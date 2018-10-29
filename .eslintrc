@@ -1,0 +1,15 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "no-console": "off",
+    "import/newline-after-import": "off",
+    "no-restricted-globals": "off",
+    "no-use-before-define": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": [0, { "ignorePureComponents": false }]
+    },
+  "env": {
+    "browser": true,
+    "node": true
+  }
+}
