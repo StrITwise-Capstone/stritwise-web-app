@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^3.3.2",
+    "@material-ui/icons": "^3.0.1",
     "axios": "^0.18.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
@@ -28,7 +30,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint": "^5.8.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
