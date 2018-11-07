@@ -4,9 +4,10 @@ import Navbar from './Navbar/Navbar';
 
 class App extends Component {
   render() {
+    const user = '';
     return (
       <React.Fragment>
-        <Navbar />
+        <Navbar user={user} />
         {this.props.children}
       </React.Fragment>
     );
