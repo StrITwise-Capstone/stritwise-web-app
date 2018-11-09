@@ -12,6 +12,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import DrawerList from './Drawer/DrawerList'
 
 const styles = {
   root: {
@@ -44,11 +45,12 @@ class Navbar extends Component {
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
-  
+
   toggleDrawer = (side, open) => () => {
     this.setState({
       [side]: open,
     });
+  };
 
   render() {
     const { classes } = this.props;
@@ -58,7 +60,7 @@ class Navbar extends Component {
     return (
       <AppBar position="static">
           <Toolbar>
-            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu"  onClick={this.toggleDrawer('isDrawerOpen', true)}>
+            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.toggleDrawer('isDrawerOpen', true)}>
               <MenuIcon />
             </IconButton>
             <SwipeableDrawer
@@ -66,6 +68,7 @@ class Navbar extends Component {
               onClose={this.toggleDrawer('isDrawerOpen', false)}
               onOpen={this.toggleDrawer('isDrawerOpen', true)}
             >
+              <DrawerList auth="Admin"/>
             </SwipeableDrawer>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               StritWise Web Application

@@ -17,19 +17,20 @@ const styles = {
 
 const DrawerList = ({ auth }) => {
   const resultList = RouteList.filter(obj => obj.name === auth);
-  // RouteList[TYPE]; //RouteList.SomeRoute
   return (
     <div>
       <List>
-        <ListItem key="Home"><RouteButton route="Home" routelink="" /></ListItem>
+        <ListItem key="Home">
+          <RouteButton route="Home" routelink="" />
+        </ListItem>
         {
-          resultList[0].route.map(key => (
-            <ListItem key={key}>
-              <RouteButton route={key} routelink={key} />
-            </ListItem>
-          ))
+            resultList[0].route.map(key => (
+              <ListItem key={key}>
+                <RouteButton route={key} routelink={key} />
+              </ListItem>
+            ))
         }
-;
+        ;
       </List>
     </div>
   );
