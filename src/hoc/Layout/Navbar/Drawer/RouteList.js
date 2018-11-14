@@ -4,10 +4,12 @@ export default [{
 }, {
   name: 'Orion Member',
   route: ['Events', 'TimeLine', 'Auction', 'Volunteers', 'Participants', 'Teams'],
-},
-{
+}, {
   name: 'Teachers',
   route: ['Events', 'Registrations'],
+}, {
+  name: 'Guest',
+  route: ['Login'],
 },
 ];
 

@@ -51,7 +51,10 @@ class Navbar extends Component {
       [side]: open,
     });
   };
+//<<<<<<< Updated upstream
 
+//=======
+//>>>>>>> Stashed changes
   render() {
     const { classes } = this.props;
     const { auth, anchorEl, isDrawerOpen } = this.state;
@@ -105,7 +108,7 @@ class Navbar extends Component {
           </Toolbar>
         </AppBar>
     );
-  }
+  };
 }
 
 export default withStyles(styles)(Navbar);
