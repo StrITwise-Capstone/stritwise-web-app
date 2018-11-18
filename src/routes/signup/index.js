@@ -1,112 +1,132 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { withFormik, Form, Field } from 'formik';
+// import { Link } from 'react-router-dom';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types'; // lazy do :(
 
 import { signUp } from '../../store/actions/authActions';
 
-const signUpForm = ({
-  values, 
-  errors, 
-  touched, 
-  isSubmitting,
-  authError,
+const initialValues = {
+  firstName: '',
+  lastName: '',
+  mobile: '',
+  email: '',
+  password: '',
+};
+
+const SignUp = ({
+  auth, authError, signUp, history,
 }) => (
-  <Form>
-    <h1>SIGN UP</h1>
-    <div id="form">
-      {touched.firstName && errors.firstName && <div id="firstName">{errors.firstName}</div>}
-      <Field type="text" name="firstName" placeholder="Enter First Name" />
-    </div>
-    <div>
-      {touched.lastName && errors.lastName && <div id="lastName">{errors.lastName}</div>}
-      <Field type="text" name="lastName" placeholder="Enter Last Name" />
-    </div>
-    <div>
-      {touched.mobile && errors.mobile && <p>{errors.mobile}</p>}
-      <Field type="text" name="mobile" placeholder="Enter Mobile Number" />
-    </div>
-    <div>
-      {touched.email && errors.email && <p>{errors.email}</p>}
-      <Field type="email" name="email" placeholder="Enter Email" />
-    </div>
-    <div>
-      {touched.password && errors.password && <p>{errors.password}</p>}
-      <Field type="password" name="password" placeholder="Enter password" />
-    </div>
-    <div>
-      <Link to="/login">Login Now!</Link>
-    </div>
-    <button type="submit" disabled={isSubmitting}>
-        Register
-    </button>
-    <div>
-      {authError ? <font color="red">{authError}</font> : null}
-    </div>
-  </Form>
+  <div>
+    <h1>Sign Up!</h1>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={Yup.object({
+        firstName: Yup.string().required('First Name is required'),
+        lastName: Yup.string().required('Last Name is required'),
+        mobile: Yup.string().min(8, 'Mobile phone number must be 8 characters long')
+          .max(8, 'Mobile phone number must be 8 characters long')
+          .required('Mobile phone number is required'),
+        email: Yup.string().email('Email not valid').required('Email is required'),
+        password: Yup.string()
+          .min(8, 'Password must be 8 characters or longer')
+          .required('Password is required'),
+      })}
+      onSubmit={(values, { setErrors, setSubmitting, resetForm }) => {
+        setTimeout(() => {
+          // alert(JSON.stringify(values, null, 2));
+          // Create user
+          signUp(values);
+          if (authError) {
+            setErrors({ form: authError });
+          } else {
+            resetForm();
+            history.push('/login');
+          }
+          setSubmitting(false);
+        }, 500);
+        console.log(values);
+      }}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleSubmit,
+        isSubmitting,
+        /* and other goodies */
+      }) => (
+        <Form onSubmit={handleSubmit}>
+
+          <div className="row">
+            <div className="col">
+              <Field type="text" name="firstName" placeholder="First Name" />
+              {touched.firstName && errors.firstName && <div id="firstName">{errors.firstName}</div>}
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col">
+              <Field type="text" name="lastName" placeholder="Last Name" />
+              {touched.lastName && errors.lastName && <div id="lastName">{errors.lastName}</div>}
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col">
+              <Field type="text" name="mobile" placeholder="Mobile Number" />
+              {touched.mobile && errors.mobile && <p>{errors.mobile}</p>}
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col">
+              <Field name="email" type="text" placeholder="Email" />
+              {errors.email && touched.email && <p>{errors.email}</p>}
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col">
+              <Field name="password" type="password" placeholder="Password" />
+              {errors.password && touched.password && <p>{errors.password}</p>}
+            </div>
+          </div>
+          <button type="submit" disabled={isSubmitting}>
+            Submit
+          </button>
+          <div>
+            {authError ? <font color="red">{authError}</font> : null}
+          </div>
+        </Form>
+      )}
+    </Formik>
+  </div>
 );
 
-const SignUp = withFormik({
-  mapPropsToValues({
-    firstName, lastName, mobile, email, password, authError,
-  }) {
-    return {
-      firstName: firstName || '',
-      lastName: lastName || '',
-      mobile: mobile || '',
-      email: email || '',
-      password: password || '',
-      authError: authError || null,
-    };
-  },
-
-  validationSchema: Yup.object().shape({
-    firstName: Yup.string()
-      .required('First Name is required'),
-    lastName: Yup.string()
-      .required('Last Name is required'),
-    mobile: Yup.string()
-      .min(8, 'Mobile phone number must be 8 characters long')
-      .max(8, 'Mobile phone number must be 8 characters long')
-      .required('Mobile phone number is required'),
-    email: Yup.string()
-      .email('Email not valid')
-      .required('Email is required'),
-    password: Yup.string()
-      .min(8, 'Password must be 8 characters or longer')
-      .required('Password is required'),
-
-  }),
-
-  handleSubmit(values, {
-    resetForm, setErrors, setSubmitting, props,
-  }) {
-
-
-    setTimeout(() => {
-      // alert(JSON.stringify(values, null, 2)); // gives user a popup of the values
-      // Create user
-      props.signUp(values);
-      if (values.authError) {
-        setErrors({ form: values.authError });
-      } else {
-        resetForm();
-      }
-      setSubmitting(false);
-    }, 2000);
-    console.log(values);
-  },
-})(signUpForm);
-
-const mapStateToProps = state => ({
-  auth: state.firebase.auth,
-  authError: state.auth.authError,
-});
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
+  console.log(state);
   return {
-    signUp: newUser => dispatch(signUp(newUser)),
+    auth: state.firebase.auth,
+    authError: state.auth.authError,
   };
 };
+const mapDispatchToProps = dispatch => ({
+  signUp: newUser => dispatch(signUp(newUser)),
+});
+
+SignUp.propTypes = {
+  auth: PropTypes.object,
+  authError: PropTypes.string,
+  signUp: PropTypes.func,
+};
+
+SignUp.defaultProps = {
+  auth: {},
+  authError: null,
+  signUp: () => {},
+};
+
+
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
