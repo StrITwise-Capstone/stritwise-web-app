@@ -11,8 +11,8 @@ const config = {
   storageBucket: 'stritwise-app.appspot.com',
   messagingSenderId: '163282995304',
 };
+
 firebase.initializeApp(config);
 firebase.firestore().settings({ timestampsInSnapshots: true });
-
 
 export default firebase;
