@@ -5,12 +5,13 @@ export default [{
   name: 'orion member',
   route: ['Events', 'TimeLine', 'Auction', 'Volunteers', 'Participants', 'Teams'],
 }, {
-  name: 'Teachers',
+  name: 'teachers',
   route: ['Events', 'Registrations'],
 }, {
-  name: 'Guest',
+  name: 'guest',
   route: ['Login'],
 },
+,
 ];
 
 // export const ADMIN_TYPE = 'ADMIN_TYPE';

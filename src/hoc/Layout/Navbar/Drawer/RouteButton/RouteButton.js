@@ -6,6 +6,7 @@ const RouteButton = withRouter(({ history, route, routelink }) => (
   <Button
     type="button"
     onClick={() => { history.push(`/${routelink}`); }}
+    color="inherit"
   >
     {route}
   </Button>

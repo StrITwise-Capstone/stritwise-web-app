@@ -1,3 +1,5 @@
+import { push } from 'connected-react-router'
+
 export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
   const firebase = getFirebase();
   firebase.auth().signInWithEmailAndPassword(
@@ -5,6 +7,7 @@ export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
     credentials.password,
   ).then(() => {
     dispatch({ type: 'LOGIN_SUCCESS' });
+    dispatch(push('/'))
   }).catch((err) => {
     dispatch({ type: 'LOGIN_ERROR', err });
   });
@@ -13,9 +16,9 @@ export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
 
 export const logOut = () => ((dispatch, getstate, { getFirebase }) => {
   const firebase = getFirebase();
-
   firebase.auth().signOut().then(() => {
     dispatch({ type: 'LOGOUT_SUCCESS' });
+    dispatch(push('/'))
   });
 });
 
