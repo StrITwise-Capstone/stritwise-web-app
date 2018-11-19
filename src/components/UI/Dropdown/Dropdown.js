@@ -9,25 +9,30 @@ const dropdown = (props) => {
   const {
     name,
     onChange,
+    onBlur,
     label,
     errors,
     values,
+    touched,
     required,
     children,
   } = props;
   const error = errors[name];
+  const isTouched = touched[name];
   const value = values[name];
+  const hasError = error && isTouched;
   return (
-    <FormControl error={error} required={required}>
-      <InputLabel shrink={value}>{label}</InputLabel>
+    <FormControl error={hasError} required={required}>
+      <InputLabel shrink={value !== ''}>{label}</InputLabel>
       <Select
         value={value}
         onChange={onChange}
         name={name}
+        onBlur={onBlur}
       >
         {children}
       </Select>
-      {error && <FormHelperText>{error}</FormHelperText>}
+      {hasError && <FormHelperText>{error}</FormHelperText>}
     </FormControl>
   );
 };
@@ -35,9 +40,11 @@ const dropdown = (props) => {
 dropdown.propTypes = {
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  onBlur: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   errors: PropTypes.objectOf(PropTypes.string),
-  values: PropTypes.objectOf(PropTypes.any).isRequired,
+  touched: PropTypes.objectOf(PropTypes.bool).isRequired,
+  values: PropTypes.objectOf(PropTypes.string).isRequired,
   required: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };

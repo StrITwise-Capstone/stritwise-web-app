@@ -47,7 +47,10 @@ class TestForm extends Component {
                 name="email"
                 label="Email"
                 type="email"
+                autoComplete="username"
+                touched={touched}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 values={values}
                 errors={errors}
               />
@@ -57,7 +60,10 @@ class TestForm extends Component {
                 name="password"
                 label="Password"
                 type="password"
+                autoComplete="current-password"
+                touched={touched}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 values={values}
                 errors={errors}
               />
@@ -66,16 +72,18 @@ class TestForm extends Component {
                 required
                 name="age"
                 label="Age"
+                touched={touched}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 values={values}
                 errors={errors}
               >
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value="10">Ten</MenuItem>
+                <MenuItem value="20">Twenty</MenuItem>
+                <MenuItem value="30">Thirty</MenuItem>
               </Dropdown>
               <br />
               <br />
