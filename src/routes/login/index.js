@@ -90,12 +90,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    logIn: creds => dispatch(logIn(creds)),
-    logOut: () => dispatch(logOut()),
-    retrieveUser: auth => dispatch(retrieveUser(auth)),
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  logIn: creds => dispatch(logIn(creds)),
+  logOut: () => dispatch(logOut()),
+  retrieveUser: auth => dispatch(retrieveUser(auth)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

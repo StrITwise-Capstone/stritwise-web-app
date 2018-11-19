@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { withRouter, Router } from 'react-router';
-import './App.css';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import './App.css';
 import Index from './routes/index';
 import Test from './routes/test';
 import Layout from './hoc/Layout/Layout';
@@ -14,27 +16,20 @@ import { retrieveUser } from './store/actions/authActions';
 
 class App extends Component {
   componentDidMount() {
-    const { auth, users } = this.props
+    const { auth, users } = this.props;
     if (auth.uid != null && users != null) {
       retrieveUser(auth.uid);
     }
   }
 
   componentDidUpdate() {
-    const { auth, users } = this.props
+    const { auth, users } = this.props;
     if (auth.uid != null && users != null) {
       retrieveUser(auth.uid);
     }
   }
 
   render() {
-    const {
-      classes,
-      auth,
-      users,
-      user,
-    } = this.props;
-
     return (
       <React.Fragment>
         <Layout>
@@ -50,6 +45,25 @@ class App extends Component {
   }
 }
 
+App.propTypes = {
+  auth: PropTypes.shape({
+    authError: PropTypes.string,
+    user: PropTypes.string,
+  }),
+  users: PropTypes.objectOf(PropTypes.shape({
+    firstName: PropTypes.string,
+    initials: PropTypes.string,
+    lastName: PropTypes.string,
+    mobile: PropTypes.string,
+    role: PropTypes.string,
+  })),
+};
+
+App.defaultProps = {
+  auth: null,
+  users: null,
+};
+
 const mapStateToProps = (state) => {
   console.log(state);
   return {
@@ -60,11 +74,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return ({
-    retrieveUser: user => dispatch(retrieveUser(user)),
-  })
-}
+const mapDispatchToProps = dispatch => ({
+  retrieveUser: user => dispatch(retrieveUser(user)),
+});
+
 export default withRouter(compose(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([{

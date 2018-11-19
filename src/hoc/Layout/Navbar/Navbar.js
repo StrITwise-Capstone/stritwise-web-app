@@ -11,12 +11,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { connect } from 'react-redux';
-import {compose } from 'redux';
+import { compose } from 'redux';
 import { firestoreConnect} from 'react-redux-firebase'
 import { withRouter, Router } from 'react-router';
 
 import DrawerList from './Drawer/DrawerList'
-import { logIn, logOut , retrieveUser} from '../../../store/actions/authActions';
+import { logIn, logOut, retrieveUser} from '../../../store/actions/authActions';
 import RouteButton from './Drawer/RouteButton/RouteButton'
 
 const styles = {
