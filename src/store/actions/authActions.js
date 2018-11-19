@@ -4,16 +4,7 @@ export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
     credentials.email,
     credentials.password,
   ).then(() => {
-    const user = firebase.auth().currentUser;
-    if (user != null) {
-      // User is signed in.
-      if (user.emailVerified) {
-        dispatch({ type: 'LOGIN_SUCCESS' });
-      } else {
-        dispatch({ type: 'LOGIN_ERROR', err: 'Email not Verified' });
-        dispatch(logOut());
-      }
-    }
+    dispatch({ type: 'LOGIN_SUCCESS' });
   }).catch((err) => {
     dispatch({ type: 'LOGIN_ERROR', err });
   });
@@ -40,20 +31,8 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
     initials: newUser.firstName[0] + newUser.lastName[0],
     mobile: newUser.mobile,
   })).then(() => {
-    const user = firebase.auth().currentUser;
-    if (user != null) {
-      user.sendEmailVerification().then(() => {
-        // Email sent.
-        dispatch({ type: 'SIGNUP_SUCCESS' });
-      }).catch((err) => {
-        // An error happened.
-        dispatch({ type: 'SIGNUP_ERROR', err });
-      });
-    }
+    dispatch({ type: 'SIGNUP_SUCCESS' });
   })
-    .then(() => {
-      dispatch(logOut());
-    })
     .catch((err) => {
       dispatch({ type: 'SIGNUP_ERROR', err });
     });
