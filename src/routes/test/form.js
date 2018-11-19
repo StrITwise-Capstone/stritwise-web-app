@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Formik, Form,
+  Formik, Form, Field,
 } from 'formik';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -42,41 +42,29 @@ class TestForm extends Component {
             isSubmitting,
           }) => (
             <Form>
-              <TextField
+              <Field
                 required
                 name="email"
                 label="Email"
                 type="email"
                 autoComplete="username"
-                touched={touched}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                values={values}
-                errors={errors}
+                component={TextField}
               />
               <br />
-              <TextField
+              <Field
                 required
                 name="password"
                 label="Password"
                 type="password"
                 autoComplete="current-password"
-                touched={touched}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                values={values}
-                errors={errors}
+                component={TextField}
               />
               <br />
-              <Dropdown
+              <Field
                 required
                 name="age"
                 label="Age"
-                touched={touched}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                values={values}
-                errors={errors}
+                component={Dropdown}
               >
                 <MenuItem value="">
                   <em>None</em>
@@ -84,13 +72,12 @@ class TestForm extends Component {
                 <MenuItem value="10">Ten</MenuItem>
                 <MenuItem value="20">Twenty</MenuItem>
                 <MenuItem value="30">Thirty</MenuItem>
-              </Dropdown>
+              </Field>
               <br />
               <br />
               <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                 Submit
               </Button>
-
             </Form>
           )}
         </Formik>

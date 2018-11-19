@@ -16,7 +16,7 @@ const initialValues = {
 };
 
 const Login = ({
-  authError, auth, logIn, logOut, 
+  authError, auth, logIn, logOut,
 }) => (
   <React.Fragment>
     <h1>Login!</h1>
@@ -60,6 +60,8 @@ const Login = ({
             label="Email"
             type="email"
             onChange={handleChange}
+            touched={touched}
+            onBlur={handleBlur}
             values={values}
             errors={errors}
           />
@@ -70,6 +72,8 @@ const Login = ({
             label="Password"
             type="password"
             onChange={handleChange}
+            touched={touched}
+            onBlur={handleBlur}
             values={values}
             errors={errors}
           />

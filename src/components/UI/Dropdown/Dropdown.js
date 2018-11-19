@@ -5,52 +5,52 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 
-const dropdown = (props) => {
+const dropdown = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const {
-    name,
-    onChange,
-    onBlur,
     label,
-    errors,
-    values,
-    touched,
     required,
     children,
   } = props;
-  const error = errors[name];
-  const isTouched = touched[name];
-  const value = values[name];
-  const hasError = error && isTouched;
+  const hasError = !!(touched[field.name] && errors[field.name]);
   return (
-    <FormControl error={hasError} required={required}>
-      <InputLabel shrink={value !== ''}>{label}</InputLabel>
-      <Select
-        value={value}
-        onChange={onChange}
-        name={name}
-        onBlur={onBlur}
-      >
-        {children}
-      </Select>
-      {hasError && <FormHelperText>{error}</FormHelperText>}
-    </FormControl>
+    <div>
+      <FormControl error={hasError} required={required}>
+        <InputLabel shrink={field.value !== ''}>{label}</InputLabel>
+        <Select
+          value={field.value}
+          onChange={field.onChange}
+          name={field.name}
+          onBlur={field.onBlur}
+        >
+          {children}
+        </Select>
+        {hasError && <FormHelperText>{hasError && errors[field.name]}</FormHelperText>}
+      </FormControl>
+    </div>
   );
 };
 
 dropdown.propTypes = {
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onBlur: PropTypes.func.isRequired,
+  field: PropTypes.shape({
+    value: PropTypes.string,
+    name: PropTypes.string,
+    onChange: PropTypes.func,
+    onBlur: PropTypes.func,
+  }).isRequired,
+  form: PropTypes.shape({
+    touched: PropTypes.objectOf(PropTypes.bool),
+    errors: PropTypes.objectOf(PropTypes.string),
+  }).isRequired,
   label: PropTypes.string.isRequired,
-  errors: PropTypes.objectOf(PropTypes.string),
-  touched: PropTypes.objectOf(PropTypes.bool).isRequired,
-  values: PropTypes.objectOf(PropTypes.string).isRequired,
   required: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };
 
 dropdown.defaultProps = {
-  errors: { },
   required: false,
 };
 
