@@ -63,7 +63,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return ({
     retrieveUser: user => dispatch(retrieveUser(user)),
-  }),
+  })
 }
 export default withRouter(compose(
   connect(mapStateToProps, mapDispatchToProps),
