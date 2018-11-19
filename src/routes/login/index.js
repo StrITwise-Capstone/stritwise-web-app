@@ -3,9 +3,9 @@ import { withRouter , Link } from 'react-router-dom';
 import { withFormik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-// import { Redirect } from 'react-router-dom';
 import { compose } from 'redux';
-import { logIn, logOut } from '../../store/actions/authActions';
+
+import { logIn, logOut, retrieveUser } from '../../store/actions/authActions';
 
 
 const loginForm = ({
@@ -86,6 +86,7 @@ const mapStateToProps = (state) => {
   return {
     authError: state.auth.authError,
     auth: state.firebase.auth,
+    user: state.auth.user,
   };
 };
 
@@ -93,6 +94,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     logIn: creds => dispatch(logIn(creds)),
     logOut: () => dispatch(logOut()),
+    retrieveUser: auth => dispatch(retrieveUser(auth)),
   };
 };
 

@@ -40,3 +40,11 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
       dispatch({ type: 'SIGNUP_ERROR', err });
     });
 };
+
+export const retrieveUser = auth => (dispatch,getState,{ getFirestore }) => {
+  const firestore = getFirestore();
+  firestore.collection('users').doc(auth).get().then((user) => {
+    const userrole = user.data().role
+    dispatch({ type: 'RETRIEVE_USER', user: userrole })
+  })
+};

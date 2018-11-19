@@ -7,19 +7,17 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-// import Switch from '@material-ui/core/Switch';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import DrawerList from './Drawer/DrawerList'
 import { connect } from 'react-redux';
-import { logIn, logOut } from '../../../store/actions/authActions';
 import {compose } from 'redux';
 import { firestoreConnect} from 'react-redux-firebase'
-import RouteButton from './Drawer/RouteButton/RouteButton'
 import { withRouter, Router } from 'react-router';
+
+import DrawerList from './Drawer/DrawerList'
+import { logIn, logOut , retrieveUser} from '../../../store/actions/authActions';
+import RouteButton from './Drawer/RouteButton/RouteButton'
 
 const styles = {
   root: {
@@ -39,7 +37,6 @@ class Navbar extends Component {
     auth: true,
     anchorEl: null,
     isDrawerOpen: false,
-    userrole: 'general',
   };
 
   handleChange = event => {
@@ -61,36 +58,19 @@ class Navbar extends Component {
   };
 
   componentDidMount(){
-    this.setUser();
+    if (this.props.auth.uid != null && this.props.users != null)
+      this.props.retrieveUser(this.props.auth.uid)
   }
 
-  componentDidUpdate(prevProps){
-    this.setUser(prevProps)
+  componentDidUpdate(){
+    if (this.props.auth.uid != null && this.props.users != null)
+      this.props.retrieveUser(this.props.auth.uid)
   }
 
-  setUser(prevProps){
-    let userrole = 'general'
-    if (this.props.users != null && this.props.auth.uid != null){
-      userrole = this.props.users[this.props.auth.uid].role;
-      console.log(userrole)
-      if (userrole !== this.state.userrole)
-        this.setState({
-          userrole : userrole
-        })
-    }
-
-    if (this.props.auth.uid == null){
-      if (userrole !== 'general')
-        this.setState({
-          userrole : 'general'
-        })
-    }
-
-  }
 
   render() {
-    const { classes,auth, users } = this.props;
-    const { anchorEl, isDrawerOpen, userrole } = this.state;
+    const { classes,auth, users, user} = this.props;
+    const { anchorEl, isDrawerOpen} = this.state;
     const open = Boolean(this.state.anchorEl);
 
     return (
@@ -106,13 +86,13 @@ class Navbar extends Component {
               onClose={this.toggleDrawer('isDrawerOpen', false)}
               onOpen={this.toggleDrawer('isDrawerOpen', true)}
             >
-              <DrawerList auth={userrole}/>
+              <DrawerList auth={user}/>
             </SwipeableDrawer>
             </div>
             )
             }
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              StritWise Web Application {userrole}
+              StritWise Web Application
             </Typography>
             {auth.uid == null && (
               <div>
@@ -160,11 +140,11 @@ class Navbar extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     authError: state.auth.authError,
     auth: state.firebase.auth,
     users: state.firestore.data.users,
+    user: state.auth.user
   };
 };
 
@@ -172,8 +152,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     logIn: (creds) => dispatch(logIn(creds)),
     logOut: () => dispatch(logOut()),
+    retrieveUser: (user) => dispatch(retrieveUser(user)),
   };
 };
+
 export default withRouter(compose(
   connect(mapStateToProps,mapDispatchToProps),
   firestoreConnect([{

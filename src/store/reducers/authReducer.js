@@ -1,5 +1,6 @@
 const initState = {
   authError: null,
+  user:null,
 };
 const authReducer = (state = initState, action) => {
   switch (action.type) {
@@ -30,6 +31,11 @@ const authReducer = (state = initState, action) => {
         ...state,
         authError: action.err.message,
       };
+    case 'RETRIEVE_USER':
+      console.log('retrieve user success');
+      return Object.assign({}, state, {
+        user: action.user
+      });
     default:
       return state;
   }
