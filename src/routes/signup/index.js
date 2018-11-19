@@ -1,11 +1,17 @@
 import React from 'react';
 // import { Link } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types'; // lazy do :(
 
 import { signUp } from '../../store/actions/authActions';
+import TextField from '../../components/UI/TextField/TextField';
 
 const initialValues = {
   firstName: '',
@@ -19,33 +25,30 @@ const SignUp = ({
   auth, authError, signUp, history,
 }) => (
   <div>
-    <h1>Sign Up!</h1>
     <Formik
       initialValues={initialValues}
       validationSchema={Yup.object({
-        firstName: Yup.string().required('First Name is required'),
-        lastName: Yup.string().required('Last Name is required'),
+        firstName: Yup.string().required('Required'),
+        lastName: Yup.string().required('Required'),
         mobile: Yup.string().min(8, 'Mobile phone number must be 8 characters long')
           .max(8, 'Mobile phone number must be 8 characters long')
-          .required('Mobile phone number is required'),
-        email: Yup.string().email('Email not valid').required('Email is required'),
+          .required('Required'),
+        email: Yup.string().email('Email not valid').required('Required'),
         password: Yup.string()
           .min(8, 'Password must be 8 characters or longer')
-          .required('Password is required'),
+          .required('Required'),
       })}
       onSubmit={(values, { setErrors, setSubmitting, resetForm }) => {
-        setTimeout(() => {
-          // alert(JSON.stringify(values, null, 2));
-          // Create user
-          signUp(values);
-          if (authError) {
-            setErrors({ form: authError });
-          } else {
-            resetForm();
-            history.push('/login');
-          }
-          setSubmitting(false);
-        }, 500);
+        // alert(JSON.stringify(values, null, 2));
+        // Create user
+        signUp(values);
+        if (authError) {
+          setErrors({ form: authError });
+        } else {
+          resetForm();
+          history.push('/login');
+        }
+        setSubmitting(false);
         console.log(values);
       }}
     >
@@ -57,49 +60,66 @@ const SignUp = ({
         isSubmitting,
         /* and other goodies */
       }) => (
-        <Form onSubmit={handleSubmit}>
 
-          <div className="row">
-            <div className="col">
-              <Field type="text" name="firstName" placeholder="First Name" />
-              {touched.firstName && errors.firstName && <div id="firstName">{errors.firstName}</div>}
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col">
-              <Field type="text" name="lastName" placeholder="Last Name" />
-              {touched.lastName && errors.lastName && <div id="lastName">{errors.lastName}</div>}
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col">
-              <Field type="text" name="mobile" placeholder="Mobile Number" />
-              {touched.mobile && errors.mobile && <p>{errors.mobile}</p>}
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col">
-              <Field name="email" type="text" placeholder="Email" />
-              {errors.email && touched.email && <p>{errors.email}</p>}
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col">
-              <Field name="password" type="password" placeholder="Password" />
-              {errors.password && touched.password && <p>{errors.password}</p>}
-            </div>
-          </div>
-          <button type="submit" disabled={isSubmitting}>
-            Submit
-          </button>
-          <div>
-            {authError ? <font color="red">{authError}</font> : null}
-          </div>
-        </Form>
+        <div style={{ padding: '30px' }}>
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+          >
+            <Paper elevation={3}>
+              <div style={{ padding: '30px' }}>
+                <Typography variant="h3">Sign Up Now!</Typography>
+                <Form onSubmit={handleSubmit}>
+                  <br />
+                  <Field
+                    required
+                    name="firstName"
+                    label="First Name"
+                    type="text"
+                    component={TextField}
+                  />
+                  <Field
+                    required
+                    name="lastName"
+                    label="Lirst Name"
+                    type="text"
+                    component={TextField}
+                  />
+                  <Field
+                    required
+                    name="mobile"
+                    label="Mobile Number"
+                    type="text"
+                    component={TextField}
+                  />
+                  <Field
+                    required
+                    name="email"
+                    label="Email"
+                    type="email"
+                    component={TextField}
+                  />
+                  <Field
+                    required
+                    name="password"
+                    label="Password"
+                    type="password"
+                    component={TextField}
+                  />
+                  <br />
+                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+                    Register
+                  </Button>
+                  <div>
+                    {authError ? <font color="red">{authError}</font> : null}
+                  </div>
+                </Form>
+              </div>
+            </Paper>
+          </Grid>
+        </div>
       )}
     </Formik>
   </div>
@@ -117,7 +137,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 SignUp.propTypes = {
-  auth: PropTypes.object,
+  auth: PropTypes.objectOf(PropTypes.string),
   authError: PropTypes.string,
   signUp: PropTypes.func,
 };

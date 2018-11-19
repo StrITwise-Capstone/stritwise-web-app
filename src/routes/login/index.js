@@ -2,13 +2,16 @@ import React from 'react';
 // import { Link } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types'; // lazy do :(
 
 import { logIn, logOut } from '../../store/actions/authActions';
 import TextField from '../../components/UI/TextField/TextField';
-
 
 const initialValues = {
   email: '',
@@ -19,27 +22,23 @@ const Login = ({
   authError, auth, logIn, logOut,
 }) => (
   <React.Fragment>
-    <h1>Login!</h1>
     <Formik
       initialValues={initialValues}
       validationSchema={Yup.object({
-        email: Yup.string().email('Email not valid').required('Email is required'),
+        email: Yup.string().email('Email not valid').required('Required'),
         password: Yup.string()
           .min(8, 'Password must be 8 characters or longer')
-          .required('Password is required'),
+          .required('Required'),
       })}
       onSubmit={(values, { setErrors, setSubmitting, resetForm }) => {
-        setTimeout(() => {
-          // alert(JSON.stringify(values, null, 2));
-          // login user
-          logIn(values);
-          if (authError) {
-            setErrors({ form: authError });
-          } else {
-            resetForm();
-          }
-          setSubmitting(false);
-        }, 500);
+        // login user
+        logIn(values);
+        if (authError) {
+          setErrors({ form: authError });
+        } else {
+          resetForm();
+        }
+        setSubmitting(false);
         console.log(values);
       }}
     >
@@ -47,48 +46,53 @@ const Login = ({
         values,
         errors,
         touched,
-        handleChange,
-        handleBlur,
         handleSubmit,
         isSubmitting,
         /* and other goodies */
       }) => (
-        <Form onSubmit={handleSubmit}>
-          <TextField
-            required
-            name="email"
-            label="Email"
-            type="email"
-            onChange={handleChange}
-            touched={touched}
-            onBlur={handleBlur}
-            values={values}
-            errors={errors}
-          />
-          <br />
-          <TextField
-            required
-            name="password"
-            label="Password"
-            type="password"
-            onChange={handleChange}
-            touched={touched}
-            onBlur={handleBlur}
-            values={values}
-            errors={errors}
-          />
-          <br />
-          <br />
-          <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-            Submit
-          </Button>
-          <Button type="button" variant="contained" color="primary" href="/signIn" onClick={() => { logOut(); }}>
-            Logout
-          </Button>
-          <div>
-            {authError ? <font color="red">{authError}</font> : null}
-          </div>
-        </Form>
+        <div style={{ padding: '30px' }}>
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+          >
+            <Paper elevation={3}>
+              <div style={{ padding: '30px' }}>
+                <Typography variant="h3">Login!</Typography>
+                <Form onSubmit={handleSubmit}>
+                  <br />
+                  <Field
+                    required
+                    name="email"
+                    label="Email"
+                    type="email"
+                    component={TextField}
+                  />
+                  <Field
+                    required
+                    name="password"
+                    label="Password"
+                    type="password"
+                    component={TextField}
+                  />
+                  <br />
+                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting && errors === {}}>
+                    Login
+                  </Button>
+                  <br />
+                  <br />
+                  <Button type="button" variant="contained" color="primary" href="/signIn" onClick={() => { logOut(); }}>
+                    Logout
+                  </Button>
+                  <div>
+                    {authError ? <font color="red">{authError}</font> : null}
+                  </div>
+                </Form>
+              </div>
+            </Paper>
+          </Grid>
+        </div>
       )}
     </Formik>
   </React.Fragment>
@@ -108,7 +112,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 Login.propTypes = {
-  auth: PropTypes.object,
+  auth: PropTypes.objectOf(PropTypes.string),
   authError: PropTypes.string,
   logIn: PropTypes.func,
   logOut: PropTypes.func,
