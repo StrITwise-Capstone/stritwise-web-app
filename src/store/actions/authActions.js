@@ -1,4 +1,4 @@
-import { push } from 'connected-react-router'
+import { push } from 'connected-react-router';
 
 export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
   const firebase = getFirebase();
@@ -7,7 +7,7 @@ export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
     credentials.password,
   ).then(() => {
     dispatch({ type: 'LOGIN_SUCCESS' });
-    dispatch(push('/'))
+    dispatch(push('/'));
   }).catch((err) => {
     dispatch({ type: 'LOGIN_ERROR', err });
   });
@@ -18,7 +18,7 @@ export const logOut = () => ((dispatch, getstate, { getFirebase }) => {
   const firebase = getFirebase();
   firebase.auth().signOut().then(() => {
     dispatch({ type: 'LOGOUT_SUCCESS' });
-    dispatch(push('/'))
+    dispatch(push('/'));
   });
 });
 
@@ -41,10 +41,10 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
     });
 };
 
-export const retrieveUser = auth => (dispatch,getState,{ getFirestore }) => {
+export const retrieveUser = auth => (dispatch, getState, { getFirestore }) => {
   const firestore = getFirestore();
   firestore.collection('users').doc(auth).get().then((user) => {
-    const userrole = user.data().role
-    dispatch({ type: 'RETRIEVE_USER', user: userrole })
-  })
+    const userrole = user.data().role;
+    dispatch({ type: 'RETRIEVE_USER', user: userrole });
+  });
 };
