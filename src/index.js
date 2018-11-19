@@ -19,12 +19,15 @@ const store = createStore(rootReducer,
     reduxFirestore(fbConfig),
     reactReduxFirebase(fbConfig, { attachAuthIsReady: true }),
   ));
+
 const app = (
   <React.Fragment>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <BrowserRouter>
-      <Provider store={store}><App /></Provider>
+      <Provider store={store}>
+        <App />
+      </Provider>
     </BrowserRouter>
   </React.Fragment>
 );

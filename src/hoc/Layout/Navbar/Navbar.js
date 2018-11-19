@@ -4,15 +4,20 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-// import Switch from '@material-ui/core/Switch';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { firestoreConnect} from 'react-redux-firebase'
+import { withRouter, Router } from 'react-router';
+
 import DrawerList from './Drawer/DrawerList'
+import { logIn, logOut, retrieveUser} from '../../../store/actions/authActions';
+import RouteButton from './Drawer/RouteButton/RouteButton'
 
 const styles = {
   root: {
@@ -31,7 +36,7 @@ class Navbar extends Component {
   state = {
     auth: true,
     anchorEl: null,
-    isDrawerOpen: false
+    isDrawerOpen: false,
   };
 
   handleChange = event => {
@@ -51,19 +56,29 @@ class Navbar extends Component {
       [side]: open,
     });
   };
-//<<<<<<< Updated upstream
 
-//=======
-//>>>>>>> Stashed changes
+  componentDidMount(){
+    if (this.props.auth.uid != null && this.props.users != null)
+      this.props.retrieveUser(this.props.auth.uid)
+  }
+
+  componentDidUpdate(){
+    if (this.props.auth.uid != null && this.props.users != null)
+      this.props.retrieveUser(this.props.auth.uid)
+  }
+
+
   render() {
-    const { classes } = this.props;
-    const { auth, anchorEl, isDrawerOpen } = this.state;
+    const { classes,auth, users, user} = this.props;
+    const { anchorEl, isDrawerOpen} = this.state;
     const open = Boolean(this.state.anchorEl);
 
     return (
       <AppBar position="static">
           <Toolbar>
-            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.toggleDrawer('isDrawerOpen', true)}>
+            {auth.uid && (
+            <div>
+              <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.toggleDrawer('isDrawerOpen', true)}>
               <MenuIcon />
             </IconButton>
             <SwipeableDrawer
@@ -71,12 +86,24 @@ class Navbar extends Component {
               onClose={this.toggleDrawer('isDrawerOpen', false)}
               onOpen={this.toggleDrawer('isDrawerOpen', true)}
             >
-              <DrawerList auth="Admin"/>
+              <DrawerList auth={user}/>
             </SwipeableDrawer>
+            </div>
+            )
+            }
             <Typography variant="h6" color="inherit" className={classes.grow}>
               StritWise Web Application
             </Typography>
-            {auth && (
+            {auth.uid == null && (
+              <div>
+                <RouteButton route="Home" color="inherit" routelink=""></RouteButton>
+                <RouteButton route="Sign Up" color="inherit" routelink="signup"></RouteButton>
+                <RouteButton route="Log In" color="inherit" routelink="login"></RouteButton>
+              </div>
+            )
+
+            }
+            {auth.uid && (
               <div>
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : null}
@@ -102,6 +129,7 @@ class Navbar extends Component {
                 >
                   <MenuItem onClick={this.handleClose}>Profile</MenuItem>
                   <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                  <MenuItem onClick={this.props.logOut}>Log Out</MenuItem>
                 </Menu>
               </div>
             )}
@@ -111,4 +139,26 @@ class Navbar extends Component {
   };
 }
 
-export default withStyles(styles)(Navbar);
+const mapStateToProps = (state) => {
+  return {
+    authError: state.auth.authError,
+    auth: state.firebase.auth,
+    users: state.firestore.data.users,
+    user: state.auth.user
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logIn: (creds) => dispatch(logIn(creds)),
+    logOut: () => dispatch(logOut()),
+    retrieveUser: (user) => dispatch(retrieveUser(user)),
+  };
+};
+
+export default withRouter(compose(
+  connect(mapStateToProps,mapDispatchToProps),
+  firestoreConnect([{
+    collection: 'users'
+  }])
+)(withStyles(styles)(Navbar)));

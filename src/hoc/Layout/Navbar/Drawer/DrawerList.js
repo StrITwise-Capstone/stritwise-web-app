@@ -2,6 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+
 import RouteList from './RouteList';
 import RouteButton from './RouteButton/RouteButton';
 
@@ -26,7 +27,7 @@ const DrawerList = ({ auth }) => {
         {
             resultList[0].route.map(key => (
               <ListItem key={key}>
-                <RouteButton route={key} routelink={key} />
+                <RouteButton route={key} routelink={key.replace(' ', '').toLowerCase()} />
               </ListItem>
             ))
         }
