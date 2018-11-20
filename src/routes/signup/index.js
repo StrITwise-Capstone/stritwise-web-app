@@ -4,6 +4,7 @@ import { Formik, Form, Field } from 'formik';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 
 import * as Yup from 'yup';
@@ -12,13 +13,19 @@ import PropTypes from 'prop-types'; // lazy do :(
 
 import { signUp } from '../../store/actions/authActions';
 import TextField from '../../components/UI/TextField/TextField';
+import Dropdown from '../../components/UI/Dropdown/Dropdown';
 
-const signUpForm = ({
-  values,
-  errors,
-  touched,
-  isSubmitting,
-  authError,
+
+const initialValues = {
+  firstName: '',
+  lastName: '',
+  mobile: '',
+  email: '',
+  password: '',
+};
+
+const SignUp = ({
+  auth, authError, signUp, history,
 }) => (
   <div>
     <Formik
@@ -92,6 +99,19 @@ const signUpForm = ({
                   />
                   <Field
                     required
+                    name="age"
+                    label="Age"
+                    component={Dropdown}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="10">Ten</MenuItem>
+                    <MenuItem value="20">Twenty</MenuItem>
+                    <MenuItem value="30">Thirty</MenuItem>
+                  </Field>
+                  <Field
+                    required
                     name="email"
                     label="Email"
                     type="email"
@@ -105,9 +125,11 @@ const signUpForm = ({
                     component={TextField}
                   />
                   <br />
-                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-                    Register
-                  </Button>
+                  <div>
+                    <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+                      Register
+                    </Button>
+                  </div>
                   <div>
                     {authError ? <font color="red">{authError}</font> : null}
                   </div>
@@ -121,28 +143,11 @@ const signUpForm = ({
   </div>
 );
 
-    setTimeout(() => {
-      // alert(JSON.stringify(values, null, 2)); // gives user a popup of the values
-      // Create user
-      props.signUp(values);
-      if (values.authError) {
-        setErrors({ form: values.authError });
-      } else {
-        resetForm();
-      }
-      setSubmitting(false);
-    }, 2000);
-    console.log(values);
-  },
-})(signUpForm);
-
-const mapStateToProps = state => ({
-  auth: state.firebase.auth,
-  authError: state.auth.authError,
-});
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
+  console.log(state);
   return {
-    signUp: newUser => dispatch(signUp(newUser)),
+    auth: state.firebase.auth,
+    authError: state.auth.authError,
   };
 };
 const mapDispatchToProps = dispatch => ({

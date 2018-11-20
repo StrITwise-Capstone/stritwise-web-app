@@ -1,11 +1,11 @@
 const initState = {
   authError: null,
-  user:null,
+  userRole: null,
 };
 const authReducer = (state = initState, action) => {
   switch (action.type) {
     case 'LOGIN_ERROR':
-      console.log('login error');
+      console.log('Login error');
       return {
         ...state,
         authError: 'Login Failed',
@@ -18,7 +18,11 @@ const authReducer = (state = initState, action) => {
       };
     case 'LOGOUT_SUCCESS':
       console.log('logout success');
-      return state;
+      return {
+        ...state,
+        authError: null,
+        userRole: null,
+      };
     case 'SIGNUP_SUCCESS':
       console.log('signup success');
       return {
@@ -33,9 +37,10 @@ const authReducer = (state = initState, action) => {
       };
     case 'RETRIEVE_USER':
       console.log('retrieve user success');
-      return Object.assign({}, state, {
-        user: action.user
-      });
+      return {
+        ...state,
+        userRole: action.userRole,
+      };
     default:
       return state;
   }

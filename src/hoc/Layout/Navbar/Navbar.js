@@ -4,7 +4,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,7 +12,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect} from 'react-redux-firebase'
-import { withRouter, Router } from 'react-router';
+import { withRouter } from 'react-router';
 
 import DrawerList from './Drawer/DrawerList'
 import { logIn, logOut, retrieveUser} from '../../../store/actions/authActions';
@@ -58,11 +57,13 @@ class Navbar extends Component {
   };
 
   componentDidMount(){
+    console.log("componentdidMount: " + this.props.auth.uid);
     if (this.props.auth.uid != null && this.props.users != null)
       this.props.retrieveUser(this.props.auth.uid)
   }
 
   componentDidUpdate(){
+    console.log("componentdidUpdate: " + this.props.auth.uid);
     if (this.props.auth.uid != null && this.props.users != null)
       this.props.retrieveUser(this.props.auth.uid)
   }

@@ -1,13 +1,19 @@
-import { push } from 'connected-react-router';
-
 export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
   const firebase = getFirebase();
   firebase.auth().signInWithEmailAndPassword(
     credentials.email,
     credentials.password,
   ).then(() => {
-    dispatch({ type: 'LOGIN_SUCCESS' });
-    dispatch(push('/'));
+    const user = firebase.auth().currentUser;
+    if (user != null) {
+      // User is signed in.
+      if (user.emailVerified) {
+        dispatch({ type: 'LOGIN_SUCCESS' });
+      } else {
+        dispatch({ type: 'LOGIN_ERROR', err: 'Email not Verified' });
+        dispatch(logOut());
+      }
+    }
   }).catch((err) => {
     dispatch({ type: 'LOGIN_ERROR', err });
   });
@@ -16,9 +22,9 @@ export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
 
 export const logOut = () => ((dispatch, getstate, { getFirebase }) => {
   const firebase = getFirebase();
+
   firebase.auth().signOut().then(() => {
     dispatch({ type: 'LOGOUT_SUCCESS' });
-    dispatch(push('/'));
   });
 });
 
@@ -34,8 +40,20 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
     initials: newUser.firstName[0] + newUser.lastName[0],
     mobile: newUser.mobile,
   })).then(() => {
-    dispatch({ type: 'SIGNUP_SUCCESS' });
+    const user = firebase.auth().currentUser;
+    if (user != null) {
+      user.sendEmailVerification().then(() => {
+        // Email sent.
+        dispatch({ type: 'SIGNUP_SUCCESS' });
+      }).catch((err) => {
+        // An error happened.
+        dispatch({ type: 'SIGNUP_ERROR', err });
+      });
+    }
   })
+    .then(() => {
+      dispatch(logOut());
+    })
     .catch((err) => {
       dispatch({ type: 'SIGNUP_ERROR', err });
     });
@@ -44,7 +62,7 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
 export const retrieveUser = auth => (dispatch, getState, { getFirestore }) => {
   const firestore = getFirestore();
   firestore.collection('users').doc(auth).get().then((user) => {
-    const userrole = user.data().role;
-    dispatch({ type: 'RETRIEVE_USER', user: userrole });
+    const userRole = user.data().role;
+    dispatch({ type: 'RETRIEVE_USER', userRole });
   });
 };

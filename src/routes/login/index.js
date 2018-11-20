@@ -8,9 +8,10 @@ import Typography from '@material-ui/core/Typography';
 
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import PropTypes from 'prop-types'; // lazy do :(
 
-import { logIn, logOut, retrieveUser } from '../../store/actions/authActions';
+import { logIn, logOut } from '../../store/actions/authActions';
+import TextField from '../../components/UI/TextField/TextField';
 
 const initialValues = {
   email: '',
@@ -97,56 +98,17 @@ const Login = ({
   </React.Fragment>
 );
 
-const Login = compose(withRouter, withFormik({
-  mapPropsToValues({ email, password }) {
-    return {
-      email: email || '',
-      password: password || '',
-    };
-  },
-
-  validationSchema: Yup.object().shape({
-    email: Yup.string()
-      .email('Email not valid')
-      .required('Email is required'),
-    password: Yup.string()
-      .min(8, 'Password must be 8 characters or longer')
-      .required('Password is required'),
-  }),
-
-  handleSubmit(values, {
-    resetForm, setErrors, setSubmitting, props,
-  }) {
-    setTimeout(() => {
-      // alert(JSON.stringify(values, null, 2)); // gives user a popup of the values
-      // login user
-      props.logIn(values);
-      if (props.authError) {
-        setErrors({ form: props.authError });
-      } else {
-        resetForm();
-        props.history.push('/');
-      }
-      setSubmitting(false);
-    }, 2000);
-    console.log(values);
-  },
-}))(loginForm);
-
-
 const mapStateToProps = (state) => {
   console.log(state);
   return {
     authError: state.auth.authError,
     auth: state.firebase.auth,
-    user: state.auth.user,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   logIn: creds => dispatch(logIn(creds)),
   logOut: () => dispatch(logOut()),
-  retrieveUser: auth => dispatch(retrieveUser(auth)),
 });
 
 Login.propTypes = {
