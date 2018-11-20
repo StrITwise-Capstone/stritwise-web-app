@@ -1,19 +1,19 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-
+import {
+  Button,
+  Paper,
+  Grid,
+  MenuItem,
+  Typography,
+} from '@material-ui/core';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types'; // lazy do :(
+import PropTypes from 'prop-types';
 
-import { signUp } from '../../store/actions/authActions';
-import TextField from '../../components/UI/TextField/TextField';
-import Dropdown from '../../components/UI/Dropdown/Dropdown';
+import * as reduxAction from '../../../store/actions';
+import TextField from '../../../components/UI/TextField/TextField';
+import Dropdown from '../../../components/UI/Dropdown/Dropdown';
 
 
 const initialValues = {
@@ -22,6 +22,7 @@ const initialValues = {
   mobile: '',
   email: '',
   password: '',
+  age: '',
 };
 
 const SignUp = ({
@@ -151,7 +152,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = dispatch => ({
-  signUp: newUser => dispatch(signUp(newUser)),
+  signUp: newUser => dispatch(reduxAction.signUp(newUser)),
 });
 
 SignUp.propTypes = {

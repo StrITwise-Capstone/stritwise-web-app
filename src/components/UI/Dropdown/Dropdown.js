@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
+import {
+  FormHelperText,
+  InputLabel,
+  Select,
+  FormControl,
+} from '@material-ui/core';
 
 const dropdown = ({
   field,

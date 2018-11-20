@@ -1,17 +1,17 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-
+import {
+  Button,
+  Grid,
+  Paper,
+  Typography,
+} from '@material-ui/core';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types'; // lazy do :(
+import PropTypes from 'prop-types';
 
-import { logIn, logOut } from '../../store/actions/authActions';
-import TextField from '../../components/UI/TextField/TextField';
+import * as reduxAction from '../../../store/actions';
+import TextField from '../../../components/UI/TextField/TextField';
 
 const initialValues = {
   email: '',
@@ -98,17 +98,14 @@ const Login = ({
   </React.Fragment>
 );
 
-const mapStateToProps = (state) => {
-  console.log(state);
-  return {
-    authError: state.auth.authError,
-    auth: state.firebase.auth,
-  };
-};
+const mapStateToProps = state => ({
+  authError: state.auth.authError,
+  auth: state.firebase.auth,
+});
 
 const mapDispatchToProps = dispatch => ({
-  logIn: creds => dispatch(logIn(creds)),
-  logOut: () => dispatch(logOut()),
+  logIn: creds => dispatch(reduxAction.logIn(creds)),
+  logOut: () => dispatch(reduxAction.logOut()),
 });
 
 Login.propTypes = {

@@ -4,7 +4,6 @@ import '../../App.css';
 
 class Index extends Component {
   render() {
-    const { userRole } = this.props;
     return (
       <div className="App">
         <header className="App-header">

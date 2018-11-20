@@ -6,19 +6,23 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import { getFirestore, reduxFirestore } from 'redux-firestore';
 import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
-import fbConfig from './config/fbConfig';
 
 import './index.css';
 import App from './App';
+import fbConfig from './config/fbConfig';
 import * as serviceWorker from './serviceWorker';
 import rootReducer from './store/reducers/rootReducer';
 
+/* eslint-disable no-underscore-dangle */
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const store = createStore(rootReducer,
-  compose(
+  composeEnhancers(
     applyMiddleware(thunk.withExtraArgument({ getFirebase, getFirestore })),
     reduxFirestore(fbConfig),
     reactReduxFirebase(fbConfig, { attachAuthIsReady: true }),
   ));
+/* eslint-enable */
 
 const app = (
   <React.Fragment>

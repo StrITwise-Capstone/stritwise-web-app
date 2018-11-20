@@ -1,86 +1,59 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import { firestoreConnect } from 'react-redux-firebase';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import {
+  createMuiTheme,
+  MuiThemeProvider,
+} from '@material-ui/core/styles';
+import {
+  purple,
+  pink,
+} from '@material-ui/core/colors';
 
 import './App.css';
-import Index from './routes/index';
-import Test from './routes/test';
 import Layout from './hoc/Layout/Layout';
-import SignUp from './routes/signup';
-import Login from './routes/login';
-import { retrieveUser } from './store/actions/authActions';
+import Routes from './routes/routes';
 
 class App extends Component {
-  componentDidMount() {
-    const { auth, users } = this.props;
-    if (auth.uid != null && users != null) {
-      retrieveUser(auth.uid);
-    }
-  }
-
-  componentDidUpdate() {
-    const { auth, users } = this.props;
-    if (auth.uid != null && users != null) {
-      retrieveUser(auth.uid);
-    }
-  }
+  theme = createMuiTheme({
+    palette: {
+      primary: {
+        light: purple[500],
+        main: purple[700],
+        dark: purple[900],
+      },
+      secondary: {
+        light: pink[500],
+        main: pink[700],
+        dark: pink[900],
+      },
+      // primary: {
+      //   light: orange, // same as '#FFCC80',
+      //   main: purple[700], // same as orange[600]
+      //   dark: '#EF6C00',
+      //   contrastText: 'rgb(0,0,0)',
+      // },
+    },
+    overrides: {
+      // MuiPaper: {
+      //   root: {
+      //     padding: '50px',
+      //     width: '50%',
+      //   },
+      // },
+    },
+  });
 
   render() {
     return (
       <React.Fragment>
-        <Layout>
-          <Switch>
-            <Route path="/test" component={Test} />
-            <Route path="/" exact component={Index} />
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={SignUp} />
-          </Switch>
-        </Layout>
+        <MuiThemeProvider theme={this.theme}>
+          <Layout>
+            <Routes />
+          </Layout>
+        </MuiThemeProvider>
       </React.Fragment>
     );
   }
 }
 
-App.propTypes = {
-  auth: PropTypes.shape({
-    authError: PropTypes.string,
-    user: PropTypes.string,
-  }),
-  users: PropTypes.objectOf(PropTypes.shape({
-    firstName: PropTypes.string,
-    initials: PropTypes.string,
-    lastName: PropTypes.string,
-    mobile: PropTypes.string,
-    role: PropTypes.string,
-  })),
-};
-
-App.defaultProps = {
-  auth: null,
-  users: null,
-};
-
-const mapStateToProps = (state) => {
-  console.log(state);
-  return {
-    authError: state.auth.authError,
-    auth: state.firebase.auth,
-    users: state.firestore.data.users,
-    user: state.auth.user,
-  };
-};
-
-const mapDispatchToProps = dispatch => ({
-  retrieveUser: user => dispatch(retrieveUser(user)),
-});
-
-export default withRouter(compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([{
-    collection: 'users',
-  }]),
-)(App));
+export default withRouter(App);
