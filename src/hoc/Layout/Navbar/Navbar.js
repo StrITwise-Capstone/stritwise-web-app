@@ -61,7 +61,6 @@ class Navbar extends Component {
   }
 
   componentDidUpdate(){
-    console.log('USER ID: ' + this.props.auth.uid);
     this.props.retrieveUser(this.props.auth.uid);
   }
 

@@ -14,14 +14,25 @@ const dropdown = ({
 }) => {
   const {
     label,
+    disabled,
+    multiple,
+    fullWidth,
     required,
     children,
   } = props;
   const hasError = !!(touched[field.name] && errors[field.name]);
   return (
     <div>
-      <FormControl error={hasError} required={required}>
-        <InputLabel shrink={field.value !== ''}>{label}</InputLabel>
+      <FormControl
+        disabled={disabled}
+        error={hasError}
+        equired={required}
+        fullWidth={fullWidth}
+        multiple={multiple}
+      >
+        <InputLabel shrink={field.value !== ''}>
+          {label}
+        </InputLabel>
         <Select
           value={field.value}
           onChange={field.onChange}
@@ -48,11 +59,17 @@ dropdown.propTypes = {
     errors: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
   label: PropTypes.string.isRequired,
+  disabled: PropTypes.bool,
+  multiple: PropTypes.bool,
+  fullWidth: PropTypes.bool,
   required: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };
 
 dropdown.defaultProps = {
+  disabled: false,
+  multiple: false,
+  fullWidth: true,
   required: false,
 };
 

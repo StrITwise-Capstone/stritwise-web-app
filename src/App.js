@@ -17,7 +17,7 @@ class App extends Component {
   theme = createMuiTheme({
     palette: {
       primary: {
-        light: purple[500],
+        light: purple[300],
         main: purple[700],
         dark: purple[900],
       },
@@ -34,12 +34,24 @@ class App extends Component {
       // },
     },
     overrides: {
-      // MuiPaper: {
-      //   root: {
-      //     padding: '50px',
-      //     width: '50%',
-      //   },
-      // },
+      MuiButton: {
+        root: {
+          margin: '10px 5px',
+        },
+      },
+      MuiTextField: {
+        root: {
+          margin: '5px 0px',
+        },
+      },
+      MuiFormControl: {
+        root: {
+          margin: '5px 0px',
+        },
+      },
+    },
+    typography: {
+      useNextVariants: true,
     },
   });
 

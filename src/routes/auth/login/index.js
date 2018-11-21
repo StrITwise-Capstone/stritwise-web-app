@@ -1,102 +1,33 @@
-import React from 'react';
-import { Formik, Form, Field } from 'formik';
+import React, { Component } from 'react';
 import {
-  Button,
-  Grid,
   Paper,
   Typography,
+  Divider,
 } from '@material-ui/core';
-import * as Yup from 'yup';
+import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import * as reduxAction from '../../../store/actions';
-import TextField from '../../../components/UI/TextField/TextField';
+import Form from './Form';
 
-const initialValues = {
-  email: '',
-  password: '',
-};
+class Login extends Component {
+  render() {
+    const { classes } = this.props;
 
-const Login = ({
-  authError, auth, logIn, logOut,
-}) => (
-  <React.Fragment>
-    <Formik
-      initialValues={initialValues}
-      validationSchema={Yup.object({
-        email: Yup.string().email('Email not valid').required('Required'),
-        password: Yup.string()
-          .min(8, 'Password must be 8 characters or longer')
-          .required('Required'),
-      })}
-      onSubmit={(values, { setErrors, setSubmitting, resetForm }) => {
-        // login user
-        logIn(values);
-        if (authError) {
-          setErrors({ form: authError });
-        } else {
-          resetForm();
-        }
-        setSubmitting(false);
-        console.log(values);
-      }}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleSubmit,
-        isSubmitting,
-        /* and other goodies */
-      }) => (
-        <div style={{ padding: '30px' }}>
-          <Grid
-            container
-            direction="column"
-            justify="center"
-            alignItems="center"
-          >
-            <Paper elevation={3}>
-              <div style={{ padding: '30px' }}>
-                <Typography variant="h3">Login!</Typography>
-                <Form onSubmit={handleSubmit}>
-                  <br />
-                  <Field
-                    required
-                    name="email"
-                    label="Email"
-                    type="email"
-                    component={TextField}
-                  />
-                  <Field
-                    required
-                    name="password"
-                    label="Password"
-                    type="password"
-                    component={TextField}
-                  />
-                  <br />
-                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting && errors === {}}>
-                    Login
-                  </Button>
-                  <br />
-                  <br />
-                  <Button type="button" variant="contained" color="primary" href="/signIn" onClick={() => { logOut(); }}>
-                    Logout
-                  </Button>
-                  <div>
-                    {authError ? <font color="red">{authError}</font> : null}
-                  </div>
-                </Form>
-              </div>
-            </Paper>
-          </Grid>
-        </div>
-      )}
-    </Formik>
-  </React.Fragment>
-);
+    return (
+      <div className={classes.root}>
+        <Paper className={classes.paper}>
+          <Typography variant="h4" className={classes.title}>Sign In</Typography>
+          <Divider />
+          <div className={classes.form}>
+            <Form />
+          </div>
+        </Paper>
+      </div>
+    );
+  }
+}
 
 const mapStateToProps = state => ({
   authError: state.auth.authError,
@@ -122,4 +53,26 @@ Login.defaultProps = {
   logOut: () => {},
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+const styles = () => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '70vh',
+  },
+  paper: {
+    width: '100%',
+    maxWidth: '500px',
+  },
+  title: {
+    textAlign: 'center',
+    padding: '10px',
+  },
+  form: {
+    margin: '10px',
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Login));

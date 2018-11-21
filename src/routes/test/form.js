@@ -52,7 +52,6 @@ class TestForm extends Component {
                 autoComplete="username"
                 component={TextField}
               />
-              <br />
               <Field
                 required
                 name="password"
@@ -61,7 +60,6 @@ class TestForm extends Component {
                 autoComplete="current-password"
                 component={TextField}
               />
-              <br />
               <Field
                 required
                 name="age"
@@ -75,8 +73,6 @@ class TestForm extends Component {
                 <MenuItem value="20">Twenty</MenuItem>
                 <MenuItem value="30">Thirty</MenuItem>
               </Field>
-              <br />
-              <br />
               <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                 Submit
               </Button>
