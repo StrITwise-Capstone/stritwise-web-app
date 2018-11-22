@@ -1,30 +1,12 @@
-export const logIn = credentials => (dispatch, getState, { getFirebase }) => {
-  const firebase = getFirebase();
-  firebase.auth().signInWithEmailAndPassword(
-    credentials.email,
-    credentials.password,
-  ).then(() => {
-    const user = firebase.auth().currentUser;
-    if (user != null) {
-      // User is signed in.
-      if (user.emailVerified) {
-        dispatch({ type: 'LOGIN_SUCCESS' });
-      } else {
-        dispatch({ type: 'LOGIN_ERROR', err: 'Email not Verified' });
-        dispatch(logOut());
-      }
-    }
-  }).catch((err) => {
-    dispatch({ type: 'LOGIN_ERROR', err });
-  });
-};
+import * as actionTypes from './actionTypes';
 
+export const logIn = () => ({ type: actionTypes.AUTH_LOGIN });
 
 export const logOut = () => ((dispatch, getstate, { getFirebase }) => {
   const firebase = getFirebase();
 
   firebase.auth().signOut().then(() => {
-    dispatch({ type: 'LOGOUT_SUCCESS' });
+    dispatch({ type: actionTypes.AUTH_LOGOUT });
   });
 });
 
@@ -44,10 +26,10 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
     if (user != null) {
       user.sendEmailVerification().then(() => {
         // Email sent.
-        dispatch({ type: 'SIGNUP_SUCCESS' });
+        dispatch({ type: actionTypes.SIGNUP_SUCCESS });
       }).catch((err) => {
         // An error happened.
-        dispatch({ type: 'SIGNUP_ERROR', err });
+        dispatch({ type: actionTypes.SIGNUP_ERROR, err });
       });
     }
   })
@@ -55,14 +37,19 @@ export const signUp = newUser => (dispatch, getState, { getFirebase, getFirestor
       dispatch(logOut());
     })
     .catch((err) => {
-      dispatch({ type: 'SIGNUP_ERROR', err });
+      dispatch({ type: actionTypes.SIGNUP_ERROR, err });
     });
 };
 
-export const retrieveUser = auth => (dispatch, getState, { getFirestore }) => {
-  const firestore = getFirestore();
-  firestore.collection('users').doc(auth).get().then((user) => {
-    const userRole = user.data().role;
-    dispatch({ type: 'RETRIEVE_USER', userRole });
-  });
+export const retrieveUser = authId => (dispatch, getState, { getFirestore }) => {
+  let userRole = null;
+  if (authId && getState().auth.isAuthenticated) {
+    const firestore = getFirestore();
+    firestore.collection('users').doc(authId).get().then((user) => {
+      userRole = user.data().role;
+      dispatch({ type: actionTypes.RETRIEVE_USER, userRole });
+    });
+  } else {
+    dispatch({ type: actionTypes.RETRIEVE_USER, userRole });
+  }
 };

@@ -10,14 +10,4 @@ export default [{
 }, {
   name: 'guest',
   route: ['Login'],
-},
-,
-];
-
-// export const ADMIN_TYPE = 'ADMIN_TYPE';
-//
-// export default {
-//   [ADMIN_TYPE]: {
-//     route: ['Events'],
-//   },
-// };
+}];

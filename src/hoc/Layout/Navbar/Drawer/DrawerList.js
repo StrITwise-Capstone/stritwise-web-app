@@ -15,7 +15,6 @@ const styles = {
   },
 };
 
-
 const DrawerList = ({ auth }) => {
   const resultList = RouteList.filter(obj => obj.name === auth);
   return (
@@ -25,13 +24,12 @@ const DrawerList = ({ auth }) => {
           <RouteButton route="Home" routelink="" />
         </ListItem>
         {
-            resultList[0].route.map(key => (
-              <ListItem key={key}>
-                <RouteButton route={key} routelink={key.replace(' ', '').toLowerCase()} />
-              </ListItem>
-            ))
+          resultList[0].route.map(key => (
+            <ListItem key={key}>
+              <RouteButton route={key} routelink={key.replace(' ', '').toLowerCase()} />
+            </ListItem>
+          ))
         }
-        ;
       </List>
     </div>
   );

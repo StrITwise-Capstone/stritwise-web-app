@@ -57,17 +57,12 @@ class Navbar extends Component {
   };
 
   componentDidMount(){
-    console.log("componentdidMount: " + this.props.auth.uid);
-    if (this.props.auth.uid != null && this.props.users != null)
-      this.props.retrieveUser(this.props.auth.uid)
+    this.props.retrieveUser(this.props.auth.uid);
   }
 
   componentDidUpdate(){
-    console.log("componentdidUpdate: " + this.props.auth.uid);
-    if (this.props.auth.uid != null && this.props.users != null)
-      this.props.retrieveUser(this.props.auth.uid)
+    this.props.retrieveUser(this.props.auth.uid);
   }
-
 
   render() {
     const { classes,auth, users, user} = this.props;
@@ -93,17 +88,8 @@ class Navbar extends Component {
             )
             }
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              StritWise Web Application
+              <img src="/assets/logo.gif" alt="StrITwise Web Application" style={{ height: '50px',}} />
             </Typography>
-            {auth.uid == null && (
-              <div>
-                <RouteButton route="Home" color="inherit" routelink=""></RouteButton>
-                <RouteButton route="Sign Up" color="inherit" routelink="signup"></RouteButton>
-                <RouteButton route="Log In" color="inherit" routelink="login"></RouteButton>
-              </div>
-            )
-
-            }
             {auth.uid && (
               <div>
                 <IconButton
@@ -145,7 +131,8 @@ const mapStateToProps = (state) => {
     authError: state.auth.authError,
     auth: state.firebase.auth,
     users: state.firestore.data.users,
-    user: state.auth.user
+    user: state.auth.user,
+    isAuthenticated: state.auth.isAuthenticated,
   };
 };
 

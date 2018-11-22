@@ -1,42 +1,32 @@
+import * as actionTypes from '../actions/actionTypes';
+
 const initState = {
-  authError: null,
+  isAuthenticated: false,
   userRole: null,
 };
+
 const authReducer = (state = initState, action) => {
   switch (action.type) {
-    case 'LOGIN_ERROR':
-      console.log('Login error');
+    case actionTypes.AUTH_LOGIN:
       return {
         ...state,
-        authError: 'Login Failed',
+        isAuthenticated: true,
       };
-    case 'LOGIN_SUCCESS':
-      console.log('login success');
+    case actionTypes.AUTH_LOGOUT:
       return {
         ...state,
-        authError: null,
-      };
-    case 'LOGOUT_SUCCESS':
-      console.log('logout success');
-      return {
-        ...state,
-        authError: null,
+        isAuthenticated: false,
         userRole: null,
       };
-    case 'SIGNUP_SUCCESS':
-      console.log('signup success');
+    case actionTypes.SIGNUP_SUCCESS:
       return {
         ...state,
-        authError: null,
       };
-    case 'SIGNUP_ERROR':
-      console.log('signup error');
+    case actionTypes.SIGNUP_ERROR:
       return {
         ...state,
-        authError: action.err.message,
       };
-    case 'RETRIEVE_USER':
-      console.log('retrieve user success');
+    case actionTypes.RETRIEVE_USER:
       return {
         ...state,
         userRole: action.userRole,
