@@ -46,7 +46,7 @@ export const retrieveUser = authId => (dispatch, getState, { getFirestore }) => 
   if (authId && getState().auth.isAuthenticated) {
     const firestore = getFirestore();
     firestore.collection('users').doc(authId).get().then((user) => {
-      userRole = user.data().role;
+      userRole = user.data().type;
       dispatch({ type: actionTypes.RETRIEVE_USER, userRole });
     });
   } else {

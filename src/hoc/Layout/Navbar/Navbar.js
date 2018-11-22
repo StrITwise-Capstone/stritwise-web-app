@@ -65,7 +65,7 @@ class Navbar extends Component {
   }
 
   render() {
-    const { classes,auth, users, user} = this.props;
+    const { classes,auth, users, userRole} = this.props;
     const { anchorEl, isDrawerOpen} = this.state;
     const open = Boolean(this.state.anchorEl);
 
@@ -82,7 +82,7 @@ class Navbar extends Component {
               onClose={this.toggleDrawer('isDrawerOpen', false)}
               onOpen={this.toggleDrawer('isDrawerOpen', true)}
             >
-              <DrawerList auth={user}/>
+              <DrawerList auth={userRole}/>
             </SwipeableDrawer>
             </div>
             )
@@ -131,7 +131,7 @@ const mapStateToProps = (state) => {
     authError: state.auth.authError,
     auth: state.firebase.auth,
     users: state.firestore.data.users,
-    user: state.auth.user,
+    userRole: state.auth.userRole,
     isAuthenticated: state.auth.isAuthenticated,
   };
 };
