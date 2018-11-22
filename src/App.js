@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 import {
   createMuiTheme,
   MuiThemeProvider,
@@ -49,6 +50,12 @@ class App extends Component {
           margin: '5px 0px',
         },
       },
+      MuiCircularProgress: {
+        root: {
+          display: 'block',
+          margin: '0 auto',
+        },
+      },
     },
     typography: {
       useNextVariants: true,
@@ -59,9 +66,17 @@ class App extends Component {
     return (
       <React.Fragment>
         <MuiThemeProvider theme={this.theme}>
-          <Layout>
-            <Routes />
-          </Layout>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <Layout>
+              <Routes />
+            </Layout>
+          </SnackbarProvider>
         </MuiThemeProvider>
       </React.Fragment>
     );

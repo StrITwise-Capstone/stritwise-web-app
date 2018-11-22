@@ -9,6 +9,7 @@
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/prefer-stateless-function": [0, { "ignorePureComponents": false }],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "newline-per-chained-call": "off",
     },
   "env": {
     "browser": true,

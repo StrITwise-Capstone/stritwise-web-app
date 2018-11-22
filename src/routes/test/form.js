@@ -4,12 +4,18 @@ import {
 } from 'formik';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Link } from 'react-router-dom';
+import { withSnackbar } from 'notistack';
 
 import TextField from '../../components/UI/TextField/TextField';
 import Dropdown from '../../components/UI/Dropdown/Dropdown';
 
 class TestForm extends Component {
   render() {
+    const { enqueueSnackbar } = this.props;
+    enqueueSnackbar('Successfully fetched the data.', {
+      variant: 'success',
+    });
     return (
       <React.Fragment>
         <Formik
@@ -73,6 +79,15 @@ class TestForm extends Component {
                 <MenuItem value="20">Twenty</MenuItem>
                 <MenuItem value="30">Thirty</MenuItem>
               </Field>
+              <Button
+                type="button"
+                variant="outlined"
+                color="secondary"
+                component={Link}
+                to="/auth/signup"
+              >
+                REGISTER AS TEACHER
+              </Button>
               <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                 Submit
               </Button>
@@ -84,4 +99,4 @@ class TestForm extends Component {
   }
 }
 
-export default TestForm;
+export default withSnackbar(TestForm);
