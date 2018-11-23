@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  MenuItem,
+  Menu
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -15,7 +17,7 @@ import { firestoreConnect} from 'react-redux-firebase'
 import { withRouter } from 'react-router';
 
 import DrawerList from './Drawer/DrawerList'
-import { logIn, logOut, retrieveUser} from '../../../store/actions/authActions';
+import { logIn, logOut, retrieveUser } from '../../../store/actions/authActions';
 import RouteButton from './Drawer/RouteButton/RouteButton'
 
 const styles = {
@@ -65,14 +67,14 @@ class Navbar extends Component {
   }
 
   render() {
-    const { classes,auth, users, user} = this.props;
+    const { classes,auth, users, userRole, isAuthenticated} = this.props;
     const { anchorEl, isDrawerOpen} = this.state;
     const open = Boolean(this.state.anchorEl);
 
     return (
       <AppBar position="static">
           <Toolbar>
-            {auth.uid && (
+            {isAuthenticated && (
             <div>
               <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.toggleDrawer('isDrawerOpen', true)}>
               <MenuIcon />
@@ -82,7 +84,7 @@ class Navbar extends Component {
               onClose={this.toggleDrawer('isDrawerOpen', false)}
               onOpen={this.toggleDrawer('isDrawerOpen', true)}
             >
-              <DrawerList auth={user}/>
+              <DrawerList auth={userRole}/>
             </SwipeableDrawer>
             </div>
             )
@@ -90,7 +92,7 @@ class Navbar extends Component {
             <Typography variant="h6" color="inherit" className={classes.grow}>
               <img src="/assets/logo.gif" alt="StrITwise Web Application" style={{ height: '50px',}} />
             </Typography>
-            {auth.uid && (
+            {isAuthenticated && (
               <div>
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : null}
@@ -120,6 +122,12 @@ class Navbar extends Component {
                 </Menu>
               </div>
             )}
+            {isAuthenticated == false && (
+              <div>
+                <RouteButton route="Sign Up" routelink="auth/signup" />
+                <RouteButton route="Log In" routelink="auth/login" />
+              </div>
+            )}
           </Toolbar>
         </AppBar>
     );
@@ -131,8 +139,9 @@ const mapStateToProps = (state) => {
     authError: state.auth.authError,
     auth: state.firebase.auth,
     users: state.firestore.data.users,
-    user: state.auth.user,
+    userRole: state.auth.userRole,
     isAuthenticated: state.auth.isAuthenticated,
+    eventsList: state.firestore.data.events,
   };
 };
 
@@ -146,7 +155,11 @@ const mapDispatchToProps = (dispatch) => {
 
 export default withRouter(compose(
   connect(mapStateToProps,mapDispatchToProps),
-  firestoreConnect([{
-    collection: 'users'
-  }])
+  firestoreConnect([
+    {
+    collection: 'users'},
+    {
+      collection:'events'
+    }
+  ])
 )(withStyles(styles)(Navbar)));
