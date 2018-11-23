@@ -36,7 +36,6 @@ const styles = {
 
 class Navbar extends Component {
   state = {
-    auth : true,
     anchorEl: null,
     isDrawerOpen: false,
   };
@@ -51,9 +50,6 @@ class Navbar extends Component {
     this.props.retrieveUser(auth.uid);
   }
 
-  handleChange = (event) => {
-    this.setState({ auth: event.target.checked });
-  };
 
   handleMenu = (event) => {
     this.setState({ anchorEl: event.currentTarget });
@@ -72,8 +68,6 @@ class Navbar extends Component {
   render() {
     const {
       classes,
-      auth,
-      users,
       userRole,
       isAuthenticated,
     } = this.props;
@@ -164,11 +158,14 @@ const mapDispatchToProps = dispatch => ({
 });
 
 Navbar.propTypes = {
-  userRole: PropTypes.string.isRequired,
-  isAuthenticated: PropTypes.string.isRequired,
+  userRole: PropTypes.string,
+  isAuthenticated: PropTypes.bool.isRequired,
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
   auth: PropTypes.node.isRequired,
-  users: PropTypes.node.isRequired,
+};
+
+Navbar.defaultProps = {
+  userRole: '',
 };
 
 export default withRouter(compose(

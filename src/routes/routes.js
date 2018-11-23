@@ -9,7 +9,7 @@ import SignUp from './auth/signup';
 import Login from './auth/login';
 import NotFound from '../components/Error/404';
 import Dashboard from './dashboard'
-import CreateEvent from './createEvents'
+import CreateEvent from './dashboard/createEvents'
 
 const routes = () => {
   const elements = [];

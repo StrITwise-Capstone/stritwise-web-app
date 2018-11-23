@@ -13,10 +13,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
+import { withSnackbar } from 'notistack';
 
-import { storage } from '../../config/fbConfig';
-import TextField from '../../components/UI/TextField/TextField';
-import DatePicker from '../../components/UI/DatePicker/DatePicker';
+import { storage } from '../../../config/fbConfig';
+import TextField from '../../../components/UI/TextField/TextField';
+import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from './ThumbNail';
 
 const initialValues = {
@@ -40,6 +41,7 @@ const createEvent = ({
   authError,
   auth,
   firestore,
+  enqueueSnackbar,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -61,6 +63,9 @@ const createEvent = ({
         (snapshot) => {
           const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
           console.log(progress);
+          enqueueSnackbar('Uploading Image...', {
+            variant: 'info',
+          });
         },
         (error) => {
           console.log(error);
@@ -73,9 +78,15 @@ const createEvent = ({
             end_date: new Date(values.enddate),
             image_path: `images/${imageuid}`,
           }).then(() => {
-            console.log('Event created');
-          }).catch((err) => {
-            console.log(`Event not created: ${err}`);
+            // console.log('Event created');
+            enqueueSnackbar('Event Created', {
+              variant: 'success',
+            });
+          }).catch(() => {
+            // console.log(`Event not created: ${err}`);
+            enqueueSnackbar('Event Not Created', {
+              variant: 'error',
+            });
           });
         });
 
@@ -165,7 +176,6 @@ createEvent.propTypes = {
 
 createEvent.defaultProps = {
   authError: '',
-
 };
 
-export default compose(connect(mapStateToProps), firestoreConnect())(createEvent);
+export default withSnackbar(compose(connect(mapStateToProps), firestoreConnect())(createEvent));
