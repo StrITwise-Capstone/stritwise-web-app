@@ -119,7 +119,7 @@ class eventCard extends React.Component {
               <CardActions className={classes.actions}>
                 <RouteButton route="Sign Up" eventuid={eventuid} />
                 <RouteButton route="Edit Event" eventuid={eventuid} />
-                <Button color="primary" onClick={this.deleteEvent}>Delete Event</Button>
+                <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>
               </CardActions>
             </Card>
           )}
