@@ -8,6 +8,8 @@ import Test from './test';
 import SignUp from './auth/signup';
 import Login from './auth/login';
 import NotFound from '../components/Error/404';
+import Dashboard from './dashboard'
+import CreateEvent from './createEvents'
 
 const routes = () => {
   const elements = [];
@@ -20,7 +22,8 @@ const routes = () => {
 
   /* OTHERS */
   elements.push(<Route path="/test" component={Test} />);
-
+  elements.push(<Route path="/events" component={Dashboard} />);
+  elements.push(<Route path="/createevent" component={CreateEvent} />);
   /* ERRORS */
   elements.push(<Route path="/" component={NotFound} />);
 
