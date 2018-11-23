@@ -2,21 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
-  CardActionArea,
   CardActions,
   CardContent,
   CardMedia,
   Button,
   Typography,
   CircularProgress,
+  DialogContent,
+  DialogContentText,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
 
-import { storage } from '../../../config/fbConfig';
-import RouteButton from './RouteButton/RouteButton';
-import SimpleDialogWrapped from '../Dialog/Dialog';
+import { storage } from '../../../../config/fbConfig';
+import RouteButton from '../RouteButton/RouteButton';
 
 const styles = {
   media: {
@@ -35,7 +35,6 @@ const styles = {
 class eventCard extends React.Component {
   state = {
     imageFile: null,
-    open: false,
     notDeleted: true,
   };
 
@@ -50,16 +49,6 @@ class eventCard extends React.Component {
       console.log(`Unable to retreive${error}`);
     });
   }
-
-  handleClickOpen = () => {
-    this.setState({
-      open: true,
-    });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
 
   deleteEvent = () => {
     const { eventuid, firebase } = this.props;
@@ -76,21 +65,19 @@ class eventCard extends React.Component {
 
   render() {
     const { classes, event, eventuid } = this.props;
-    const { imageFile, notDeleted, open } = this.state;
+    const { imageFile, notDeleted } = this.state;
     return (
       <React.Fragment>
-        {event
-          && notDeleted
+        {notDeleted
           && (
-            <Card style={{ width: '400px', height: '500px' }}>
-              <CardActionArea className={classes.cardActionArea} onClick={this.handleClickOpen}>
+            <Card style={{ width: '600px', height: '700px' }}>
+              <CardContent className={classes.cardActionArea}>
                 <div>
                   { imageFile == null
                     && (
                       <div>
                         <CircularProgress className={classes.progress} />
-                      </div>)
-                  }
+                      </div>)}
                   { imageFile
                     && (
                       <CardMedia
@@ -98,8 +85,7 @@ class eventCard extends React.Component {
                         className={classes.media}
                         height="140"
                         src={imageFile}
-                      />
-                    )
+                      />)
                   }
                 </div>
                 <CardContent>
@@ -107,9 +93,9 @@ class eventCard extends React.Component {
                     {event.name}
                   </Typography>
                 </CardContent>
-              </CardActionArea>
+              </CardContent>
               <div>
-                <CardContent style={{ height: '200px' }}>
+                <CardContent style={{ height: '300px' }}>
                   <Typography variant="h7" component="h7" color="primary">
                     <strong>Start Date : </strong>
                     {
@@ -126,10 +112,7 @@ class eventCard extends React.Component {
                   <Typography component="p" className={classes.textField}>
                     Description:
                     <div style={{ height: '5px' }} />
-                    { (event.desc.length > 200)
-                      ? `${event.desc.substring(0, 200)}...`
-                      : event.desc
-                    }
+                    {event.desc}
                   </Typography>
                 </CardContent>
               </div>
@@ -138,13 +121,17 @@ class eventCard extends React.Component {
                 <RouteButton route="Edit Event" eventuid={eventuid} />
                 <Button color="primary" onClick={this.deleteEvent}>Delete Event</Button>
               </CardActions>
-              <SimpleDialogWrapped
-                open={open}
-                onClose={this.handleClose}
-                event={event}
-                eventuid={eventuid}
-              />
-            </Card>)}
+            </Card>
+          )}
+        { notDeleted === false
+          && (
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Event is deleted successfully.
+              </DialogContentText>
+            </DialogContent>
+          )
+        }
       </React.Fragment>
     );
   }
@@ -156,6 +143,5 @@ eventCard.propTypes = {
   firebase: PropTypes.node.isRequired,
   classes: PropTypes.node.isRequired,
 };
-
 
 export default withFirebase(withStyles(styles)(eventCard));

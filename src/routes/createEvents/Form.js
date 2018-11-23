@@ -17,14 +17,14 @@ import { compose } from 'redux';
 import { storage } from '../../config/fbConfig';
 import TextField from '../../components/UI/TextField/TextField';
 import DatePicker from '../../components/UI/DatePicker/DatePicker';
-import Thumb from './Thumb';
+import Thumb from './ThumbNail';
 
 const initialValues = {
   name: '',
   startdate: '',
-  enddate:'',
-  description:'',
-  image:'',
+  enddate: '',
+  description: '',
+  image: '',
 };
 
 const guid = () => {
@@ -33,11 +33,13 @@ const guid = () => {
       .toString(16)
       .substring(1);
   }
-  return `${s4() + s4()  }-${  s4()  }-${  s4()  }-${  s4()  }-${  s4()  }${s4()  }${s4()}`;
-}
+  return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+};
 
 const createEvent = ({
-  authError, auth, createEvent, firebase, firestore
+  authError,
+  auth,
+  firestore,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -72,8 +74,8 @@ const createEvent = ({
             image_path: `images/${imageuid}`,
           }).then(() => {
             console.log('Event created');
-              }).catch((err) => {
-            console.log(`Event not created${  err}`);
+          }).catch((err) => {
+            console.log(`Event not created: ${err}`);
           });
         });
 
@@ -88,8 +90,6 @@ const createEvent = ({
   >
     {({
       values,
-      errors,
-      touched,
       handleSubmit,
       isSubmitting,
       setFieldValue,
@@ -127,12 +127,12 @@ const createEvent = ({
         <p>Upload Event Image</p>
         <Field
           required
-          render={ props => (
+          render={() => (
             <Input
               id="image"
               name="file"
               type="file"
-              onChange={(event) => { setFieldValue('image', event.currentTarget.files[0]);}}
+              onChange={(event) => { setFieldValue('image', event.currentTarget.files[0]); }}
             />
           )}
         />
@@ -158,9 +158,14 @@ const mapStateToProps = state => ({
 });
 
 createEvent.propTypes = {
+  authError: PropTypes.string,
+  auth: PropTypes.node.isRequired,
+  firestore: PropTypes.node.isRequired,
 };
 
 createEvent.defaultProps = {
+  authError: '',
+
 };
 
 export default compose(connect(mapStateToProps), firestoreConnect())(createEvent);
