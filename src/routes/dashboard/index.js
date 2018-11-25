@@ -5,6 +5,8 @@ import ListItem from '@material-ui/core/ListItem';
 import { Button, Icon, withStyles, Modal } from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
+import PropTypes from 'prop-types';
+import CardList from './EventsUI/CardList/CardList';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import CardList from './CardList/CardList';

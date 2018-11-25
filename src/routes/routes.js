@@ -23,10 +23,17 @@ const routes = () => {
   elements.push(<Route exact path="/auth/forgot" key="/auth/forgot" component={Forgot} />);
 
   /* OTHERS */
+<<<<<<<
   elements.push(<Route exact path="/test" key="/test" component={Test} />);
   elements.push(<Route exact path="/events" key="/events" component={Dashboard} />);
   elements.push(<Route exact path="/events/create" key="/events/create" component={CreateEvent} />);
 
+=======
+  elements.push(<Route path="/test" component={Test} />);
+  elements.push(<Route path="/events" component={Dashboard} />);
+  elements.push(<Route path="/createevent" component={CreateEvent} />);
+  elements.push(<Route path="/editevent" component={EditEvent} />);
+>>>>>>>
   /* ERRORS */
   elements.push(<Route path="/" key="/404" component={NotFound} />);
 
