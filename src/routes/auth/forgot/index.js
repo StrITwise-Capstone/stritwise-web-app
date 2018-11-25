@@ -6,7 +6,7 @@ import Container from '../Container';
 class Forgot extends Component {
   render() {
     return (
-      <Container label="Sign In">
+      <Container label="Forgot Password">
         <ForgotForm />
       </Container>
     );
