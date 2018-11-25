@@ -30,7 +30,6 @@ const initialValues = (event) => {
   
   if (event != null)
   {
-    console.log("here")
   return {
     name: event.name,
     startdate: timeConverter(event.start_date),

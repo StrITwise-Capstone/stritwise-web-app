@@ -67,7 +67,7 @@ class Navbar extends Component {
   }
 
   render() {
-    const { classes,auth, users, userRole, isAuthenticated} = this.props;
+    const { classes, userRole, isAuthenticated} = this.props;
     const { anchorEl, isDrawerOpen} = this.state;
     const open = Boolean(this.state.anchorEl);
 
@@ -122,7 +122,7 @@ class Navbar extends Component {
                 </Menu>
               </div>
             )}
-            {isAuthenticated == false && (
+            {isAuthenticated === false && (
               <div>
                 <RouteButton route="Sign Up" routelink="auth/signup" />
                 <RouteButton route="Log In" routelink="auth/login" />

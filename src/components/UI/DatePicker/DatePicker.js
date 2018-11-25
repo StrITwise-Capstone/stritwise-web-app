@@ -11,7 +11,6 @@ const datePicker = ({
     autoComplete,
     label,
     disabled,
-    type,
     multiline,
     rows,
     rowsMax,

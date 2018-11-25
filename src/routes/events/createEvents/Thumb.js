@@ -1,8 +1,4 @@
 import React from 'react';
-import { render } from 'react-dom';
-import { Formik } from "formik";
-import yup from "yup";
-
 
 class Thumb extends React.Component {
   state = {

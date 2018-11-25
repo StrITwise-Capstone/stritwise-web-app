@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import { Button, Icon, withStyles, Modal } from '@material-ui/core';
+import { Button, withStyles } from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import CardList from './EventsUI/CardList/CardList';
-import DeleteIcon from '@material-ui/icons/Delete';
 
-import CardList from './CardList/CardList';
+import CardList from './EventsUI/CardList/CardList';
 
 const styles = () => ({
   button: {
@@ -22,20 +18,6 @@ const styles = () => ({
   }
 });
 
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
-
-function getModalStyle() {
-  const top = 50 + rand();
-  const left = 50 + rand();
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-}
 
 class Dashboard extends Component {
   state = {
@@ -51,7 +33,7 @@ class Dashboard extends Component {
   };
 
   render() {
-    const { eventsList ,firestore, classes, auth, users, isAuthenticated, user} = this.props;
+    const { eventsList , classes, auth, users, isAuthenticated } = this.props;
     return (
       <div>
         <div>

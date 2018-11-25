@@ -7,38 +7,21 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import queryString from 'query-string';
 
+import * as reduxAction from '../../../store/actions';
 import Form from './Form';
 
-class editEvent extends Component {
-  state = {
-    event: null,
-  };
-
-  componentDidUpdate(){
-    const { events } = this.props;
-    const { event } = this.state;
-    const values = queryString.parse(this.props.location.search)
-    if ( events != null && event == null)
-    { this.setState({
-        event: events[values.event],
-      })
-      this.forceUpdate()
-    }
-  }
-
+class createEvent extends Component {
   render() {
-    const { classes , events } = this.props;
-    const { event } = this.state;
-    const values = queryString.parse(this.props.location.search);
+    const { classes } = this.props;
+
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <Typography variant="h4" className={classes.title}>Edit Event</Typography>
+          <Typography variant="h4" className={classes.title}>Create Event</Typography>
           <Divider />
           <div className={classes.form}>
-            <Form event={event} eventuid={values.event}/>
+            <Form />
           </div>
         </Paper>
       </div>
@@ -49,13 +32,26 @@ class editEvent extends Component {
 const mapStateToProps = state => ({
   authError: state.auth.authError,
   auth: state.firebase.auth,
-  events : state.firestore.data.events,
 });
 
-editEvent.propTypes = {
-  classes: PropTypes.node.isRequired,
+const mapDispatchToProps = dispatch => ({
+  logIn: creds => dispatch(reduxAction.logIn(creds)),
+  logOut: () => dispatch(reduxAction.logOut()),
+});
+
+createEvent.propTypes = {
+  auth: PropTypes.objectOf(PropTypes.string),
+  authError: PropTypes.string,
+  logIn: PropTypes.func,
+  logOut: PropTypes.func,
 };
 
+createEvent.defaultProps = {
+  auth: {},
+  authError: null,
+  logIn: () => {},
+  logOut: () => {},
+};
 
 const styles = () => ({
   root: {
@@ -79,4 +75,4 @@ const styles = () => ({
   },
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(editEvent));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(createEvent));

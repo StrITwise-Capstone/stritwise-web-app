@@ -10,13 +10,12 @@ import {
 } from '@material-ui/core';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 
-import { storage } from '../../config/fbConfig';
-import TextField from '../../components/UI/TextField/TextField';
-import DatePicker from '../../components/UI/DatePicker/DatePicker';
+import { storage } from '../../../config/fbConfig';
+import TextField from '../../../components/UI/TextField/TextField';
+import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from './Thumb';
 
 const initialValues = {
