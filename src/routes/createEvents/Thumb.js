@@ -1,5 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { render } from 'react-dom';
+import { Formik } from "formik";
+import yup from "yup";
 
 
 class Thumb extends React.Component {
@@ -12,7 +14,7 @@ class Thumb extends React.Component {
     if (!nextProps.file) { return; }
 
     this.setState({ loading: true }, () => {
-      const reader = new FileReader();
+      let reader = new FileReader();
 
       reader.onloadend = () => {
         this.setState({ loading: false, thumb: reader.result });
@@ -35,18 +37,11 @@ class Thumb extends React.Component {
         src={thumb}
         alt={file.name}
         className="img-thumbnail mt-2"
-        height={300}
-        width={480}
+        height={200}
+        width={200}
       />
     );
   }
 }
-Thumb.propTypes = {
-  file: PropTypes.node,
-};
-
-Thumb.defaultProps = {
-  file: null,
-};
 
 export default Thumb;

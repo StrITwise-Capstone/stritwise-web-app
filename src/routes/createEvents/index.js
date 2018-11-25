@@ -8,6 +8,7 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import * as reduxAction from '../../store/actions';
 import Form from './Form';
 
 class createEvent extends Component {
@@ -33,10 +34,24 @@ const mapStateToProps = state => ({
   auth: state.firebase.auth,
 });
 
+const mapDispatchToProps = dispatch => ({
+  logIn: creds => dispatch(reduxAction.logIn(creds)),
+  logOut: () => dispatch(reduxAction.logOut()),
+});
+
 createEvent.propTypes = {
-  classes: PropTypes.node.isRequired,
+  auth: PropTypes.objectOf(PropTypes.string),
+  authError: PropTypes.string,
+  logIn: PropTypes.func,
+  logOut: PropTypes.func,
 };
 
+createEvent.defaultProps = {
+  auth: {},
+  authError: null,
+  logIn: () => {},
+  logOut: () => {},
+};
 
 const styles = () => ({
   root: {
@@ -60,4 +75,4 @@ const styles = () => ({
   },
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(createEvent));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(createEvent));

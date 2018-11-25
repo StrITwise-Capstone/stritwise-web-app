@@ -11,13 +11,12 @@ import {
   CircularProgress,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
-import moment from 'moment';
-import { withFirebase } from 'react-redux-firebase';
+import moment from 'moment'
+import queryString from 'query-string'
 
 import { storage } from '../../../config/fbConfig';
+import image from './Image/eventimage.jpg';
 import RouteButton from './RouteButton/RouteButton';
-import SimpleDialogWrapped from '../Dialog/Dialog';
-
 const styles = {
   media: {
     // ⚠️ object-fit is not supported by IE 11.
@@ -29,14 +28,12 @@ const styles = {
   textField: {
     'word-wrap': 'break-word',
     overflow: 'auto',
-  },
+  }
 };
 
 class eventCard extends React.Component {
   state = {
     imageFile: null,
-    open: false,
-    notDeleted: true,
   };
 
   componentWillMount() {
@@ -45,117 +42,73 @@ class eventCard extends React.Component {
       const imageFile = img;
       this.setState({
         imageFile,
-      });
+      })
     }).catch((error) => {
-      console.log(`Unable to retreive${error}`);
-    });
-  }
-
-  handleClickOpen = () => {
-    this.setState({
-      open: true,
-    });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  deleteEvent = () => {
-    const { eventuid, firebase } = this.props;
-    const db = firebase.firestore();
-    db.collection('events').doc(eventuid).delete().then(() => {
-      console.log('Document successfully deleted');
-      this.setState({
-        notDeleted: false,
-      });
-    }).catch((error) => {
-      console.error('Error moving document', error);
-    });
+      console.log(`Unable to retreive${ error}`)
+    })
   }
 
   render() {
     const { classes, event, eventuid } = this.props;
-    const { imageFile, notDeleted, open } = this.state;
+    const { imageFile } = this.state;
     return (
-      <React.Fragment>
-        {event
-          && notDeleted
-          && (
-            <Card style={{ width: '400px', height: '500px' }}>
-              <CardActionArea className={classes.cardActionArea} onClick={this.handleClickOpen}>
-                <div>
-                  { imageFile == null
-                    && (
-                      <div>
-                        <CircularProgress className={classes.progress} />
-                      </div>)
-                  }
-                  { imageFile
-                    && (
-                      <CardMedia
-                        component="img"
-                        className={classes.media}
-                        height="140"
-                        src={imageFile}
-                      />
-                    )
-                  }
-                </div>
-                <CardContent>
-                  <Typography variant="h5" component="h2" className={classes.textField}>
-                    {event.name}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
+      <Card style={{'width': '400px','height':'500px'}}>
+        <CardActionArea className={classes.cardActionArea}>
+          <div>
+            { imageFile == null &&
+              (
               <div>
-                <CardContent style={{ height: '200px' }}>
-                  <Typography variant="h7" component="h7" color="primary">
-                    <strong>Start Date : </strong>
-                    {
-                      moment(event.start_date.toDate()).calendar()
-                    }
-                  </Typography>
-                  <Typography variant="h7" component="h7" color="primary">
-                    <strong>End Date : </strong>
-                    {
-                      moment(event.end_date.toDate()).calendar()
-                    }
-                  </Typography>
-                  <div style={{ height: '10px' }} />
-                  <Typography component="p" className={classes.textField}>
-                    Description:
-                    <div style={{ height: '5px' }} />
-                    { (event.desc.length > 200)
-                      ? `${event.desc.substring(0, 200)}...`
-                      : event.desc
-                    }
-                  </Typography>
-                </CardContent>
-              </div>
-              <CardActions className={classes.actions}>
-                <RouteButton route="Sign Up" eventuid={eventuid} />
-                <RouteButton route="Edit Event" eventuid={eventuid} />
-                <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>
-              </CardActions>
-              <SimpleDialogWrapped
-                open={open}
-                onClose={this.handleClose}
-                event={event}
-                eventuid={eventuid}
-              />
-            </Card>)}
-      </React.Fragment>
+                <CircularProgress className={classes.progress} />
+              </div>)
+            }
+            { imageFile &&
+              (
+                <CardMedia
+                  component="img"
+                  className={classes.media}
+                  height="140"
+                  src={imageFile}
+                />
+              )
+            }
+          </div>
+          <CardContent>
+            <Typography variant="h5" component="h2" className={classes.textField}>
+              {event.name}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+          <div>
+            <CardContent style={{'height':'200px',}}>
+              <Typography variant="h7" component="h7" color="primary">
+                <strong>Start Date :</strong> {moment(event.start_date.toDate()).calendar()}
+              </Typography>
+              <Typography variant="h7" component="h7" color="primary">
+                <strong>End Date : </strong>{moment(event.end_date.toDate()).calendar()}
+              </Typography>
+              <div style={{'height':'10px'}}></div>
+              <Typography component="p" className={classes.textField} >
+                Description: <div style={{'height':'5px'}}/>
+                { (event.desc.length> 200) ?
+                  `${event.desc.substring(0,200)}...`:
+                  event.desc
+                }
+              </Typography>
+            </CardContent>
+          </div>
+          <CardActions className={classes.actions}>
+            <RouteButton route='Sign Up' eventuid={eventuid}/>
+            <RouteButton route='Edit Event' eventuid={eventuid}/>
+            <RouteButton route='Delete Event' eventuid={eventuid}/>
+        </CardActions>
+      </Card>
     );
-  }
+    }
 }
 
 eventCard.propTypes = {
-  event: PropTypes.node.isRequired,
-  eventuid: PropTypes.string.isRequired,
-  firebase: PropTypes.node.isRequired,
-  classes: PropTypes.node.isRequired,
+  classes: PropTypes.object.isRequired,
+  event: PropTypes.object.isRequired,
 };
 
-
-export default withFirebase(withStyles(styles)(eventCard));
+export default withStyles(styles)(eventCard);

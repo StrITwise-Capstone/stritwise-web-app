@@ -5,9 +5,9 @@ import {
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 
-import EventCard from '../Card/EventCard';
+import EventCard from '../Card/EventCard'
 
-const styles = () => ({
+const styles = theme => ({
   root: {
     flexGrow: 1,
   },
@@ -21,7 +21,7 @@ const cardList = (props) => {
 
   return (
     <div className={classes.root}>
-      <div style={{ margin: '0 auto' }} />
+      <div style={{ margin: '0 auto' }}/>
       <Grid
         container
         spacing={24}
@@ -31,17 +31,16 @@ const cardList = (props) => {
         {eventsList
           && Object.keys(eventsList).map(eventuid => (
             <Grid item>
-              <EventCard event={eventsList[eventuid]} eventuid={eventuid} />
+              <EventCard event={eventsList[eventuid]} eventuid={eventuid}/>
             </Grid>))
           }
       </Grid>
     </div>
   );
-};
+}
 
 cardList.propTypes = {
-  classes: PropTypes.node.isRequired,
-  eventsList: PropTypes.node.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(cardList);
