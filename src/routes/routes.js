@@ -10,7 +10,7 @@ import Login from './auth/login';
 import Forgot from './auth/forgot';
 import NotFound from '../components/Error/404';
 import Dashboard from './dashboard';
-import CreateEvent from './dashboard/createEvents';
+import CreateEvent from './createEvents';
 
 const routes = () => {
   const elements = [];
