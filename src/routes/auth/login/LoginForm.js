@@ -69,7 +69,6 @@ const LoginForm = ({
       touched,
       handleSubmit,
       isSubmitting,
-      /* and other goodies */
     }) => {
       let content = <CircularProgress />;
       if (!isSubmitting) {

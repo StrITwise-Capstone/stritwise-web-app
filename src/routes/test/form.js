@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
+import Select from '../../components/UI/Select/Select';
 
 import TextField from '../../components/UI/TextField/TextField';
 import Dropdown from '../../components/UI/Dropdown/Dropdown';
@@ -19,7 +20,11 @@ class TestForm extends Component {
     return (
       <React.Fragment>
         <Formik
-          initialValues={{ email: '', password: '', age: '' }}
+          initialValues={{
+            email: '',
+            password: '',
+            age: '',
+          }}
           validate={(values) => {
             const errors = {};
             if (!values.email) {
@@ -31,9 +36,14 @@ class TestForm extends Component {
             } else if (!values.mobile) {
               errors.mobile = 'Required';
             }
+            if (values.select.length === 0) {
+              errors.select = 'Required!';
+            }
+            console.log(values);
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
+            console.log('Submitting');
             setTimeout(() => {
               alert(JSON.stringify(values, null, 2));
               setSubmitting(false);
@@ -52,6 +62,21 @@ class TestForm extends Component {
             <Form>
               <Field
                 required
+                options={[
+                  { label: 'Afghanistan', value: 'Afghanistan' },
+                  { label: 'Aland Islands', value: 'Aland Islands' },
+                  { label: 'Albania', value: 'Albania' },
+                  { label: 'Algeria', value: 'Algeria' },
+                  { label: 'American Samoa', value: 'American Samoa' },
+                ]}
+                name="select"
+                label="Select"
+                component={Select}
+                isMulti={false}
+              />
+
+              <Field
+                required
                 name="email"
                 label="Email"
                 type="email"
@@ -66,6 +91,7 @@ class TestForm extends Component {
                 autoComplete="current-password"
                 component={TextField}
               />
+              {/*
               <Field
                 required
                 name="age"
@@ -79,15 +105,7 @@ class TestForm extends Component {
                 <MenuItem value="20">Twenty</MenuItem>
                 <MenuItem value="30">Thirty</MenuItem>
               </Field>
-              <Button
-                type="button"
-                variant="outlined"
-                color="secondary"
-                component={Link}
-                to="/auth/signup"
-              >
-                REGISTER AS TEACHER
-              </Button>
+              */}
               <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                 Submit
               </Button>

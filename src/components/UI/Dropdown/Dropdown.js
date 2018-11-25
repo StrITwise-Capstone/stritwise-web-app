@@ -26,7 +26,7 @@ const dropdown = ({
       <FormControl
         disabled={disabled}
         error={hasError}
-        equired={required}
+        required={required}
         fullWidth={fullWidth}
         multiple={multiple}
       >
