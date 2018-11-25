@@ -15,7 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
 
-import { storage } from '../../../../config/fbConfig';
+import { storage } from '../../../../../config/fbConfig';
 import RouteButton from '../RouteButton/RouteButton';
 
 const styles = {

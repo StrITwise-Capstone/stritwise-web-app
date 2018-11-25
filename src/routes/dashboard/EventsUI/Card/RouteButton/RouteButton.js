@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 const RouteButton = withRouter(({ history, route, eventuid }) => (
   <Button
     type="button"
-    onClick={() => { history.push(`/${route.replace(' ', '').toLowerCase()}&event=${eventuid}`); }}
+    onClick={() => { history.push(`/${route.replace(' ', '').toLowerCase()}?event=${eventuid}`); }}
     size="small"
     color="primary"
   >

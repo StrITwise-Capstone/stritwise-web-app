@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Button, withStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import CardList from './CardList/CardList';
+import CardList from './EventsUI/CardList/CardList';
 
 const styles = () => ({
   button: {
