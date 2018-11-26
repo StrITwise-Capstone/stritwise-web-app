@@ -7,7 +7,6 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import queryString from 'query-string';
 
 import Form from './Form';
 
@@ -17,21 +16,21 @@ class editEvent extends Component {
   };
 
   componentDidMount(){
-    const { events } = this.props;
+    const { events, match } = this.props;
     const { event } = this.state;
-    const values = queryString.parse(this.props.location.search)
+    const values = match.params.id;
     if ( events != null && event == null)
     { this.setState({
-        event: events[values.event],
+        event: events[values],
       })
-      this.forceUpdate()
+      this.forceUpdate();
     }
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, match } = this.props;
     const { event } = this.state;
-    const values = queryString.parse(this.props.location.search);
+    const values = match.params.id;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>

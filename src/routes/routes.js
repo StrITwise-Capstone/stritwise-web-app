@@ -15,7 +15,7 @@ import NotFound from '../components/Error/404';
 import Dashboard from './events';
 import CreateEvent from './events/create';
 import EditEvent from './events/edit';
-import SignUpEvent from './events/signUp';
+import RegisterEvent from './events/register';
 
 const routes = () => {
   const elements = [];
@@ -37,10 +37,10 @@ const routes = () => {
   elements.push(<Route exact path="/test" key="/test" component={Test} />);
   elements.push(<Route exact path="/events" key="/events" component={Dashboard} />);
   elements.push(<Route exact path="/events/create" key="/events/create" component={CreateEvent} />);
-  elements.push(<Route exact path="/events/edit" key="/events/edit" component={EditEvent} />);
-  elements.push(<Route exact path="/events/signup" key="/events/signup" component={SignUpEvent} />);
+  elements.push(<Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />);
+  elements.push(<Route exact path="/events/:id/register" key="/events/register" component={RegisterEvent} />);
 
-  /* ERRORS */
+  /* ERRORS */ 
   elements.push(<Route path="/" key="/404" component={NotFound} />);
 
   return (
