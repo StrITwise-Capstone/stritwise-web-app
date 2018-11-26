@@ -3,10 +3,10 @@ import { withRouter } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 
-const RouteButton = withRouter(({ history, route, eventuid }) => (
+const RouteButton = withRouter(({ history, route, routelink ,eventuid }) => (
   <Button
     type="button"
-    onClick={() => { history.push(`/events/${route.replace(' ', '').toLowerCase()}?event=${eventuid}`); }}
+    onClick={() => { history.push(`/events/${routelink}?event=${eventuid}`); }}
     size="small"
     color="primary"
   >

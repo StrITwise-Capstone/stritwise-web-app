@@ -16,7 +16,6 @@ import { compose } from 'redux';
 import { storage } from '../../../config/fbConfig';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
-import Thumb from './Thumb';
 
 const initialValues = {
   name: '',
@@ -32,13 +31,14 @@ const guid = () => {
       .toString(16)
       .substring(1);
   }
-  return `${s4() + s4()  }-${  s4()  }-${  s4()  }-${  s4()  }-${  s4()  }${s4()  }${s4()}`;
+  return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 }
 
-const createEvent = ({
-  authError, auth, createEvent, firebase, firestore
+const signUpEvent = ({
+  authError, auth, firestore,
 }) => (
   <Formik
+    enableReinitialize={true}
     initialValues={initialValues}
     validationSchema={Yup.object({
       name: Yup.string()
@@ -87,13 +87,13 @@ const createEvent = ({
   >
     {({
       values,
-      errors,
-      touched,
       handleSubmit,
       isSubmitting,
       setFieldValue,
+      event,
+      eventuid,
       /* and other goodies */
-    }) => (
+    }) => { return (
       <Form onSubmit={handleSubmit}>
         <Field
           required
@@ -135,31 +135,29 @@ const createEvent = ({
             />
           )}
         />
-        <div>
-          <Thumb file={values.image} />
-        </div>
 
         <div className="align-right">
           <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-            CREATE EVENT
+            SIGN UP
           </Button>
         </div>
       </Form>
-    )}
+    )}}
   </Formik>
 );
 
-const mapStateToProps = state => ({
+const mapStateToProps = state => 
+({
   authError: state.auth.authError,
   auth: state.firebase.auth,
   firestore: state.firestore,
   firebase: state.firebase,
 });
 
-createEvent.propTypes = {
+signUpEvent.propTypes = {
 };
 
-createEvent.defaultProps = {
+signUpEvent.defaultProps = {
 };
 
-export default compose(connect(mapStateToProps), firestoreConnect())(createEvent);
+export default compose(connect(mapStateToProps), firestoreConnect())(signUpEvent);

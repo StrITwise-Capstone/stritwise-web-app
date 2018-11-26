@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, withStyles } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
 
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-
 import CardList from './EventsUI/CardList/CardList';
 
 const styles = () => ({
@@ -32,6 +32,10 @@ class Dashboard extends Component {
     this.setState({ open: false });
   };
 
+  createEvent = () => {
+    const { history } = this.props;
+    history.push('/events/create')
+  }
   render() {
     const { eventsList , classes, auth, users, isAuthenticated } = this.props;
     return (
@@ -41,7 +45,7 @@ class Dashboard extends Component {
         <h1>Events </h1>
         <CardList eventsList={eventsList} />
         </div>
-        <Button variant="fab" color="primary" aria-label="Add" href="/createevent" className={classes.button}>
+        <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
         </Button>
       </div>
@@ -58,4 +62,4 @@ const mapStateToProps = (state) => {
     user: state.auth.user,
   };
 };
-export default connect(mapStateToProps)(withStyles(styles)(Dashboard));
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Dashboard)));
