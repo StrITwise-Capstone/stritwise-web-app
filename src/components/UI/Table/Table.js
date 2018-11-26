@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Paper,
@@ -72,9 +73,47 @@ class CustomTable extends Component {
       children,
       title,
     } = this.props;
+    const { anchorEl, rowsPerPage, page } = this.state;
+
     let content = <CircularProgress />;
+
+    let dataContent = null;
     if (data) {
-      const { anchorEl, rowsPerPage, page } = this.state;
+      dataContent = (data
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map((row) => {
+          const rowCopy = { ...row };
+          return (
+            <TableRow key={rowCopy.id}>
+              {Object.keys(rowCopy).slice(1).map(key => (
+                <CustomTableCell>{rowCopy[key]}</CustomTableCell>
+              ))}
+              <CustomTableCell numeric>
+                <IconButton
+                  aria-owns={anchorEl ? 'more-options-menu' : undefined}
+                  aria-haspopup="true"
+                  onClick={this.handleClick}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+                <Menu
+                  id="more-options-menu"
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={() => handleEdit(rowCopy.id)}>Edit</MenuItem>
+                  <MenuItem onClick={() => { handleDelete(); }}>Delete</MenuItem>
+                </Menu>
+              </CustomTableCell>
+            </TableRow>
+          );
+        }));
+    }
+
+
+    if (data) {
       const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
       content = (
         <React.Fragment>
@@ -94,34 +133,7 @@ class CustomTable extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data && data
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(row => (
-                    <TableRow key={row.id}>
-                      {Object.keys(row).slice(1).map(key => (
-                        <CustomTableCell>{row[key]}</CustomTableCell>
-                      ))}
-                      <CustomTableCell numeric>
-                        <IconButton
-                          aria-owns={anchorEl ? 'more-options-menu' : undefined}
-                          aria-haspopup="true"
-                          onClick={this.handleClick}
-                          color="inherit"
-                        >
-                          <MoreIcon />
-                        </IconButton>
-                        <Menu
-                          id="more-options-menu"
-                          anchorEl={anchorEl}
-                          open={Boolean(anchorEl)}
-                          onClose={this.handleClose}
-                        >
-                          <MenuItem onClick={() => { handleEdit(row.id); }}>Edit</MenuItem>
-                          <MenuItem onClick={() => { handleDelete(); }}>Delete</MenuItem>
-                        </Menu>
-                      </CustomTableCell>
-                    </TableRow>
-                  ))}
+                {dataContent}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 49 * emptyRows }}>
                     <TableCell colSpan={6} />
@@ -152,4 +164,4 @@ class CustomTable extends Component {
   }
 }
 
-export default withStyles(styles)(CustomTable);
+export default withRouter(withStyles(styles)(CustomTable));

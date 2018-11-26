@@ -13,11 +13,10 @@ import CustomTable from '../../components/UI/Table/Table';
 class Users extends Component {
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (userID) => {
-    this.props.history.push(`/users/ + ${userID} + /edit`);
+    this.props.history.push(`/users/${userID}/edit`);
   }
 
   handleDelete = () => {
-    
   }
 
   getSchoolName = (schools, user) => {
