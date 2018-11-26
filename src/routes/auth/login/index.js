@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import {
+  Paper,
+  Typography,
+  Divider,
+} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 
