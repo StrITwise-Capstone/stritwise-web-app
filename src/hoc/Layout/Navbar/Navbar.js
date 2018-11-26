@@ -13,7 +13,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { firestoreConnect} from 'react-redux-firebase'
+import { firestoreConnect } from 'react-redux-firebase'
 import { withRouter } from 'react-router';
 
 import DrawerList from './Drawer/DrawerList'
