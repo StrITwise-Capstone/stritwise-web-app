@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, withStyles } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
 
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import CardList from '../EventsUI/CardList/CardList';
+import CardList from '../TeamsUI/CardList/CardList';
 
 const styles = () => ({
   button: {
@@ -22,7 +24,20 @@ const styles = () => ({
 class Dashboard extends Component {
   state = {
     open: false,
+    event: null,
   };
+
+  componentDidMount(){
+    const { eventsList, match } = this.props;
+    const { event } = this.state;
+    const values = match.params.id;
+    if ( eventsList != null && event == null)
+    { this.setState({
+        event: eventsList[values],
+      })
+      this.forceUpdate();
+    }
+  }
 
   handleOpen = () => {
     this.setState({ open: true });
@@ -38,12 +53,14 @@ class Dashboard extends Component {
   }
   render() {
     const { eventsList , classes, auth, users, isAuthenticated } = this.props;
+    const { event } = this.state;
+    //console.log(this.props.store.firestore.get('events/3z1WXjgy2jt607vcJ1qp/teams'));
     return (
       <div>
         <div>
-        <h1>{users && isAuthenticated && `Welcome, ${users[auth.uid].firstName} ${users[auth.uid].lastName}`}</h1>
-        <h1>Events </h1>
-        <CardList eventsList={eventsList} />
+        <h1>{event && event.name}</h1>
+        <h1>Teams </h1>
+        <CardList />
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
@@ -54,12 +71,26 @@ class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return {
-    eventsList: state.firestore.data.events,
-    auth: state.firebase.auth,
-    users: state.firestore.data.users,
-    isAuthenticated: state.auth.isAuthenticated,
-    user: state.auth.user,
-  };
+    console.log(state);
+    return {
+        eventsList: state.firestore.data.events,
+        auth: state.firebase.auth,
+        users: state.firestore.data.users,
+        isAuthenticated: state.auth.isAuthenticated,
+        user: state.auth.user,
+        teams: state.firestore.data.teams,
+    }
 };
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(Dashboard)));
+
+export default compose(
+    connect(mapStateToProps),
+    firestoreConnect([
+      {
+        collection:'events', doc:'3z1WXjgy2jt607vcJ1qp', subcollections: [{collection:'teams'}], storeAs: 'teams'
+      },
+      {
+        collection:'events',
+      }
+    ])
+)(withStyles(styles)(Dashboard));
+  

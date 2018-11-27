@@ -7,6 +7,8 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
 
 import Form from './Form';
 
@@ -15,13 +17,13 @@ class editEvent extends Component {
     event: null,
   };
 
-  componentDidMount(){
+  componentWillMount(){
     const { events, match } = this.props;
     const { event } = this.state;
-    const values = match.params.id;
+    const eventuid = match.params.id;
     if ( events != null && event == null)
     { this.setState({
-        event: events[values],
+        event: events[eventuid],
       })
       this.forceUpdate();
     }
@@ -30,14 +32,14 @@ class editEvent extends Component {
   render() {
     const { classes, match } = this.props;
     const { event } = this.state;
-    const values = match.params.id;
+    const eventuid = match.params.id;
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <Typography variant="h4" className={classes.title}>Edit Event</Typography>
           <Divider />
           <div className={classes.form}>
-            <Form event={event} eventuid={values.event}/>
+            <Form event={event} eventuid={eventuid}/>
           </div>
         </Paper>
       </div>
@@ -78,4 +80,11 @@ const styles = () => ({
   },
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(editEvent));
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    {
+      collection:'events'
+    }
+  ])
+)(withStyles(styles)(editEvent));

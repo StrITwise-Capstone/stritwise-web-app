@@ -13,6 +13,7 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
+import { withSnackbar } from 'notistack';
 
 import { storage } from '../../../../config/fbConfig';
 import RouteButton from './RouteButton/RouteButton';
@@ -69,8 +70,14 @@ class eventCard extends React.Component {
       this.setState({
         notDeleted: false,
       });
+      this.props.enqueueSnackbar('Deleted Event', {
+        variant: 'success',
+      });
     }).catch((error) => {
       console.error('Error moving document', error);
+      this.props.enqueueSnackbar('Deleted Event Error', {
+        variant: 'error',
+      });
     });
   }
 
@@ -134,7 +141,7 @@ class eventCard extends React.Component {
                 </CardContent>
               </div>
               <CardActions className={classes.actions}>
-                <RouteButton route="Sign Up" routelink="signup" eventuid={eventuid} />
+                <RouteButton route="Register" routelink="register" eventuid={eventuid} />
                 <RouteButton route="Edit Event" routelink="edit" eventuid={eventuid} />
                 <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>
               </CardActions>
@@ -158,4 +165,4 @@ eventCard.propTypes = {
 };
 
 
-export default withFirebase(withStyles(styles)(eventCard));
+export default withSnackbar(withFirebase(withStyles(styles)(eventCard)));

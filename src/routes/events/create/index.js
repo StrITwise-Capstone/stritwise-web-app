@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
 
 import Form from './Form';
 
@@ -60,4 +61,7 @@ const styles = () => ({
   },
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(createEvent));
+
+export default compose(
+  connect(mapStateToProps)
+)(withStyles(styles)(createEvent));

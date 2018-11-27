@@ -4,7 +4,8 @@ import {
   Grid,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
-import EventCard from '../Card/EventCard';
+
+import EventCard from '../Card/TeamCard'
 
 const styles = theme => ({
   root: {
@@ -15,7 +16,7 @@ const styles = theme => ({
 const cardList = (props) => {
   const {
     classes,
-    eventsList,
+    teamsList,
   } = props;
 
   return (
@@ -27,10 +28,10 @@ const cardList = (props) => {
         justify="space-evenly"
         alignItems="center"
       >
-        {eventsList
-          && Object.keys(eventsList).map(eventuid => (
+        {teamsList
+          && Object.keys(teamsList).map(eventuid => (
             <Grid item>
-              <EventCard event={eventsList[eventuid]} eventuid={eventuid}/>
+              <EventCard event={teamsList[eventuid]} eventuid={eventuid}/>
             </Grid>))
           }
       </Grid>

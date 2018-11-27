@@ -157,9 +157,7 @@ export default withRouter(compose(
   connect(mapStateToProps,mapDispatchToProps),
   firestoreConnect([
     {
-    collection: 'users'},
-    {
-      collection:'events'
+    collection: 'users'
     }
   ])
 )(withStyles(styles)(Navbar)));

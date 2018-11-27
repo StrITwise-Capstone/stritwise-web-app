@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, withStyles } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase'
 
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
@@ -62,4 +64,12 @@ const mapStateToProps = (state) => {
     user: state.auth.user,
   };
 };
-export default withRouter(connect(mapStateToProps)(withStyles(styles)(Dashboard)));
+
+export default withRouter(compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    {
+      collection:'events'
+    }
+  ])
+)(withStyles(styles)(Dashboard)));
