@@ -3,9 +3,12 @@ import PropTypes from 'prop-types';
 import {
   Grid,
 } from '@material-ui/core/';
-import { withStyles } from '@material-ui/core/styles';
+import { withRouter } from 'react-router';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
 
-import EventCard from '../Card/TeamCard'
+import TeamCard from '../Card/TeamCard';
 
 const styles = theme => ({
   root: {
@@ -13,34 +16,54 @@ const styles = theme => ({
   },
 });
 
-const cardList = (props) => {
-  const {
-    classes,
-    teamsList,
-  } = props;
+class cardList extends React.Component {
 
-  return (
-    <div className={classes.root}>
-      <div style={{ margin: '0 auto' }}/>
-      <Grid
-        container
-        spacing={24}
-        justify="space-evenly"
-        alignItems="center"
-      >
-        {teamsList
-          && Object.keys(teamsList).map(eventuid => (
-            <Grid item>
-              <EventCard event={teamsList[eventuid]} eventuid={eventuid}/>
-            </Grid>))
-          }
-      </Grid>
-    </div>
-  );
+    render(){
+        const {
+            match,
+            teamsList,
+        } = this.props;
+
+        return (
+        <div>
+            <div style={{ margin: '0 auto' }}/>
+            <Grid
+            container
+            spacing={24}
+            justify="space-evenly"
+            alignItems="center"
+            >
+            {teamsList
+                && Object.keys(teamsList).map(teamuid => (
+                <Grid item>
+                    <TeamCard event={teamsList[teamuid]} teamuid={teamuid} eventuid={match.params.id}/>
+                </Grid>))
+                }
+            </Grid>
+        </div>
+        );
+    }
 }
 
 cardList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(cardList);
+
+const mapStateToProps = (state) => {
+    console.log(state);
+    return {
+        teamsList: state.firestore.data.teamsList,
+    }
+};
+
+
+
+export default compose(withRouter,
+firestoreConnect((props) => [
+    {
+        collection:'events', doc:`${props.match.params.id}`, subcollections: [{collection:'teams'}], storeAs: 'teamsList'
+    },
+    ]),
+    connect(mapStateToProps)
+)(cardList);

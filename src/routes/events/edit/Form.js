@@ -163,7 +163,6 @@ const editEvent = ({
               label="Name of the event"
               type="text"
               component={TextField}
-              value={initialValues.name}
             />
             <Field
               required
@@ -233,4 +232,4 @@ editEvent.defaultProps = {
   authError: '',
 };
 
-export default withSnackbar(compose(connect(mapStateToProps), firestoreConnect())(editEvent));
+export default compose(withSnackbar,connect(mapStateToProps),firestoreConnect())(editEvent);

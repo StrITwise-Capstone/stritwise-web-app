@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Paper,
-  Typography,
-  Divider,
   withStyles,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
@@ -11,19 +8,13 @@ import { compose } from 'redux';
 
 import Form from './Form';
 
-class createEvent extends Component {
+class editStudent extends Component {
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <Paper className={classes.paper}>
-          <Typography variant="h4" className={classes.title}>Create Event</Typography>
-          <Divider />
-          <div className={classes.form}>
-            <Form />
-          </div>
-        </Paper>
+        <Form/>
       </div>
     );
   }
@@ -64,5 +55,5 @@ const styles = () => ({
 
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles)
-)(createEvent);
+  withStyles(styles),
+)(editStudent);

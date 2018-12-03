@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, withStyles } from '@material-ui/core';
-import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 
@@ -19,7 +18,6 @@ const styles = () => ({
     position: 'fixed',
   }
 });
-
 
 class Dashboard extends Component {
   state = {
@@ -60,7 +58,7 @@ class Dashboard extends Component {
         <div>
         <h1>{event && event.name}</h1>
         <h1>Teams </h1>
-        <CardList />
+        <CardList eventuid={this.props.match.params.id}/>
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
@@ -86,11 +84,9 @@ export default compose(
     connect(mapStateToProps),
     firestoreConnect([
       {
-        collection:'events', doc:'3z1WXjgy2jt607vcJ1qp', subcollections: [{collection:'teams'}], storeAs: 'teams'
-      },
-      {
         collection:'events',
       }
-    ])
-)(withStyles(styles)(Dashboard));
+    ]),
+    withStyles(styles)
+)(Dashboard);
   

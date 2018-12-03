@@ -86,5 +86,6 @@ export default compose(
     {
       collection:'events'
     }
-  ])
-)(withStyles(styles)(editEvent));
+  ]),
+  withStyles(styles)
+)(editEvent);

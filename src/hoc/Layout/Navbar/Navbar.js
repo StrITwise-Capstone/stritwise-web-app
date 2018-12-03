@@ -13,7 +13,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { firestoreConnect } from 'react-redux-firebase'
+import { firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
 
 import DrawerList from './Drawer/DrawerList'
@@ -67,7 +67,7 @@ class Navbar extends Component {
   }
 
   render() {
-    const { classes, userRole, isAuthenticated} = this.props;
+    const { classes, isAuthenticated, user, history } = this.props;
     const { anchorEl, isDrawerOpen} = this.state;
     const open = Boolean(this.state.anchorEl);
 
@@ -84,13 +84,13 @@ class Navbar extends Component {
               onClose={this.toggleDrawer('isDrawerOpen', false)}
               onOpen={this.toggleDrawer('isDrawerOpen', true)}
             >
-              <DrawerList auth={userRole}/>
+              <DrawerList auth={user.type}/>
             </SwipeableDrawer>
             </div>
             )
             }
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              <img src="/assets/logo.gif" alt="StrITwise Web Application" style={{ height: '50px',}} />
+              <img onClick={() => { history.push(`/`); }} src="/assets/logo.gif" alt="StrITwise Web Application" style={{ height: '50px',}} />
             </Typography>
             {isAuthenticated && (
               <div>
@@ -135,13 +135,13 @@ class Navbar extends Component {
 }
 
 const mapStateToProps = (state) => {
+  console.log(state);
   return {
-    authError: state.auth.authError,
     auth: state.firebase.auth,
-    users: state.firestore.data.users,
     userRole: state.auth.userRole,
     isAuthenticated: state.auth.isAuthenticated,
     eventsList: state.firestore.data.events,
+    user: state.firestore.data.user,
   };
 };
 
@@ -153,11 +153,15 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(compose(
+export default compose(
+  withRouter,
   connect(mapStateToProps,mapDispatchToProps),
-  firestoreConnect([
+  firestoreConnect(props => [
     {
-    collection: 'users'
-    }
-  ])
-)(withStyles(styles)(Navbar)));
+      collection: 'users',
+      storeAs: 'user',
+      doc: `${props.auth.uid}`,
+    },
+  ]),
+  withStyles(styles)
+)(Navbar);

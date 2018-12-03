@@ -14,6 +14,7 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
+import { compose } from 'redux';
 
 import { storage } from '../../../../../config/fbConfig';
 import RouteButton from '../RouteButton/RouteButton';
@@ -144,4 +145,4 @@ eventCard.propTypes = {
   classes: PropTypes.node.isRequired,
 };
 
-export default withFirebase(withStyles(styles)(eventCard));
+export default compose(withFirebase,withStyles(styles))(eventCard);

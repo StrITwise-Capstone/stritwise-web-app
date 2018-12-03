@@ -2,19 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
-  CardActionArea,
-  CardActions,
   CardContent,
-  CardMedia,
-  Button,
   Typography,
-  CircularProgress,
+  List,
+  Divider,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
-import moment from 'moment';
-import { withFirebase } from 'react-redux-firebase';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { withRouter } from 'react-router';
+import _ from 'lodash';
 
-import { storage } from '../../../../config/fbConfig';
+import ExpansionPanel from './ExpansionPanel/ExpansionPanel';
 
 const styles = {
   media: {
@@ -27,27 +27,14 @@ const styles = {
   textField: {
     'word-wrap': 'break-word',
     overflow: 'auto',
+    'text-align': 'center',
   },
 };
 
 class eventCard extends React.Component {
   state = {
-    imageFile: null,
     open: false,
-    notDeleted: true,
   };
-
-  componentWillMount() {
-    const { event } = this.props;
-    storage.ref(`${event.image_path}`).getDownloadURL().then((img) => {
-      const imageFile = img;
-      this.setState({
-        imageFile,
-      });
-    }).catch((error) => {
-      console.log(`Unable to retreive${error}`);
-    });
-  }
 
   handleClickOpen = () => {
     this.setState({
@@ -59,24 +46,39 @@ class eventCard extends React.Component {
     this.setState({ open: false });
   };
 
-  deleteEvent = () => {
-    const { eventuid, firebase } = this.props;
-    const db = firebase.firestore();
-    db.collection('events').doc(eventuid).delete().then(() => {
-      console.log('Document successfully deleted');
-      this.setState({
-        notDeleted: false,
-      });
-    }).catch((error) => {
-      console.error('Error moving document', error);
-    });
-  }
-
   render() {
-    const { classes, event, eventuid } = this.props;
-    const { imageFile, notDeleted, open } = this.state;
+    const { classes, event,currentevent, team, studentsList, eventuid, teamuid , history, minStudent } = this.props;
+    const { open } = this.state;
+    let i = 1;
     return (
       <React.Fragment>
+        {team
+          && (
+            <Card style={{ width: '700px', height: '500px' }}>
+              <CardContent className={classes.cardActionArea} onClick={this.handleClickOpen} style={{height:'450px'}}>
+                <CardContent>
+                  <Typography variant="h5" component="h2" className={classes.textField}>
+                    {team.team_name}
+                  </Typography>
+                </CardContent>
+                <Divider/>
+                <CardContent style={{height:'300px'}}>
+                  <List>
+                <div style={{"overflow-y":"auto", "max-height":"350px",}}>
+                {studentsList 
+                  && Object.keys(studentsList).map(student => 
+                (
+                  <React.Fragment>
+                    <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student+1 : true }/>
+                  </React.Fragment>
+                ))
+                }
+                </div>
+                  </List>
+                </CardContent>
+              </CardContent>
+            </Card>
+            )}
       </React.Fragment>
     );
   }
@@ -89,5 +91,24 @@ eventCard.propTypes = {
   classes: PropTypes.node.isRequired,
 };
 
+const mapStateToProps = (state) => {
+  console.log(state);
+  return {
+      team: state.firestore.data.team,
+      studentsList: state.firestore.data.studentsList,
+      currentevent: state.firestore.data.currentevent,
+  }
+};
 
-export default withFirebase(withStyles(styles)(eventCard));
+export default compose(withRouter,firestoreConnect((props) => {console.log(props.teamuid); return [
+  {
+      collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`}], storeAs: 'team'
+  },
+  {
+    collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`, subcollections: [{collection: 'students'}]}], storeAs: 'studentsList'
+  },
+  {
+    collection:'events',doc:`${props.eventuid}`,storeAs:`currentevent`
+  }
+  ]}),connect(mapStateToProps),withStyles(styles))(eventCard);
+

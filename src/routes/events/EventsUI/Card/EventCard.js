@@ -14,6 +14,7 @@ import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
+import { compose } from 'redux';
 
 import { storage } from '../../../../config/fbConfig';
 import RouteButton from './RouteButton/RouteButton';
@@ -165,4 +166,4 @@ eventCard.propTypes = {
 };
 
 
-export default withSnackbar(withFirebase(withStyles(styles)(eventCard)));
+export default compose(withSnackbar, withFirebase, withStyles(styles))(eventCard);

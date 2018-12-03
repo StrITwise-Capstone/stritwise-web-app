@@ -27,6 +27,8 @@ const initialValues = {
   enddate: '',
   description: '',
   image: '',
+  max_student:'',
+  min_student:'',
 };
 
 const guid = () => {
@@ -54,6 +56,8 @@ const createEvent = ({
       image: Yup.mixed().required(),
       startdate: Yup.date().required('Required'),
       enddate: Yup.date().required('Required'),
+      min_student: Yup.number().integer().required('Required'),
+      max_student: Yup.number().integer().required('Required'),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       // login user
@@ -78,6 +82,8 @@ const createEvent = ({
             start_date: new Date(values.startdate),
             end_date: new Date(values.enddate),
             image_path: `images/${imageuid}`,
+            min_student: parseInt(values.min_student),
+            max_student: parseInt(values.max_student),
           }).then(() => {
             // console.log('Event created');
             enqueueSnackbar('Event Created', {
@@ -135,6 +141,20 @@ const createEvent = ({
               type="text"
               component={TextField}
             />
+            <Field
+              required
+              name="min_student"
+              label="Minimum Student (Numbers only)"
+              type="text"
+              component={TextField}
+            />
+            <Field
+              required
+              name="max_student"
+              label="Maximum Student (Numbers only)"
+              type="text"
+              component={TextField}
+            />
             <p>Upload Event Image</p>
             <Field
               required
@@ -182,4 +202,4 @@ createEvent.defaultProps = {
   authError: '',
 };
 
-export default withSnackbar(compose(connect(mapStateToProps), firestoreConnect())(createEvent));
+export default compose(connect(mapStateToProps),withSnackbar, firestoreConnect())(createEvent);
