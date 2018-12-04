@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { withStyles } from '@material-ui/core/styles';
 
-import styles from './selectStyle';
+import styles from './Select.styles';
 import components from './selectCustomComponents';
 
 const select = ({
@@ -38,9 +38,6 @@ const select = ({
       },
     }),
   };
-
-  console.log(theme);
-
   return (
     <div>
       <Select
@@ -89,9 +86,9 @@ select.propTypes = {
   isMulti: PropTypes.bool,
   required: PropTypes.bool,
   /* eslint-disable react/forbid-prop-types */
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-  options: PropTypes.object.isRequired,
+  classes: PropTypes.any.isRequired,
+  theme: PropTypes.any.isRequired,
+  options: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 

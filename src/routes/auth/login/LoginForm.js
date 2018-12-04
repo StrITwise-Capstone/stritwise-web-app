@@ -126,7 +126,9 @@ const mapDispatchToProps = dispatch => ({
 LoginForm.propTypes = {
   logIn: PropTypes.func.isRequired,
   logOut: PropTypes.func.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  enqueueSnackbar: PropTypes.any.isRequired,
+  /* eslint-enable */
 };
 
 export default withSnackbar(connect(null, mapDispatchToProps)(LoginForm));

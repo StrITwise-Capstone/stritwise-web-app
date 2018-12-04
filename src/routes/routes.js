@@ -28,9 +28,9 @@ const routes = () => {
   elements.push(<Route exact path="/auth/forgot" key="/auth/forgot" component={Forgot} />);
 
   /* Users */
-  elements.push(<Route exact path="/users" component={Users} />);
-  elements.push(<Route exact path="/users/:id/edit" component={EditUser} />);
-  elements.push(<Route exact path="/users/create" component={AddUser} />);
+  elements.push(<Route exact path="/users" key="/users" component={Users} />);
+  elements.push(<Route exact path="/users/:id/edit" key="/users/edit" component={EditUser} />);
+  elements.push(<Route exact path="/users/create" key="/users/create" component={AddUser} />);
 
 
   /* OTHERS */
@@ -40,7 +40,7 @@ const routes = () => {
   elements.push(<Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />);
   elements.push(<Route exact path="/events/:id/register" key="/events/register" component={RegisterEvent} />);
 
-  /* ERRORS */ 
+  /* ERRORS */
   elements.push(<Route path="/" key="/404" component={NotFound} />);
 
   return (

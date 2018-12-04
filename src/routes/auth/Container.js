@@ -35,7 +35,7 @@ const styles = () => ({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    height: '80vh',
+    height: '85vh',
   },
   paper: {
     width: '100%',

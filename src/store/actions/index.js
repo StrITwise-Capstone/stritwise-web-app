@@ -1,7 +1,6 @@
 export {
   logIn,
   logOut,
-  signUp,
   retrieveUser,
 } from './authActions';
 // export {

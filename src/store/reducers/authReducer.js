@@ -18,14 +18,6 @@ const authReducer = (state = initState, action) => {
         isAuthenticated: false,
         userRole: null,
       };
-    case actionTypes.SIGNUP_SUCCESS:
-      return {
-        ...state,
-      };
-    case actionTypes.SIGNUP_ERROR:
-      return {
-        ...state,
-      };
     case actionTypes.RETRIEVE_USER:
       return {
         ...state,
