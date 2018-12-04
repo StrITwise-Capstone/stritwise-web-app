@@ -29,15 +29,13 @@ class SimpleExpansionPanel extends React.Component {
     return (
       <div className={classes.root}>
         {student && <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ "background-color":"purple", padding:"5px"}}>
-            <Typography className={classes.heading} style={{"padding-left":"10px"}}>{student.first_name} {student.last_name}</Typography>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ "backgroundColor":"purple", padding:"5px"}}>
+            <Typography className={classes.heading} style={{"paddingLeft":"10px"}}>{student.first_name} {student.last_name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
               {deletevalue}
           <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
           </ExpansionPanelDetails>
-          <ExpansionPanelActions>
-          </ExpansionPanelActions>
         </ExpansionPanel>
         }
         <div style={{ padding:"10px"}}/>
@@ -46,7 +44,5 @@ class SimpleExpansionPanel extends React.Component {
 }
 }
 
-SimpleExpansionPanel.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+
 export default withStyles(styles)(SimpleExpansionPanel);

@@ -20,7 +20,6 @@ class DeleteButton extends React.Component {
 }}
 
   render() {
-      console.log(this.props);
     return (
         <Button onClick={this.deleteStudent} color="primary">Delete</Button>
     );

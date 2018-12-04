@@ -128,10 +128,10 @@ const editStudent = ({
               type="text"
               component={TextField}
             />
-            <div class="align-right">
+            <div className="align-right">
                 <Button type="submit" color="primary">Update</Button>
             </div>
-            <div class="align-right">
+            <div className="align-right">
                 {initialValues.deletevalue && <DeleteButton teamuid={initialValues.teamuid} studentuid={initialValues.studentuid} eventuid={initialValues.eventuid}/>}
             </div>
           </Form>

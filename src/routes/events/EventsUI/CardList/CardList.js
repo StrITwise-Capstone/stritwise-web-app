@@ -29,7 +29,7 @@ const cardList = (props) => {
       >
         {eventsList
           && Object.keys(eventsList).map(eventuid => (
-            <Grid item>
+            <Grid item key={eventuid} >
               <EventCard event={eventsList[eventuid]} eventuid={eventuid}/>
             </Grid>))
           }

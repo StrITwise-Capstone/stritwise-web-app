@@ -118,13 +118,13 @@ class eventCard extends React.Component {
               </CardActionArea>
               <div>
                 <CardContent style={{ height: '200px' }}>
-                  <Typography variant="h7" component="h7" color="primary">
+                  <Typography variant="subheading" color="primary">
                     <strong>Start Date : </strong>
                     {
                       moment(event.start_date.toDate()).calendar()
                     }
                   </Typography>
-                  <Typography variant="h7" component="h7" color="primary">
+                  <Typography variant="subheading" color="primary">
                     <strong>End Date : </strong>
                     {
                       moment(event.end_date.toDate()).calendar()
@@ -133,7 +133,8 @@ class eventCard extends React.Component {
                   <div style={{ height: '10px' }} />
                   <Typography component="p" className={classes.textField}>
                     Description:
-                    <div style={{ height: '5px' }} />
+                  </Typography>
+                  <Typography component="p" style={{ "paddingTop": '5px' }} >
                     { (event.desc.length > 200)
                       ? `${event.desc.substring(0, 200)}...`
                       : event.desc
@@ -158,12 +159,6 @@ class eventCard extends React.Component {
   }
 }
 
-eventCard.propTypes = {
-  event: PropTypes.node.isRequired,
-  eventuid: PropTypes.string.isRequired,
-  firebase: PropTypes.node.isRequired,
-  classes: PropTypes.node.isRequired,
-};
 
 
 export default compose(withSnackbar, firebaseConnect(), withFirebase, withStyles(styles))(eventCard);

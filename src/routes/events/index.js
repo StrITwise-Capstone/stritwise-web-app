@@ -65,11 +65,13 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default withRouter(compose(
+export default compose(
+  withRouter,
   connect(mapStateToProps),
   firestoreConnect([
     {
       collection:'events'
     }
-  ])
-)(withStyles(styles)(Dashboard)));
+  ]),
+  withStyles(styles),
+)(Dashboard);

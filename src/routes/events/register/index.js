@@ -69,7 +69,6 @@ class Dashboard extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
     return {
         eventsList: state.firestore.data.events,
         auth: state.firebase.auth,

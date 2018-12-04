@@ -31,7 +31,7 @@ const styles = {
   },
 };
 
-class eventCard extends React.Component {
+class teamCard extends React.Component {
   state = {
     open: false,
   };
@@ -64,11 +64,11 @@ class eventCard extends React.Component {
                 <Divider/>
                 <CardContent style={{height:'300px'}}>
                   <List>
-                <div style={{"overflow-y":"auto", "max-height":"350px",}}>
+                <div style={{"overflowY":"auto", "maxHeight":"350px",}}>
                 {studentsList 
                   && Object.keys(studentsList).map(student => 
                 (
-                  <React.Fragment>
+                  <React.Fragment key={student}>
                     <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student+1 : true }/>
                   </React.Fragment>
                 ))
@@ -84,15 +84,7 @@ class eventCard extends React.Component {
   }
 }
 
-eventCard.propTypes = {
-  event: PropTypes.node.isRequired,
-  eventuid: PropTypes.string.isRequired,
-  firebase: PropTypes.node.isRequired,
-  classes: PropTypes.node.isRequired,
-};
-
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
       team: state.firestore.data.team,
       studentsList: state.firestore.data.studentsList,
@@ -100,7 +92,7 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default compose(withRouter,firestoreConnect((props) => {console.log(props.teamuid); return [
+export default compose(withRouter,firestoreConnect((props) => {return [
   {
       collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`}], storeAs: 'team'
   },
@@ -110,5 +102,5 @@ export default compose(withRouter,firestoreConnect((props) => {console.log(props
   {
     collection:'events',doc:`${props.eventuid}`,storeAs:`currentevent`
   }
-  ]}),connect(mapStateToProps),withStyles(styles))(eventCard);
+  ]}),connect(mapStateToProps),withStyles(styles))(teamCard);
 

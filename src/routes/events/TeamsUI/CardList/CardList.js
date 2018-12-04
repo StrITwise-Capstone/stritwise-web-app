@@ -35,7 +35,7 @@ class cardList extends React.Component {
             >
             {teamsList
                 && Object.keys(teamsList).map(teamuid => (
-                <Grid item>
+                <Grid item key={teamuid}>
                     <TeamCard event={teamsList[teamuid]} teamuid={teamuid} eventuid={match.params.id}/>
                 </Grid>))
                 }
@@ -45,13 +45,10 @@ class cardList extends React.Component {
     }
 }
 
-cardList.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+
 
 
 const mapStateToProps = (state) => {
-    console.log(state);
     return {
         teamsList: state.firestore.data.teamsList,
     }
