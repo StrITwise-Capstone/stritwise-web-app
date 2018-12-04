@@ -16,7 +16,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 
-import { storage } from '../../../config/fbConfig';
+import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from './ThumbNail';
@@ -45,6 +45,7 @@ const createEvent = ({
   auth,
   firestore,
   enqueueSnackbar,
+  firebase,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -63,7 +64,7 @@ const createEvent = ({
       // login user
       const { image } = values;
       const imageuid = guid();
-      const uploadTask = storage.ref(`images/${imageuid}`).put(image);
+      const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
       uploadTask.on('state_changed',
         (snapshot) => {
           const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
@@ -202,4 +203,4 @@ createEvent.defaultProps = {
   authError: '',
 };
 
-export default compose(connect(mapStateToProps),withSnackbar, firestoreConnect())(createEvent);
+export default compose(connect(mapStateToProps),withSnackbar, firebaseConnect(),firestoreConnect())(createEvent);

@@ -16,7 +16,7 @@ import { withFirebase } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { compose } from 'redux';
 
-import { storage } from '../../../../config/fbConfig';
+import { firebaseConnect } from 'react-redux-firebase';
 import RouteButton from './RouteButton/RouteButton';
 import SimpleDialogWrapped from '../Dialog/Dialog';
 
@@ -42,8 +42,8 @@ class eventCard extends React.Component {
   };
 
   componentWillMount() {
-    const { event } = this.props;
-    storage.ref(`${event.image_path}`).getDownloadURL().then((img) => {
+    const { event, firebase } = this.props;
+    firebase.storage().ref(`${event.image_path}`).getDownloadURL().then((img) => {
       const imageFile = img;
       this.setState({
         imageFile,
@@ -166,4 +166,4 @@ eventCard.propTypes = {
 };
 
 
-export default compose(withSnackbar, withFirebase, withStyles(styles))(eventCard);
+export default compose(withSnackbar, firebaseConnect(), withFirebase, withStyles(styles))(eventCard);

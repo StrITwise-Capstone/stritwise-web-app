@@ -16,7 +16,7 @@ import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
 import { compose } from 'redux';
 
-import { storage } from '../../../../../config/fbConfig';
+import { firebaseConnect } from 'react-redux-firebase';
 import RouteButton from '../RouteButton/RouteButton';
 
 const styles = {
@@ -40,8 +40,8 @@ class eventCard extends React.Component {
   };
 
   componentWillMount() {
-    const { event } = this.props;
-    storage.ref(`${event.image_path}`).getDownloadURL().then((img) => {
+    const { event , firebase } = this.props;
+    firebase.storage().ref(`${event.image_path}`).getDownloadURL().then((img) => {
       const imageFile = img;
       this.setState({
         imageFile,
@@ -145,4 +145,4 @@ eventCard.propTypes = {
   classes: PropTypes.node.isRequired,
 };
 
-export default compose(withFirebase,withStyles(styles))(eventCard);
+export default compose(withFirebase,withStyles(styles),firebaseConnect())(eventCard);

@@ -7,7 +7,6 @@ class Test extends Component {
   render() {
     return (
       <React.Fragment>
-        <TestTable />
       </React.Fragment>
     );
   }

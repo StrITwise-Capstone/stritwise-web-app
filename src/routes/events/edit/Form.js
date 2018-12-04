@@ -17,7 +17,7 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import moment from 'moment';
 
-import { storage } from '../../../config/fbConfig';
+import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from './ThumbNail';
@@ -65,6 +65,7 @@ const editEvent = ({
   enqueueSnackbar,
   event,
   eventuid,
+  firebase,
 }) => {
   return (<Formik
     enableReinitialize={true}
@@ -107,7 +108,7 @@ const editEvent = ({
       }
       if (image !== '') {
         const imageuid = guid();
-        const uploadTask = storage.ref(`images/${imageuid}`).put(image);
+        const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
         uploadTask.on('state_changed',
           (snapshot) => {
             const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
@@ -232,4 +233,4 @@ editEvent.defaultProps = {
   authError: '',
 };
 
-export default compose(withSnackbar,connect(mapStateToProps),firestoreConnect())(editEvent);
+export default compose(withSnackbar,connect(mapStateToProps),firebaseConnect(),firestoreConnect())(editEvent);
