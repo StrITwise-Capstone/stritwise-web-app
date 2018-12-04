@@ -14,7 +14,8 @@ import {
   TablePagination,
   CircularProgress,
 } from '@material-ui/core';
-import MoreIcon from '@material-ui/icons/MoreVert';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import TableToolbar from './TableToolbar';
 
 const styles = theme => ({
@@ -90,22 +91,17 @@ class CustomTable extends Component {
               ))}
               <CustomTableCell numeric>
                 <IconButton
-                  aria-owns={anchorEl ? 'more-options-menu' : undefined}
-                  aria-haspopup="true"
-                  onClick={this.handleClick}
+                  onClick={() => handleEdit(rowCopy.id)}
                   color="inherit"
                 >
-                  <MoreIcon />
+                  <EditIcon />
                 </IconButton>
-                <Menu
-                  id="more-options-menu"
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={this.handleClose}
+                <IconButton
+                  onClick={() => handleDelete()}
+                  color="inherit"
                 >
-                  <MenuItem onClick={() => handleEdit(rowCopy.id)}>Edit</MenuItem>
-                  <MenuItem onClick={() => { handleDelete(); }}>Delete</MenuItem>
-                </Menu>
+                  <DeleteIcon />
+                </IconButton>
               </CustomTableCell>
             </TableRow>
           );
