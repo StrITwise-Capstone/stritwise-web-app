@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
@@ -43,20 +42,17 @@ const editStudent = ({
         teamuid: teamuid,
         deletevalue: deletevalue,
     }}
-    // validationSchema={Yup.object({
-    //   name: Yup.string()
-    //     .required('Required'),
-    //   description: Yup.string()
-    //     .required('Required'),
-    //   image: Yup.mixed().required(),
-    //   startdate: Yup.date().required('Required'),
-    //   enddate: Yup.date().required('Required'),
-    // })}
+    validationSchema={Yup.object({
+      firstname: Yup.string()
+        .required('Required'),
+      lastname: Yup.string()
+        .required('Required'),
+      badge_name: Yup.string().required('Required'),
+      dietary_restriction: Yup.string(),
+      email: Yup.string().email("Email is not valid"),
+      remarks: Yup.string(),
+    })}
     onSubmit={(values, { setSubmitting }) => {
-        console.log(`teamuid${teamuid}`);
-        console.log(`studentuid${studentuid}`);
-        console.log(`eventuid${eventuid}`);
-        console.log(`teamuid${teamuid}`);
       firestore.collection('events').doc(eventuid).collection('teams').doc(teamuid).collection('students').doc(studentuid).update({
           first_name: values.firstname,
           last_name: values.lastname,
@@ -96,7 +92,7 @@ const editStudent = ({
             <Field
               required
               name="lastname"
-              label="First Name"
+              label="Last Name"
               type="text"
               component={TextField}
             />
