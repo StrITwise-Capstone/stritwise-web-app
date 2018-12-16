@@ -1,11 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
   Card,
   CardContent,
   Typography,
   List,
   Divider,
+  Button,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -13,6 +13,7 @@ import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
 import _ from 'lodash';
+import { withSnackbar } from 'notistack'
 
 import ExpansionPanel from './ExpansionPanel/ExpansionPanel';
 
@@ -34,6 +35,7 @@ const styles = {
 class teamCard extends React.Component {
   state = {
     open: false,
+    studentsList: null,
   };
 
   handleClickOpen = () => {
@@ -46,15 +48,23 @@ class teamCard extends React.Component {
     this.setState({ open: false });
   };
 
+  deleteTeam = () =>{
+    const {firestore , teamuid ,eventuid, enqueueSnackbar } = this.props;
+    firestore.collection("events").doc(eventuid).collection("teams").doc(teamuid).delete().then(
+      enqueueSnackbar('Event Deleted',{
+        variant: 'success',
+    })
+    )
+  }
+  
   render() {
-    const { classes, event,currentevent, team, studentsList, eventuid, teamuid , history, minStudent } = this.props;
-    const { open } = this.state;
+    const { classes, currentevent, team, eventuid, teamuid , studentsList } = this.props;
     let i = 1;
     return (
       <React.Fragment>
-        {team
+        {team && studentsList && currentevent
           && (
-            <Card style={{ width: '700px', height: '500px' }}>
+          <Card style={{ width: '700px', height: '580px' }}>
               <CardContent className={classes.cardActionArea} onClick={this.handleClickOpen} style={{height:'450px'}}>
                 <CardContent>
                   <Typography variant="h5" component="h2" className={classes.textField}>
@@ -75,7 +85,10 @@ class teamCard extends React.Component {
                 }
                 </div>
                   </List>
-                </CardContent>
+                </CardContent>  
+              </CardContent>
+              <CardContent>
+                  <Button onClick={this.deleteTeam} color="primary">Delete Team</Button>
               </CardContent>
             </Card>
             )}
@@ -84,23 +97,21 @@ class teamCard extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state,props) => {
   return {
-      team: state.firestore.data.team,
-      studentsList: state.firestore.data.studentsList,
+      team: state.firestore.data[`team${props.teamuid}`],
+      studentsList: state.firestore.data[`studentsList${props.teamuid}`],
       currentevent: state.firestore.data.currentevent,
   }
 };
 
-export default compose(withRouter,firestoreConnect((props) => {return [
+export default compose(withRouter,firestoreConnect((props) => {
+  return [
   {
-      collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`}], storeAs: 'team'
+      collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`}], storeAs: `team${props.teamuid}`
   },
   {
-    collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`, subcollections: [{collection: 'students'}]}], storeAs: 'studentsList'
+    collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`, subcollections: [{collection: 'students'}]}], storeAs: `studentsList${props.teamuid}`
   },
-  {
-    collection:'events',doc:`${props.eventuid}`,storeAs:`currentevent`
-  }
-  ]}),connect(mapStateToProps),withStyles(styles))(teamCard);
+  ]}),connect(mapStateToProps),withStyles(styles),withSnackbar)(teamCard);
 

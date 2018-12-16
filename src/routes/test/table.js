@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { TableCell } from '@material-ui/core';
+
 import CustomTable from '../../components/UI/Table/Table';
 
 const data = [
@@ -24,7 +25,6 @@ class TestTable extends Component {
   render() {
     return (
       <div>
-        <h1>Test Table</h1>
         <CustomTable
           data={data}
           handleEdit={this.handleEdit}

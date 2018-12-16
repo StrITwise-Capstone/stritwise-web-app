@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import TestForm from './form';
-import TestTable from './table';
+import TestLayout from './layout';
 
 class Test extends Component {
   render() {
     return (
       <React.Fragment>
+        <TestLayout />
       </React.Fragment>
     );
   }

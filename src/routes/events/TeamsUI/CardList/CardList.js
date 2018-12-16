@@ -1,7 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
   Grid,
+  List,
+  ListItem,
 } from '@material-ui/core/';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
@@ -10,35 +11,32 @@ import { firestoreConnect } from 'react-redux-firebase';
 
 import TeamCard from '../Card/TeamCard';
 
-const styles = theme => ({
-  root: {
-    flexGrow: 1,
-  },
-});
-
 class cardList extends React.Component {
-
+    mapping = () => {
+        const { teamsList , match } = this.props;
+         return Object.keys(teamsList).map(teamuid => (
+            <ListItem key={teamuid}>
+                <TeamCard event={teamsList[teamuid]} teamuid={teamuid} eventuid={match.params.id}/>
+            </ListItem>))
+    }
     render(){
         const {
-            match,
             teamsList,
         } = this.props;
-
         return (
         <div>
             <div style={{ margin: '0 auto' }}/>
             <Grid
-            container
-            spacing={24}
-            justify="space-evenly"
-            alignItems="center"
+                container
+                alignContent="center"
+                justify="center"
+            >
+            <List
             >
             {teamsList
-                && Object.keys(teamsList).map(teamuid => (
-                <Grid item key={teamuid}>
-                    <TeamCard event={teamsList[teamuid]} teamuid={teamuid} eventuid={match.params.id}/>
-                </Grid>))
+                && this.mapping()
                 }
+            </List>
             </Grid>
         </div>
         );
@@ -46,14 +44,11 @@ class cardList extends React.Component {
 }
 
 
-
-
 const mapStateToProps = (state) => {
     return {
         teamsList: state.firestore.data.teamsList,
     }
 };
-
 
 
 export default compose(withRouter,

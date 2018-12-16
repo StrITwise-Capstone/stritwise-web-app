@@ -27,7 +27,7 @@ const routes = () => {
   elements.push(<Route exact path="/auth/signup" key="/auth/signup" component={SignUp} />);
   elements.push(<Route exact path="/auth/forgot" key="/auth/forgot" component={Forgot} />);
 
-  /* Users */
+  /* USERS */
   elements.push(<Route exact path="/users" key="/users" component={Users} />);
   elements.push(<Route exact path="/users/:id/edit" key="/users/edit" component={EditUser} />);
   elements.push(<Route exact path="/users/create" key="/users/create" component={AddUser} />);

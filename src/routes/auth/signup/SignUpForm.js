@@ -14,7 +14,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withFirebase } from 'react-redux-firebase';
+import { withFirebase, withFirestore } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 
 import * as util from '../../../helper/util';
@@ -53,69 +53,59 @@ const validationSchema = yup.object({
 });
 
 const SignUp = ({
-  logOut, history, schools, firebase, enqueueSnackbar,
+  logOut, history, schools, firebase, firestore, enqueueSnackbar,
 }) => (
   <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
-    onSubmit={(values, { setErrors, setSubmitting, resetForm }) => {
+    onSubmit={(values, { setSubmitting }) => {
       console.log(values);
 
-      firebase.push(`users`, {
+      firebase.auth().createUserWithEmailAndPassword(
+        values.email,
+        values.password,
+      ).then(resp => firestore.set(`users/${resp.user.uid}`, {
         firstName: values.firstName,
         lastName: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
         school: values.school.value,
+        type: 'teacher',
+      })).then(() => {
+        const user = firebase.auth().currentUser;
+        if (user != null) {
+          user.sendEmailVerification().then(() => {
+            enqueueSnackbar('Verification email sent.', {
+              variant: 'success',
+            });
+          }).catch(() => {
+            enqueueSnackbar('Verification email failed to send. Please contact an administrator.', {
+              variant: 'error',
+            });
+          });
+        }
+      }).then(() => {
+        logOut();
+        enqueueSnackbar('Account registered.', {
+          variant: 'success',
+        });
+        history.push('/');
+      }).catch((err) => {
+        if (err.code === 'auth/email-already-in-use') {
+          enqueueSnackbar(err.message, {
+            variant: 'warning',
+          });
+        } else {
+          enqueueSnackbar('Something went wrong. Please try again.', {
+            variant: 'error',
+          });
+        }
+      }).finally(() => {
+        setSubmitting(false);
       });
-
-      // firebase.auth().createUserWithEmailAndPassword(
-      //   values.email,
-      //   values.password,
-      // ).then(resp => firebase.push(`users/${resp.user.uid}`, {
-      //   firstName: values.firstName,
-      //   lastName: values.lastName,
-      //   initials: values.firstName[0] + values.lastName[0],
-      //   mobile: values.mobile,
-      //   school: values.school.value,
-      // })).then(() => {
-      //   const user = firebase.auth().currentUser;
-      //   if (user != null) {
-      //     user.sendEmailVerification().then(() => {
-      //       enqueueSnackbar('Verification email sent.', {
-      //         variant: 'success',
-      //       });
-      //     }).catch((err) => {
-      //       console.log(err);
-      //       enqueueSnackbar('Verification email failed to send. Please contact an administrator.', {
-      //         variant: 'error',
-      //       });
-      //     });
-      //   }
-      // }).then(() => {
-      //   logOut();
-      //   enqueueSnackbar('Account registered.', {
-      //     variant: 'success',
-      //   });
-      //   history.push('/login');
-      // }).catch((err) => {
-      //   console.log(err);
-      //   if (err.code === 'auth/email-already-in-use') {
-      //     enqueueSnackbar(err.message, {
-      //       variant: 'warning',
-      //     });
-      //   } else {
-      //     enqueueSnackbar('Something went wrong. Please try again.', {
-      //       variant: 'error',
-      //     });
-      //   }
-      // }).finally(() => {
-      //   setSubmitting(false);
-      // });
     }}
   >
     {({
-      values,
       errors,
       touched,
       handleSubmit,
@@ -227,6 +217,7 @@ SignUp.propTypes = {
   enqueueSnackbar: PropTypes.any.isRequired,
   history: PropTypes.any.isRequired,
   firebase: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
@@ -239,4 +230,5 @@ export default compose(
   withSnackbar,
   withRouter,
   withFirebase,
+  withFirestore,
 )(SignUp);

@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button, withStyles } from '@material-ui/core';
+import { 
+  Button, 
+  withStyles,
+  Paper,
+  Divider, 
+  CircularProgress,
+  Grid
+} from '@material-ui/core';
 import { compose } from 'redux';
-import { firestoreConnect } from 'react-redux-firebase';
-
+import { 
+  firestoreConnect,
+  firebaseConnect 
+} from 'react-redux-firebase';
+import moment from 'moment';
 import AddIcon from '@material-ui/icons/Add';
-import PropTypes from 'prop-types';
+
 import CardList from '../TeamsUI/CardList/CardList';
+import ImportButton from './ImportButton/ImportButton';
 
 const styles = () => ({
   button: {
@@ -23,20 +34,8 @@ class Dashboard extends Component {
   state = {
     open: false,
     event: null,
+    eventuid: null,
   };
-
-  componentDidMount(){
-    const { eventsList, match } = this.props;
-    const { event } = this.state;
-    const values = match.params.id;
-    if ( eventsList != null && event == null)
-    { this.setState({
-        event: eventsList[values],
-      })
-      this.forceUpdate();
-    }
-  }
-
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -49,43 +48,78 @@ class Dashboard extends Component {
     const { history } = this.props;
     history.push('/events/create')
   }
+  componentDidUpdate(){
+    const { firebase, currentevent } = this.props;
+    firebase.storage().ref(`${currentevent.image_path}`).getDownloadURL().then((img) => {
+      const imageFile = img;
+      this.setState({
+        imageFile,
+      });
+    }).catch((error) => {
+      console.log(`Unable to retreive${error}`);
+    });
+  }
   render() {
-    const { eventsList , classes, auth, users, isAuthenticated } = this.props;
-    const { event } = this.state;
-    //console.log(this.props.store.firestore.get('events/3z1WXjgy2jt607vcJ1qp/teams'));
+    const { classes, currentevent} = this.props;
+    const { imageFile } = this.state;
     return (
-      <div>
+      <React.Fragment>
+      {currentevent == null && imageFile == null &&
+        <CircularProgress></CircularProgress>
+      }
+      {currentevent && imageFile
+        && 
+        (<div>
         <div>
-        <h1>{event && event.name}</h1>
+        <Paper>
+        <div style={{'marginLeft':'15px'}}>
+        <h1>{currentevent && currentevent.name}</h1>
+        <Grid container>
+          <Grid item xs={6}>
+            <div>
+              <p>Start Date: {moment(currentevent.start_date.toDate()).calendar()}</p>
+              <p>End Date: {moment(currentevent.end_date.toDate()).calendar()}</p>
+              <p>Description: </p>
+              <p>{currentevent.desc}</p>
+            </div>
+          </Grid>
+          <Grid item xs={6}><img src={imageFile}></img></Grid>
+        </Grid>
+        <Divider/>
+        <ImportButton/>
+        </div>
+        </Paper>
+        <Paper style={{background:'#E6E6FA'}}>
+        <div style={{'marginLeft':'15px'}}>
         <h1>Teams </h1>
         <CardList eventuid={this.props.match.params.id}/>
+        </div>
+        </Paper>
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
         </Button>
-      </div>
+      </div>)
+    }
+    </React.Fragment>
     );
   }
 }
 
 const mapStateToProps = (state) => {
     return {
-        eventsList: state.firestore.data.events,
-        auth: state.firebase.auth,
-        users: state.firestore.data.users,
-        isAuthenticated: state.auth.isAuthenticated,
-        user: state.auth.user,
-        teams: state.firestore.data.teams,
+        currentevent: state.firestore.data.currentevent,
     }
 };
 
 export default compose(
     connect(mapStateToProps),
-    firestoreConnect([
+    withStyles(styles),
+    firestoreConnect((props) => [
       {
-        collection:'events',
-      }
-    ]),
-    withStyles(styles)
+        collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
+      },
+      ]),
+    firebaseConnect(),
 )(Dashboard);
   

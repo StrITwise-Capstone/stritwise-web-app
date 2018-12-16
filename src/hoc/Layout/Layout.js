@@ -9,7 +9,7 @@ class App extends Component {
     return (
       <React.Fragment>
         <Navbar />
-        <div style={{ padding: '10px' }}>
+        <div style={{ padding: '0px 10px 10px 10px' }}>
           { children }
         </div>
       </React.Fragment>
