@@ -34,7 +34,6 @@ class Dashboard extends Component {
   state = {
     open: false,
     event: null,
-    eventuid: null,
   };
   handleOpen = () => {
     this.setState({ open: true });
@@ -45,8 +44,8 @@ class Dashboard extends Component {
   };
 
   createEvent = () => {
-    const { history } = this.props;
-    history.push('/events/create')
+    const { history, match } = this.props;
+    history.push(`/events/${match.params.id}/register/create`)
   }
   componentDidUpdate(){
     const { firebase, currentevent } = this.props;

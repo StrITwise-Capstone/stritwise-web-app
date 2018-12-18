@@ -8,45 +8,32 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
+import {firestoreConnect} from 'react-redux-firebase';
 
 import Form from './Form';
 
 class createEvent extends Component {
   render() {
-    const { classes } = this.props;
+    const { classes, currentevent } = this.props;
 
     return (
       <div className={classes.root}>
-        <Paper className={classes.paper}>
-          <Typography variant="h4" className={classes.title}>Create Event</Typography>
+        <Paper>
+          <Typography variant="h4" className={classes.title}>Add Team and Students</Typography>
           <Divider />
           <div className={classes.form}>
-            <Form />
-          </div>
+           {currentevent && <Form minStudent={currentevent['min_student'] ? currentevent['min_student'] : 1} />
+           }</div>
         </Paper>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  authError: state.auth.authError,
-  auth: state.firebase.auth,
-});
-
 
 const styles = () => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '70vh',
-  },
-  paper: {
-    width: '100%',
-    maxWidth: '500px',
+    paddingTop:'10px',
   },
   title: {
     textAlign: 'center',
@@ -57,8 +44,19 @@ const styles = () => ({
   },
 });
 
+const mapStateToProps = (state) => {
+  console.log(state);
+  return {
+      currentevent: state.firestore.data.currentevent,
+  }
+};
 
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles)
+  withStyles(styles),
+  firestoreConnect((props) => [
+    {
+      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
+    },
+  ]),
 )(createEvent);

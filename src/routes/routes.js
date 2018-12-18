@@ -16,6 +16,7 @@ import Dashboard from './events';
 import CreateEvent from './events/create';
 import EditEvent from './events/edit';
 import RegisterEvent from './events/register';
+import CreateStudents from './events/register/create';
 
 const routes = () => {
   const elements = [];
@@ -39,7 +40,7 @@ const routes = () => {
   elements.push(<Route exact path="/events/create" key="/events/create" component={CreateEvent} />);
   elements.push(<Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />);
   elements.push(<Route exact path="/events/:id/register" key="/events/register" component={RegisterEvent} />);
-
+  elements.push(<Route exact path="/events/:id/register/create" key="/events/register/create" component={CreateStudents}/>)
   /* ERRORS */
   elements.push(<Route path="/" key="/404" component={NotFound} />);
 
