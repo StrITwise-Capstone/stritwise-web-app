@@ -116,7 +116,8 @@ class ImportButton extends Component {
     return (
       <React.Fragment>
         <div>
-        <h3>Upload Excel For Teams</h3>
+        <h3>Upload Excel For Teams (*Only CSV*)</h3> 
+        <p><a href="https://drive.google.com/file/d/1FlHPvk59R1W3b9Q-XFxuXTWduyzseQGo/view?usp=sharing">Download the excel here</a></p>
         <Input type="file" onChange={this.handleChange}></Input>
         <Button onClick={this.uploadTeams}>Upload</Button>
         </div>

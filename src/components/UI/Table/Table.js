@@ -97,7 +97,7 @@ class CustomTable extends Component {
                   <EditIcon />
                 </IconButton>
                 <IconButton
-                  onClick={() => handleDelete()}
+                  onClick={() => handleDelete(rowCopy.id)}
                   color="inherit"
                 >
                   <DeleteIcon />

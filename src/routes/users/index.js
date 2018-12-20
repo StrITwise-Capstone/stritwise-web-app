@@ -11,12 +11,24 @@ import {
 import CustomTable from '../../components/UI/Table/Table';
 
 class Users extends Component {
+
+  state = {
+    page: 0,
+    rowsPerPage: 5,
+  }
+
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (userID) => {
     this.props.history.push(`/users/${userID}/edit`);
   }
 
-  handleDelete = () => {
+  handleDelete = (userID) => {
+    const { firestore } = this.props;
+    firestore.collection('users').doc(userID).delete().then(() => {
+      console.log("Document successfully deleted!");
+    }).catch((error) => {
+      console.error("Error removing document: ", error);
+    });
   }
 
   getSchoolName = (schools, user) => {
@@ -25,7 +37,7 @@ class Users extends Component {
       if (currentSchool) {
         return currentSchool.name;
       }
-      return 'Error Loading';
+      return 'N.A.';
     }
     return 'Loading...';
   }
@@ -47,6 +59,7 @@ class Users extends Component {
 
   render() {
     const { users, auth, schools } = this.props;
+    console.log(this.props);
     const data = this.createTable(users, schools);
     return (
       <Grid
@@ -88,7 +101,7 @@ class Users extends Component {
 };
 
 const mapStateToProps = (state) => {
-  return{
+  return {
     users: state.firestore.ordered.users,
     schools: state.firestore.ordered.schools,
     auth: state.firebase.auth,

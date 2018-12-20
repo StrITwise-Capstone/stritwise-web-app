@@ -4,9 +4,9 @@ import { Button, withStyles } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
-
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
+
 import CardList from './EventsUI/CardList/CardList';
 
 const styles = () => ({

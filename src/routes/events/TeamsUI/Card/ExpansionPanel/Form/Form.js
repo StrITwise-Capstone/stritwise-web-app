@@ -47,10 +47,8 @@ const editStudent = ({
         .required('Required'),
       lastname: Yup.string()
         .required('Required'),
-      badge_name: Yup.string().required('Required'),
-      dietary_restriction: Yup.string(),
+      badge_name: Yup.string(),
       email: Yup.string().email("Email is not valid"),
-      remarks: Yup.string(),
     })}
     onSubmit={(values, { setSubmitting }) => {
       firestore.collection('events').doc(eventuid).collection('teams').doc(teamuid).collection('students').doc(studentuid).update({

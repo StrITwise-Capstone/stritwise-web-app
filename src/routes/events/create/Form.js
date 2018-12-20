@@ -86,7 +86,6 @@ const createEvent = ({
             min_student: parseInt(values.min_student),
             max_student: parseInt(values.max_student),
           }).then(() => {
-            // console.log('Event created');
             enqueueSnackbar('Event Created', {
               variant: 'success',
             });
@@ -191,13 +190,6 @@ const mapStateToProps = state => ({
   firestore: state.firestore,
   firebase: state.firebase,
 });
-
-createEvent.propTypes = {
-  authError: PropTypes.string,
-  auth: PropTypes.node.isRequired,
-  firestore: PropTypes.node.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
-};
 
 createEvent.defaultProps = {
   authError: '',
