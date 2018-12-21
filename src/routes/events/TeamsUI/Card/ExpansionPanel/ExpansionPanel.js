@@ -24,7 +24,6 @@ class SimpleExpansionPanel extends React.Component {
 
     render(){
     const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
-
     return (
       <div className={classes.root}>
         {student && <ExpansionPanel>

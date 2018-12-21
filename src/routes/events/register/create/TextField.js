@@ -18,7 +18,6 @@ const textField = ({
     fullWidth,
     required,
     style,
-    index,
   } = props;
 
   const hasError = !!(touched[field.name] && errors[field.name]);

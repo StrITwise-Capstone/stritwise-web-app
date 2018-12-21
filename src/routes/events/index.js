@@ -20,32 +20,24 @@ const styles = () => ({
   }
 });
 
-
 class Dashboard extends Component {
-  state = {
-    open: false,
-  };
-
-  handleOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
 
   createEvent = () => {
     const { history } = this.props;
     history.push('/events/create')
   }
   render() {
-    const { eventsList , classes, auth, users, isAuthenticated } = this.props;
+    const { eventsList , classes, isAuthenticated,user} = this.props;
+    var type = "";
+    if (user){
+      type = user.type;
+    }
     return (
       <div>
         <div>
-        <h1>{users && isAuthenticated && `Welcome, ${users[auth.uid].firstName} ${users[auth.uid].lastName}`}</h1>
+        <h1>{user && isAuthenticated && `Welcome, ${user.firstName} ${user.lastName}`}</h1>
         <h1>Events </h1>
-        <CardList eventsList={eventsList} />
+        <CardList eventsList={eventsList} userType={type}/>
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
@@ -59,18 +51,22 @@ const mapStateToProps = (state) => {
   return {
     eventsList: state.firestore.data.events,
     auth: state.firebase.auth,
-    users: state.firestore.data.users,
     isAuthenticated: state.auth.isAuthenticated,
-    user: state.auth.user,
+    user: state.firestore.data.user,
   };
 };
 
 export default compose(
   withRouter,
   connect(mapStateToProps),
-  firestoreConnect([
+  firestoreConnect(props => [
     {
-      collection:'events'
+      collection: 'users',
+      storeAs: 'user',
+      doc: `${props.auth.uid}`,
+    },
+    {
+      collection: 'events',
     }
   ]),
   withStyles(styles),

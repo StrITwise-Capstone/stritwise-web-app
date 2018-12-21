@@ -23,7 +23,7 @@ const DrawerList = ({ auth }) => {
         <ListItem key="Home">
           <RouteButton route="Home" routelink="" />
         </ListItem>
-        {
+        { auth &&
           resultList[0].route.map(key => (
             <ListItem key={key}>
               <RouteButton route={key} routelink={key.replace(' ', '').toLowerCase()} />

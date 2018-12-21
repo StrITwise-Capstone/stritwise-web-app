@@ -18,7 +18,8 @@ import { compose } from 'redux';
 
 import { firebaseConnect } from 'react-redux-firebase';
 import RouteButton from './RouteButton/RouteButton';
-import SimpleDialogWrapped from '../Dialog/Dialog';
+import Dialog from './Dialog/Dialog';
+import ButtonList from './ButtonList';
 
 const styles = {
   media: {
@@ -83,7 +84,7 @@ class eventCard extends React.Component {
   }
 
   render() {
-    const { classes, event, eventuid } = this.props;
+    const { classes, event, eventuid, userType } = this.props;
     const { imageFile, notDeleted, open } = this.state;
     return (
       <React.Fragment>
@@ -93,7 +94,7 @@ class eventCard extends React.Component {
             <Card style={{ width: '400px', height: '500px' }}>
               <CardActionArea className={classes.cardActionArea} onClick={this.handleClickOpen}>
                 <div>
-                  { imageFile == null
+                  { imageFile === null
                     && (
                       <div>
                         <CircularProgress className={classes.progress} />
@@ -118,13 +119,13 @@ class eventCard extends React.Component {
               </CardActionArea>
               <div>
                 <CardContent style={{ height: '200px' }}>
-                  <Typography variant="subheading" color="primary">
+                  <Typography variant="subtitle1" color="primary">
                     <strong>Start Date : </strong>
                     {
                       moment(event.start_date.toDate()).calendar()
                     }
                   </Typography>
-                  <Typography variant="subheading" color="primary">
+                  <Typography variant="subtitle1" color="primary">
                     <strong>End Date : </strong>
                     {
                       moment(event.end_date.toDate()).calendar()
@@ -142,23 +143,21 @@ class eventCard extends React.Component {
                   </Typography>
                 </CardContent>
               </div>
-              <CardActions className={classes.actions}>
-                <RouteButton route="Register" routelink="register" eventuid={eventuid} />
-                <RouteButton route="Edit Event" routelink="edit" eventuid={eventuid} />
-                <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>
+              <CardActions className={classes.action}>
+              <ButtonList eventuid={eventuid} classes={classes} userType={userType}/>
+              {userType === 'admin' && <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>}
               </CardActions>
-              <SimpleDialogWrapped
+              <Dialog
                 open={open}
                 onClose={this.handleClose}
                 event={event}
                 eventuid={eventuid}
+                userType={userType}
               />
             </Card>)}
       </React.Fragment>
     );
   }
 }
-
-
 
 export default compose(withSnackbar, firebaseConnect(), withFirebase, withStyles(styles))(eventCard);

@@ -1,7 +1,7 @@
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 
-import BigEventCard from '../Card/BigEventCard/BigEventCard';
+import BigEventCard from './BigEventCard';
 
 
 class SimpleDialog extends React.Component {
@@ -20,12 +20,13 @@ class SimpleDialog extends React.Component {
       event,
       selectedValue,
       eventuid,
+      userType,
       ...other
     } = this.props;
 
     return (
       <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
-        <BigEventCard event={event} eventuid={eventuid} />
+        <BigEventCard event={event} eventuid={eventuid} userType={userType} />
       </Dialog>
     );
   }

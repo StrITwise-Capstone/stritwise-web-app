@@ -49,6 +49,8 @@ class Dashboard extends Component {
   }
   componentDidUpdate(){
     const { firebase, currentevent } = this.props;
+    const { imageFile } = this.state;
+    if (imageFile == null && currentevent){
     firebase.storage().ref(`${currentevent.image_path}`).getDownloadURL().then((img) => {
       const imageFile = img;
       this.setState({
@@ -57,10 +59,12 @@ class Dashboard extends Component {
     }).catch((error) => {
       console.log(`Unable to retreive${error}`);
     });
+    }
   }
   render() {
-    const { classes, currentevent} = this.props;
+    const { classes, currentevent, user } = this.props;
     const { imageFile } = this.state;
+    
     return (
       <React.Fragment>
       {currentevent == null && imageFile == null &&
@@ -85,13 +89,13 @@ class Dashboard extends Component {
           <Grid item xs={6}><img src={imageFile}></img></Grid>
         </Grid>
         <Divider/>
-        <ImportButton/>
+        <ImportButton teacherid={this.props.auth.id}/>
         </div>
         </Paper>
         <Paper style={{background:'#E6E6FA'}}>
         <div style={{'marginLeft':'15px'}}>
         <h1>Teams </h1>
-        <CardList eventuid={this.props.match.params.id}/>
+        <CardList eventuid={this.props.match.params.id} schooluid={user.school_id}/>
         </div>
         </Paper>
         </div>
@@ -107,18 +111,24 @@ class Dashboard extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        currentevent: state.firestore.data.currentevent,
+      currentevent: state.firestore.data.currentevent,
+      user: state.firestore.data.user,
+      auth: state.firebase.auth,
     }
 };
 
 export default compose(
-    connect(mapStateToProps),
-    withStyles(styles),
-    firestoreConnect((props) => [
-      {
-        collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
-      },
-      ]),
-    firebaseConnect(),
+  connect(mapStateToProps),
+  withStyles(styles),
+  firestoreConnect((props) => [
+    {
+      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
+    },
+    {
+      collection: 'users',
+      storeAs: 'user',
+      doc: `${props.auth.uid}`,
+    },
+    ]),
+  firebaseConnect(),
 )(Dashboard);
-  

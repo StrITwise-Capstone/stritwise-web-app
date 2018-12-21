@@ -10,9 +10,8 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { firestoreConnect } from 'react-redux-firebase';
+import { firebaseConnect , firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
-import _ from 'lodash';
 import { withSnackbar } from 'notistack'
 
 import ExpansionPanel from './ExpansionPanel/ExpansionPanel';
@@ -49,17 +48,27 @@ class teamCard extends React.Component {
   };
 
   deleteTeam = () =>{
-    const {firestore , teamuid ,eventuid, enqueueSnackbar } = this.props;
+    const { firestore , teamuid ,eventuid, enqueueSnackbar } = this.props;
+    var ref = firestore.collection('events').doc(eventuid).collection('students').where('team_id','==',`${teamuid}`)
+    ref.get().then((querySnapshot)=>
+      querySnapshot.forEach(function(doc){
+          doc.ref.delete().then(() => {
+          }).catch(() => {
+              enqueueSnackbar('Student Not Deleted', {
+                  variant: 'error',
+              });
+          });     
+    }))
     firestore.collection("events").doc(eventuid).collection("teams").doc(teamuid).delete().then(
-      enqueueSnackbar('Event Deleted',{
+      enqueueSnackbar('Team Deleted',{
         variant: 'success',
     })
     )
   }
   
   render() {
-    const { classes, currentevent, team, eventuid, teamuid , studentsList } = this.props;
-    let i = 1;
+    const { classes, currentevent, team, eventuid, teamuid , studentsList,user } = this.props;
+
     return (
       <React.Fragment>
         {team && studentsList && currentevent
@@ -79,7 +88,7 @@ class teamCard extends React.Component {
                   && Object.keys(studentsList).map(student => 
                 (
                   <React.Fragment key={student}>
-                    <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student+1 : true }/>
+                    <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
                   </React.Fragment>
                 ))
                 }
@@ -111,7 +120,7 @@ export default compose(withRouter,firestoreConnect((props) => {
       collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`}], storeAs: `team${props.teamuid}`
   },
   {
-    collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`, subcollections: [{collection: 'students'}]}], storeAs: `studentsList${props.teamuid}`
+    collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'students', where: ['team_id','==',`${props.teamuid}`]}], storeAs: `studentsList${props.teamuid}`
   },
-  ]}),connect(mapStateToProps),withStyles(styles),withSnackbar)(teamCard);
+]}),connect(mapStateToProps),withStyles(styles),withSnackbar)(teamCard);
 

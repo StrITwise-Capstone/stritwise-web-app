@@ -16,6 +16,7 @@ const cardList = (props) => {
   const {
     classes,
     eventsList,
+    userType,
   } = props;
 
   return (
@@ -30,7 +31,7 @@ const cardList = (props) => {
         {eventsList
           && Object.keys(eventsList).map(eventuid => (
             <Grid item key={eventuid} >
-              <EventCard event={eventsList[eventuid]} eventuid={eventuid}/>
+              <EventCard event={eventsList[eventuid]} eventuid={eventuid} userType={userType}/>
             </Grid>))
           }
       </Grid>

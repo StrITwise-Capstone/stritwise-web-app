@@ -5,7 +5,7 @@ export default [{
   name: 'orion member',
   route: ['Events', 'TimeLine', 'Auction', 'Volunteers', 'Participants', 'Teams'],
 }, {
-  name: 'teachers',
+  name: 'teacher',
   route: ['Events', 'Registrations'],
 }, {
   name: 'guest',

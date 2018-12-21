@@ -64,16 +64,17 @@ const createStudent = ({
       
       const eventuid = match.params.id;
       var teamRef = firestore.collection("events").doc(eventuid).collection("teams");
-      var query = teamRef.where("team_name","==", `${values.team_name}`);
+      var query = teamRef.where("team_name","===", `${values.team_name}`);
       var students = values.students;
       query.get().then(querySnapshot => {
-          if (querySnapshot.empty == false){
+          if (querySnapshot.empty === false){
             const teamuid = querySnapshot.docs[0].id;
             for (var i = 0; i < students.length; i++) {
-              firestore.collection("events").doc(eventuid).collection("teams").doc(teamuid).collection("students").add({
+              firestore.collection("events").doc(eventuid).collection("students").add({
+                team_id: teamuid,
                 first_name: students[i]['firstname'],
                 last_name: students[i]['lastname'],
-                phone_number: students[i]['phonenumber'],
+                mobile: students[i]['phonenumber'],
                 email: students[i]['email'],
                 badge_name: students[i]['badgename'],
                 dietary_restriction: students[i]['dietaryrestriction'],
@@ -84,7 +85,7 @@ const createStudent = ({
                 });
                 resetForm();
                 setSubmitting(false);
-                if (i == students.length){
+                if (i === students.length){
                   enqueueSnackbar('Students Added Successfully', {
                     variant: 'success',
                   });
@@ -102,7 +103,8 @@ const createStudent = ({
                 variant: 'info',
               });
               for (var i = 0; i < students.length; i++) {
-                firestore.collection("events").doc(match.params.id).collection("teams").doc(docRef.id).collection("students").add({
+                firestore.collection("events").doc(eventuid).collection("students").add({
+                  team_id: docRef.id,
                   first_name: students[i]['firstname'],
                   last_name: students[i]['lastname'],
                   phone_number: students[i]['phonenumber'],
@@ -110,13 +112,18 @@ const createStudent = ({
                   badge_name: students[i]['badgename'],
                   dietary_restriction: students[i]['dietaryrestriction'],
                   remarks: students[i]['remarks'],
+                  emergency_contacts: {
+                    name:students[i]['emergency_contact_name'],
+                    mobile:students[i]['emergency_contact_mobile'],
+                    relation: students[i]['emergency_contact_relation'],
+                  },
                 }).then(()=>{
                   enqueueSnackbar('Added 1 student...', {
                     variant: 'info',
                   });
                   resetForm();
                   setSubmitting(false);
-                  if (i == students.length){
+                  if (i === students.length){
                     enqueueSnackbar('Team Created Successfully', {
                       variant: 'success',
                     });
@@ -132,8 +139,6 @@ const createStudent = ({
       values,
       handleSubmit,
       isSubmitting,
-      errors,
-      touched,
     }) => {
       let content = <CircularProgress />;
       if (!isSubmitting) {
@@ -202,6 +207,28 @@ const createStudent = ({
                       name={`students[${index}].dietaryrestriction`}
                       type="text"
                       label="Dietary Restriction"
+                      component={TextField}
+                      />
+                      </div>
+                      <div>
+                      <Field
+                      name={`students[${index}].emergency_contact_name`}
+                      type="text"
+                      label="Emergency Contact Name"
+                      component={TextField}
+                      style={{paddingRight:'50px'}}
+                      />
+                      <Field
+                      name={`students[${index}].emergency_contact_mobile`}
+                      type="text"
+                      label="Mobile"
+                      component={TextField}
+                      style={{paddingRight:'50px'}}
+                      />
+                      <Field
+                      name={`students[${index}].emergency_contact_relation`}
+                      type="text"
+                      label="Relation"
                       component={TextField}
                       />
                       </div>

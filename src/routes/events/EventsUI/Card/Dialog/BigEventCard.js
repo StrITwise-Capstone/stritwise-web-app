@@ -17,7 +17,7 @@ import { withFirebase } from 'react-redux-firebase';
 import { compose } from 'redux';
 
 import { firebaseConnect } from 'react-redux-firebase';
-import RouteButton from '../RouteButton/RouteButton';
+import ButtonList from '../ButtonList';
 
 const styles = {
   media: {
@@ -65,7 +65,7 @@ class eventCard extends React.Component {
   }
 
   render() {
-    const { classes, event, eventuid } = this.props;
+    const { classes, event, eventuid, userType } = this.props;
     const { imageFile, notDeleted } = this.state;
     return (
       <React.Fragment>
@@ -74,7 +74,7 @@ class eventCard extends React.Component {
             <Card style={{ width: '600px', height: '700px' }}>
               <CardContent className={classes.cardActionArea}>
                 <div>
-                  { imageFile == null
+                  { imageFile === null
                     && (
                       <div>
                         <CircularProgress className={classes.progress} />
@@ -118,10 +118,9 @@ class eventCard extends React.Component {
                   </Typography>
                 </CardContent>
               </div>
-              <CardActions className={classes.actions}>
-                <RouteButton route="Register" routelink="register" eventuid={eventuid} />
-                <RouteButton route="Edit Event" routelink="edit" eventuid={eventuid} />
-                <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>
+              <CardActions className={classes.action}>
+              <ButtonList eventuid={eventuid} classes={classes} userType={userType}/>
+              {userType === 'admin' && <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>}
               </CardActions>
             </Card>
           )}

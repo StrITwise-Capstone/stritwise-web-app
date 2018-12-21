@@ -6,16 +6,17 @@ import { withSnackbar } from 'notistack';
 
 class DeleteButton extends React.Component {
   deleteStudent = () =>{{
-    const {enqueueSnackbar,firestore,eventuid,teamuid,studentuid} = this.props;
-    firestore.collection('events').doc(eventuid).collection('teams').doc(teamuid).collection('students').doc(studentuid).delete().then(() => {
-        enqueueSnackbar('Student Delete',{
-            variant: 'success',
-        })
-    }).catch(() => {
-        enqueueSnackbar('Student Not Deleted', {
-            variant: 'error',
-        });
-   });
+    const {enqueueSnackbar,firestore,eventuid,studentuid} = this.props;
+    firestore.collection('events').doc(eventuid).collection('students').doc(studentuid)
+    .delete().then(() => {
+            enqueueSnackbar('Student Delete',{
+                variant: 'success',
+            })
+        }).catch(() => {
+            enqueueSnackbar('Student Not Deleted', {
+                variant: 'error',
+            });
+    });
 }}
 
   render() {

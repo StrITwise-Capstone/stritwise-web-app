@@ -37,10 +37,14 @@ const editStudent = ({
         dietary_restriction: student.dietary_restriction,
         remarks: student.remarks,
         email: student.email,
+        mobile : student.mobile,
         studentuid: studentuid,
         eventuid: eventuid,
         teamuid: teamuid,
         deletevalue: deletevalue,
+        emergency_contact_name: student.emergency_contacts ? student.emergency_contacts['name']: null,
+        emergency_contact_mobile: student.emergency_contacts ? student.emergency_contacts['mobile'] : null,
+        emergency_contact_relation: student.emergency_contacts ? student.emergency_contacts['relation'] : null,
     }}
     validationSchema={Yup.object({
       firstname: Yup.string()
@@ -55,6 +59,7 @@ const editStudent = ({
           first_name: values.firstname,
           last_name: values.lastname,
           badge_name: values.badgename,
+          mobile: values.mobile,
           dietary_restriction: values.dietary_restriction,
           remarks: values.remarks,
           email: values.email,
@@ -103,6 +108,13 @@ const editStudent = ({
             />
             <Field
               required
+              name="mobile"
+              label="Phone Number"
+              type="text"
+              component={TextField}
+            />
+            <Field
+              required
               name="badgename"
               label="Badge Name"
               type="text"
@@ -117,13 +129,34 @@ const editStudent = ({
             />
             <Field
               required
+              name="emergency_contact_name"
+              label="Emergency Contact Name"
+              type="text"
+              component={TextField}
+            />
+            <Field
+              required
+              name="emergency_contact_mobile"
+              label="Emergency Contact Mobile Number"
+              type="text"
+              component={TextField}
+            />
+            <Field
+              required
+              name="emergency_contact_relation"
+              label="Emergency Contact Relation"
+              type="text"
+              component={TextField}
+            />
+            <Field
+              required
               name="remarks"
               label="Remarks"
               type="text"
               component={TextField}
             />
             <div className="align-right">
-                <Button type="submit" color="primary">Update</Button>
+                {<Button type="submit" color="primary">Update</Button>}
             </div>
             <div className="align-right">
                 {initialValues.deletevalue && <DeleteButton teamuid={initialValues.teamuid} studentuid={initialValues.studentuid} eventuid={initialValues.eventuid}/>}
