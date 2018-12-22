@@ -86,7 +86,7 @@ class Dashboard extends Component {
               <p>{currentevent.desc}</p>
             </div>
           </Grid>
-          <Grid item xs={6}><img src={imageFile}></img></Grid>
+          <Grid item xs={6}><img src={imageFile}  style={{width:'500px',height:'300px'}}></img></Grid>
         </Grid>
         <Divider/>
         <ImportButton teacherid={this.props.auth.id}/>
