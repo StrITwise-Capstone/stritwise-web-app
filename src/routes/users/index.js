@@ -59,7 +59,7 @@ class Users extends Component {
 
   render() {
     const { users, auth, schools } = this.props;
-    console.log(this.props);
+    // console.log(this.props);
     const data = this.createTable(users, schools);
     return (
       <Grid

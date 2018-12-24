@@ -22,41 +22,47 @@ import TextField from '../../../components/UI/TextField/TextField';
 import Select from '../../../components/UI/Select/Select';
 import yup from '../../../instances/yup';
 
-const initialValues = {
-  firstName: '',
-  lastName: '',
-  mobile: '',
-  school: [],
-};
-
 const validationSchema = yup.object({
   firstName: yup.string().required('Required'),
   lastName: yup.string().required('Required'),
   mobile: yup.number().moreThan(60000000, 'Enter a valid phone number')
     .lessThan(100000000, 'Enter a valid phone number')
     .required('Required'),
-  // school: yup.mixed()
-  //   .singleSelectRequired('Required'),
+  school: yup.mixed()
+    .singleSelectRequired('Required'),
 });
 
 const EditUser = ({
   history, schools, firebase, firestore, enqueueSnackbar, user,
 }) => (
   <Formik
-    initialValues={initialValues}
+    enableReinitialize={true}
+    initialValues={{
+      firstName: `${user.firstName}`,
+      lastName: `${user.lastName}`,
+      mobile: `${user.mobile}`,
+      school: {
+        label: `${user.school.label}`,
+        value: `${user.school.value}`,
+      },
+    }}
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
-      console.log(values);
+      // console.log(values);
 
       const userRef = firestore.collection('users').doc(user.id);
       // update user values
-      userRef.update({
+      const updateValues = {
         firstName: values.firstName,
         lastName: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
-        //school: values.school.value,
-      }).then(() => {
+
+      };
+      if (typeof (user.school.value) !== 'undefined') {
+        updateValues.school_id = values.school.value;
+      }
+      userRef.update({ ...updateValues }).then(() => {
         enqueueSnackbar('User successfully updated.', {
           variant: 'success',
         });
@@ -104,16 +110,13 @@ const EditUser = ({
               type="text"
               component={TextField}
             />
-            {user.school !== 'N.A.' && user.school !== 'ErrorLoading' ? (
+            {typeof (user.school.value) !== 'undefined' && (
               <Field
-                required
                 name="school"
                 label="School"
                 options={schools}
                 component={Select}
               />
-            ) : (
-              null
             )}
             <div className="align-right">
               <Button

@@ -36,7 +36,10 @@ class EditUser extends Component {
           firstName: doc.data().firstName,
           lastName: doc.data().lastName,
           mobile: doc.data().mobile,
-          school: doc.data().school_id,
+          school: {
+            label: '',
+            value: doc.data().school_id,
+          },
         };
         this.setState({ user });
       }
@@ -46,12 +49,12 @@ class EditUser extends Component {
   }
 
   getSchoolName = (schools, userSchoolId) => {
-    if (schools) {
+    if (schools !== null && userSchoolId !== null) {
       const currentSchool = schools.find(schoolElement => (schoolElement.value === userSchoolId));
       if (currentSchool) {
         return currentSchool.label;
       }
-      return 'N.A.';
+      return 'N.A. ';
     }
     return 'ErrorLoading';
   }
@@ -59,8 +62,10 @@ class EditUser extends Component {
   render() {
     let content = <CircularProgress />;
     const { schools, user } = this.state;
-    if (schools.length) {
-      user.school = this.getSchoolName(schools, user.school);
+    if (schools.length && user.school != null) {
+      const userSchoolId = user.school.value;
+      user.school.label = this.getSchoolName(schools, userSchoolId);
+      console.log(user);
       content = (
         <React.Fragment>
           <Typography variant="h4" id="title">Edit a User!</Typography>

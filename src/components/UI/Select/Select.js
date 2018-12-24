@@ -51,7 +51,7 @@ const select = ({
         name={field.name}
         textFieldProps={{
           InputLabelProps: {
-            shrink: touched[field.name],
+            shrink: touched[field.name] || field.value != null,
           },
           error: hasError,
           helperText: hasError && errors[field.name],
@@ -65,6 +65,7 @@ const select = ({
         isMulti={isMulti}
       />
     </div>
+
   );
 };
 
