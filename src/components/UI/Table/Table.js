@@ -42,11 +42,6 @@ const CustomTableCell = withStyles(theme => ({
 }))(TableCell);
 
 class CustomTable extends Component {
-  state = {
-    anchorEl: null,
-    page: 0,
-    rowsPerPage: 5,
-  };
 
   handleChangePage = (event, page) => {
     this.setState({ page });
@@ -54,14 +49,6 @@ class CustomTable extends Component {
 
   handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
-  };
-
-  handleClick = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleClose = () => {
-    this.setState({ anchorEl: null });
   };
 
   render() {
@@ -73,15 +60,17 @@ class CustomTable extends Component {
       handleDelete,
       children,
       title,
+      size,
+      rowsPerPage,
+      page,
+      handleChangeRowsPerPage,
     } = this.props;
-    const { anchorEl, rowsPerPage, page } = this.state;
-
     let content = <CircularProgress />;
 
     let dataContent = null;
     if (data) {
       dataContent = (data
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((row) => {
           const rowCopy = { ...row };
           return (
@@ -140,7 +129,7 @@ class CustomTable extends Component {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={data.length}
+              count={size}
               rowsPerPage={rowsPerPage}
               page={page}
               backIconButtonProps={{
@@ -150,7 +139,7 @@ class CustomTable extends Component {
                 'aria-label': 'Next Page',
               }}
               onChangePage={this.handleChangePage}
-              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
             />
           </Paper>
         </React.Fragment>

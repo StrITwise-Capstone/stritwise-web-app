@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import {
   Grid,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
 
 import CustomTable from '../../components/UI/Table/Table';
@@ -13,9 +14,51 @@ import CustomTable from '../../components/UI/Table/Table';
 class Users extends Component {
 
   state = {
+    userList: [],
+    size: 0,
     page: 0,
     rowsPerPage: 5,
+    lastVisible: null,
+    firstVisible: null,
   }
+
+  componentWillMount = () => {
+    const { firestore } = this.props;
+    firestore.collection('users').get().then((snap) => {
+      const size = snap.size; // will return the collection size
+      this.setState({ size }); 
+    });
+
+    this.getData();
+  }
+
+  getData = () => {
+    const { firestore, schools } = this.props;
+    const { rowsPerPage } = this.state;
+    const first = firestore.collection('users')
+      .orderBy('firstName')
+      .limit(rowsPerPage);
+    const userList = [];
+
+    first.get().then((documentSnapshot) => {
+      // Get the last visible document
+      const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+      documentSnapshot.forEach((doc) => {
+        userList.push({
+          uid: doc.id,
+          data: doc.data(),
+        });
+      });
+      //const rowsUserList = this.createRows(userList, schools);
+      this.setState({ userList, lastVisible });
+    });
+  }
+
+  handleChangeRowsPerPage = (event) => {
+    this.setState({ rowsPerPage: event.target.value }, () => {
+      this.getData();
+    });
+  };
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (userID) => {
@@ -31,9 +74,9 @@ class Users extends Component {
     });
   }
 
-  getSchoolName = (schools, user) => {
+  getSchoolName = (schools, userSchoolId) => {
     if (schools) {
-      const currentSchool = schools.find(schoolElement => (schoolElement.id === user.school_id));
+      const currentSchool = schools.find(schoolElement => (schoolElement.id === userSchoolId));
       if (currentSchool) {
         return currentSchool.name;
       }
@@ -42,25 +85,31 @@ class Users extends Component {
     return 'Loading...';
   }
 
-  createTable = (users, schools) => {
+  createRows = (userList, schools) => {
     let data = [];
-    if (users && schools) {
+    if (userList !== null && schools !== null) {
       const toUserData = user => ({
-        id: user.id,
-        Name: `${user.firstName} ${user.lastName}`,
-        Mobile: user.mobile,
-        Type: user.type,
-        School: this.getSchoolName(schools, user),
+        id: user.uid,
+        Name: `${user.data.firstName} ${user.data.lastName}`,
+        Mobile: user.data.mobile,
+        Type: user.data.type,
+        School: this.getSchoolName(schools, user.data.school_id),
       });
-      data = users.map(toUserData);
+      data = userList.map(toUserData);
     }
     return data;
   }
 
   render() {
+    let content = <CircularProgress />;
     const { users, auth, schools } = this.props;
+    const { userList, size, rowsPerPage, page } = this.state;
+    console.log(this.state);
+    let data = [];
     // console.log(this.props);
-    const data = this.createTable(users, schools);
+    if (schools !== null && userList.length !== null) {
+      data = this.createRows(userList, schools);
+    }
     return (
       <Grid
         container
@@ -71,6 +120,10 @@ class Users extends Component {
       >
         <Grid item xs={8}>
           <CustomTable
+            page={page}
+            rowsPerPage={rowsPerPage}
+            size={size}
+            handleChangeRowsPerPage={this.handleChangeRowsPerPage}
             title="Users"
             dataHeader={['Name', 'Mobile', 'Type', 'School']}
             data={data}
@@ -78,7 +131,7 @@ class Users extends Component {
             handleDelete={this.handleDelete}
           >
             <div>
-              <Button 
+              <Button
                 variant="contained"
                 size="small"
                 color="primary"
@@ -95,14 +148,12 @@ class Users extends Component {
           </CustomTable>
         </Grid>
       </Grid>
-  
     );
   }
-};
+}
 
 const mapStateToProps = (state) => {
   return {
-    users: state.firestore.ordered.users,
     schools: state.firestore.ordered.schools,
     auth: state.firebase.auth,
   };
@@ -119,7 +170,6 @@ Users.defaultProps = {
 export default compose(
   connect(mapStateToProps),
   firestoreConnect([
-    { collection: 'users' },
     { collection: 'schools' },
   ]),
 )(Users);

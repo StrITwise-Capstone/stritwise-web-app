@@ -15,47 +15,47 @@ import TablePaginationActions from './TablePaginationActions'
 import TeamCard from '../Card/TeamCard';
 
 const actionsStyles = theme => ({
-    root: {
-      flexShrink: 0,
-      color: theme.palette.text.secondary,
-      marginLeft: theme.spacing.unit * 2.5,
-    },
+  root: {
+    flexShrink: 0,
+    color: theme.palette.text.secondary,
+    marginLeft: theme.spacing.unit * 2.5,
+  },
 });
 
 const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: true })(
-    TablePaginationActions,
+  TablePaginationActions,
 );
 class cardList extends React.Component {
     state = {
-        eventsList : null,
-        page: 0,
-        rowsPerPage: 5,
-        rows:3,
-        lastVisible:null,
-        firstVisible:null,
-        isLoading: false,
+      eventsList: null,
+      page: 0,
+      rowsPerPage: 5,
+      rows:3,
+      lastVisible: null,
+      firstVisible: null,
+      isLoading: false,
     }
 
     handleChangePage = (event, page) => {
-        const { firestore, eventuid } = this.props;
-        const { lastVisible,firstVisible } = this.state;
-        const callback = (array,lastVisible,page,firstVisible) => {
-            this.setState({teamsList : array, lastVisible , page, firstVisible})
-        }
-        if (page > this.state.page){
+      const { firestore, eventuid } = this.props;
+      const { lastVisible, firstVisible } = this.state;
+      const callback = (array, lastVisible, page, firstVisible) => {
+        this.setState({ teamsList : array, lastVisible , page, firstVisible})
+      };
+      if (page > this.state.page) {
         var first = firestore.collection("events").doc(eventuid).collection("teams")
-        .orderBy("team_name",'asc')
-        .limit(5)
-        .startAfter(lastVisible);
+          .orderBy("team_name",'asc')
+          .limit(5)
+          .startAfter(lastVisible);
         var array = [];
         first.get().then(function (documentSnapshots) {
         // Get the last visible document
         var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
         var firstVisible = documentSnapshots.docs[0];
         documentSnapshots.forEach(function(documentSnapshots){
-            array.push({
-                uid: documentSnapshots.id,
-                data:documentSnapshots.data()});
+          array.push({
+            uid: documentSnapshots.id,
+            data:documentSnapshots.data()});
         }
         );
         callback(array,lastVisible,page,firstVisible);
@@ -79,37 +79,37 @@ class cardList extends React.Component {
         );
         callback(array.reverse(),lastVisible,page,firstVisible);
         })
-        }
+      }
     }
 
     mapping = () => {
-        const { match } = this.props;
-        const { teamsList } = this.state;
-         return Object.keys(teamsList).map(teamuid => (
-            <ListItem key={teamuid}>
-                <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id}/>
-            </ListItem>))
+      const { match } = this.props;
+      const { teamsList } = this.state;
+      return Object.keys(teamsList).map(teamuid => (
+        <ListItem key={teamuid}>
+          <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id}/>
+        </ListItem>));
     }
 
     getData = () => {
-        const { firestore, eventuid } = this.props;
-        const callback = (array,lastVisible) => {
-            this.setState({teamsList : array, lastVisible })
-        }
-        var first = firestore.collection("events").doc(eventuid).collection("teams")
-        .orderBy("team_name")
-        .limit(5);
-        var array = [];
-        first.get().then(function (documentSnapshots) {
-        // Get the last visible document
-        var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
-        documentSnapshots.forEach(function(documentSnapshots){
-            array.push({
-                uid: documentSnapshots.id,
-                data:documentSnapshots.data()});
-        }
-        );
-        callback(array,lastVisible);
+      const { firestore, eventuid } = this.props;
+      const callback = (array,lastVisible) => {
+          this.setState({teamsList : array, lastVisible })
+      }
+      var first = firestore.collection("events").doc(eventuid).collection("teams")
+      .orderBy("team_name")
+      .limit(5);
+      var array = [];
+      first.get().then(function (documentSnapshots) {
+      // Get the last visible document
+      var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+      documentSnapshots.forEach(function(documentSnapshots){
+        array.push({
+          uid: documentSnapshots.id,
+          data:documentSnapshots.data()});
+      }
+      );
+      callback(array,lastVisible);
     })
 
     }
@@ -121,8 +121,8 @@ class cardList extends React.Component {
     render(){
         const {
             teamsList,
+            page,
         } = this.state;
-        const { page } = this.state;
         const {
             teamsListCount
         } = this.props;
