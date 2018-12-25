@@ -43,6 +43,7 @@ class Users extends Component {
     first.get().then((documentSnapshot) => {
       // Get the last visible document
       const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+      const firstVisible = documentSnapshot.docs[0];
       documentSnapshot.forEach((doc) => {
         userList.push({
           uid: doc.id,
@@ -50,9 +51,53 @@ class Users extends Component {
         });
       });
       //const rowsUserList = this.createRows(userList, schools);
-      this.setState({ userList, lastVisible });
+      this.setState({ userList, lastVisible, firstVisible });
     });
   }
+
+  handleChangePage = (event, chosenPage) => {
+    const { firestore } = this.props;
+    const { lastVisible, firstVisible, page, rowsPerPage} = this.state;
+    if (chosenPage > page) {
+      const first = firestore.collection('users')
+        .orderBy('firstName', 'asc')
+        .limit(rowsPerPage)
+        .startAfter(lastVisible);
+      const userList = [];
+      first.get().then((documentSnapshot) => {
+        // Get the last visible document
+        const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+        const firstVisible = documentSnapshot.docs[0];
+        documentSnapshot.forEach((doc) => {
+          userList.push({
+            uid: doc.id,
+            data: doc.data(),
+          });
+        });
+        this.setState({ userList, lastVisible, page: chosenPage, firstVisible });
+      });
+    } else if (chosenPage < page) {
+      const first = firestore.collection('users')
+        .orderBy('firstName', 'desc')
+        .limit(rowsPerPage)
+        .startAfter(firstVisible);
+      const userList = [];
+      first.get().then((documentSnapshot) => {
+      // Get the last visible document
+        const lastVisible = documentSnapshot.docs[0];
+        const firstVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+        documentSnapshot.forEach((doc) => {
+          userList.push({
+            uid: doc.id,
+            data: doc.data(),
+          });
+        });
+        userList.reverse();
+        this.setState({ userList, lastVisible, page: chosenPage, firstVisible });
+      });
+    }
+  }
+
 
   handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value }, () => {
@@ -123,6 +168,7 @@ class Users extends Component {
             page={page}
             rowsPerPage={rowsPerPage}
             size={size}
+            handleChangePage={this.handleChangePage}
             handleChangeRowsPerPage={this.handleChangeRowsPerPage}
             title="Users"
             dataHeader={['Name', 'Mobile', 'Type', 'School']}

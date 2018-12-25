@@ -17,6 +17,7 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TableToolbar from './TableToolbar';
+import TablePaginationActions from './TablePaginationActions';
 
 const styles = theme => ({
   root: {
@@ -63,6 +64,7 @@ class CustomTable extends Component {
       size,
       rowsPerPage,
       page,
+      handleChangePage,
       handleChangeRowsPerPage,
     } = this.props;
     let content = <CircularProgress />;
@@ -138,8 +140,9 @@ class CustomTable extends Component {
               nextIconButtonProps={{
                 'aria-label': 'Next Page',
               }}
-              onChangePage={this.handleChangePage}
+              onChangePage={handleChangePage}
               onChangeRowsPerPage={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
             />
           </Paper>
         </React.Fragment>
