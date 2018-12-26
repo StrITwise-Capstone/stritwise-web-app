@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { 
   Input, 
   Button,
+  MenuItem,
+  Select,
+  OutlinedInput,
 } from '@material-ui/core';
 import Papa from 'papaparse';
 import { withRouter } from 'react-router';
@@ -14,11 +18,16 @@ class ImportButton extends Component {
   state = {
     data: null,
     file: null,
+    school_name: '',
   }
   handleChange = (event) =>{
     var input = event.target.files[0];
     this.setState({ file : input});
   }
+
+  handleDropboxChange = event => {
+    this.setState({ [event.target.name]: event.target.value});
+  };
 
   uploadTeams = () =>{
     const input = this.state.file;
@@ -27,60 +36,41 @@ class ImportButton extends Component {
     
     const setData = (result)=>{
       const { enqueueSnackbar, firestore, match} = this.props;
+      const { school_name } = this.state;
       const eventuid = match.params.id;
       var dataByTeamName = d3.nest()
       .key(function(d) { return d['Team Name']; })
       .entries(result);
-      Object.keys(dataByTeamName).map(TeamIndex => {
-        var team = dataByTeamName[TeamIndex];
-        //Query for firestore where team name exist
-        var teamRef = firestore.collection("events").doc(match.params.id).collection("teams");
-        var teamName = team.key;
-        var query = teamRef.where("team_name","==", `${teamName}`);
-        query.get().then(querySnapshot => {
-          if (querySnapshot.empty === false){
-            const teamuid = querySnapshot.docs[0].id;
-            for (var i = 0; i < team.values.length; i++) {
-              firestore.collection("events").doc(eventuid).collection("students").add({
-                team_id: teamuid,
-                first_name: team.values[i]['First Name'],
-                last_name: team.values[i]['Last Name'],
-                mobile: team.values[i]['Phone Number'],
-                email: team.values[i]['Email'],
-                badge_name: team.values[i]['Badge Name'],
-                dietary_restriction: team.values[i]['Dietary Restrictions'],
-                remarks: team.values[i]['Remarks'],
-                emergency_contacts : {
-                  name: team.values[i]['Emergency Contact Name'],
-                  mobile: team.values[i]['Emergency Contact Mobile'],
-                  relation: team.values[i]['Relation to Participant'],
-                }
-              }).then(()=>{
-                enqueueSnackbar('Added 1 student...', {
-                  variant: 'info',
-                });
-              })
-            }
-          }
-          else{
-            firestore.collection("events").doc(eventuid).collection("teams").add({
-              team_name: team.key,
-              credit:0,
-            }).then((docRef)=>{
-              enqueueSnackbar('Added Team...', {
-                variant: 'info',
-              });
+      //Query for school where school name matches
+      var schoolRef = firestore.collection("schools");
+      var schoolQuery = schoolRef.where("name",'==',`${school_name}`);
+      schoolQuery.get().then((querySnapshot) =>{
+        var school_id = '';
+        querySnapshot.forEach((docRef)=>{
+          school_id = docRef.id;
+        })
+        Object.keys(dataByTeamName).map(TeamIndex => {
+          var team = dataByTeamName[TeamIndex];
+          //Query for firestore where team name exist
+          var teamRef = firestore.collection("events").doc(match.params.id).collection("teams");
+          var teamName = team.key;
+          var query = teamRef.where("team_name","==", `${teamName}`);
+          console.log(school_id);
+          query.get().then(querySnapshot => {
+            if (querySnapshot.empty === false){
+              const teamuid = querySnapshot.docs[0].id;
               for (var i = 0; i < team.values.length; i++) {
                 firestore.collection("events").doc(eventuid).collection("students").add({
-                  team_id: docRef.id,
+                  school_id: school_id,
+                  team_id: teamuid,
                   first_name: team.values[i]['First Name'],
                   last_name: team.values[i]['Last Name'],
                   mobile: team.values[i]['Phone Number'],
                   email: team.values[i]['Email'],
                   badge_name: team.values[i]['Badge Name'],
                   dietary_restriction: team.values[i]['Dietary Restrictions'],
-                  remarks: team.values[i]['Remarks'],  
-                  emergency_contacts: {
+                  remarks: team.values[i]['Remarks'],
+                  emergency_contacts : {
                     name: team.values[i]['Emergency Contact Name'],
                     mobile: team.values[i]['Emergency Contact Mobile'],
                     relation: team.values[i]['Relation to Participant'],
@@ -91,10 +81,43 @@ class ImportButton extends Component {
                   });
                 })
               }
-            })
-          }
+            }
+            else{
+              firestore.collection("events").doc(eventuid).collection("teams").add({
+                team_name: team.key,
+                credit:0,
+              }).then((docRef)=>{
+                enqueueSnackbar('Added Team...', {
+                  variant: 'info',
+                });
+                for (var i = 0; i < team.values.length; i++) {
+                  firestore.collection("events").doc(eventuid).collection("students").add({
+                    team_id: docRef.id,
+                    school_id: school_id,
+                    first_name: team.values[i]['First Name'],
+                    last_name: team.values[i]['Last Name'],
+                    mobile: team.values[i]['Phone Number'],
+                    email: team.values[i]['Email'],
+                    badge_name: team.values[i]['Badge Name'],
+                    dietary_restriction: team.values[i]['Dietary Restrictions'],
+                    remarks: team.values[i]['Remarks'],  
+                    emergency_contacts: {
+                      name: team.values[i]['Emergency Contact Name'],
+                      mobile: team.values[i]['Emergency Contact Mobile'],
+                      relation: team.values[i]['Relation to Participant'],
+                    }
+                  }).then(()=>{
+                    enqueueSnackbar('Added 1 student...', {
+                      variant: 'info',
+                    });
+                  })
+                }
+              })
+            }
+          })
         })
-      })
+      }
+      )
     }
 
     var reader = new FileReader()
@@ -121,12 +144,35 @@ class ImportButton extends Component {
     reader.readAsText(input);
   }
 
+
   render() {
+    const { schoolsList } = this.props;
+    console.log(schoolsList);
+    console.log(this.state.school_uid);
     return (
       <React.Fragment>
         <div>
         <h3>Upload Excel For Teams (*Only CSV*)</h3> 
         <p><a href="https://drive.google.com/file/d/1FlHPvk59R1W3b9Q-XFxuXTWduyzseQGo/view?usp=sharing">Download the excel here</a></p>
+        <div>
+          <Select
+            value={this.state.school_name}
+            onChange={this.handleDropboxChange}
+            input={
+              <OutlinedInput
+                labelWidth={100}
+                name="school_name"
+            />
+            }
+          >
+            {schoolsList && 
+              Object.keys(schoolsList).map(school => 
+            (
+              <MenuItem key={school} value={schoolsList[school].name}>{schoolsList[school].name}</MenuItem>
+            ))
+            }
+          </Select>
+          </div>
         <Input type="file" onChange={this.handleChange}></Input>
         <Button onClick={this.uploadTeams}>Upload</Button>
         </div>
@@ -135,4 +181,17 @@ class ImportButton extends Component {
   }
 }
 
-export default compose(withSnackbar, firestoreConnect(), withRouter)(ImportButton);
+const mapStateToProps = (state) => {
+  return {
+    schoolsList: state.firestore.data.schoolsList,
+  }
+};
+
+export default compose(withSnackbar,
+  connect(mapStateToProps),
+  firestoreConnect((props) => [
+  {
+    collection:'schools',storeAs:`schoolsList`
+  },
+  ]),
+  withRouter)(ImportButton);

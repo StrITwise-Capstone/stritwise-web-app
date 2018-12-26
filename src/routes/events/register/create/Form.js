@@ -12,10 +12,8 @@ import {
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
-import * as Yup from 'yup';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
-import PropTypes, { number } from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
@@ -23,38 +21,41 @@ import { firebaseConnect } from 'react-redux-firebase';
 
 import TextField from './TextField';
 import ErrorMessage from './ErrorMessage';
+import Select from '../../../../components/UI/Select/Select';
+import yup from '../../../../instances/yup';
 
 const createStudent = ({
   firestore,
   enqueueSnackbar,
   match,
   minStudent,
-  maxStudent,
+  schools,
 }) => (
   <Formik
     initialValues={{
       team_name: '',
       students:[],
+      schools: schools,
     }}
-    validationSchema={Yup.object({
-      team_name: Yup.string()
+    validationSchema={yup.object({
+      team_name: yup.string()
         .required('Required'),
-      students: Yup.array()
+      students: yup.array()
       .of(
-        Yup.object().shape({
-          firstname: Yup.string()
+        yup.object().shape({
+          firstname: yup.string()
             .min(1, 'too short')
             .required('First Name Required'), 
-          lastname: Yup.string()
+          lastname: yup.string()
             .required('Last Name Required'), 
-          phonenumber: Yup.number()
+          phonenumber: yup.number()
           .required('Phone Number Required'),
-          email: Yup.string()
+          email: yup.string()
           .email('Invalid email')
           .required('Email Required'), 
-          badgename: Yup.string(),
-          dietaryrestriction: Yup.string(),
-          remarks: Yup.string(),
+          badgename: yup.string(),
+          dietaryrestriction: yup.string(),
+          remarks: yup.string(),
         })
         )
       .required('Must have members') 
@@ -64,7 +65,7 @@ const createStudent = ({
       
       const eventuid = match.params.id;
       var teamRef = firestore.collection("events").doc(eventuid).collection("teams");
-      var query = teamRef.where("team_name","===", `${values.team_name}`);
+      var query = teamRef.where("team_name","==", `${values.team_name}`);
       var students = values.students;
       query.get().then(querySnapshot => {
           if (querySnapshot.empty === false){
@@ -79,6 +80,7 @@ const createStudent = ({
                 badge_name: students[i]['badgename'],
                 dietary_restriction: students[i]['dietaryrestriction'],
                 remarks: students[i]['remarks'],
+                school_id: students[i]['school'].value,
               }).then(()=>{
                 enqueueSnackbar('Added 1 student...', {
                   variant: 'info',
@@ -107,7 +109,7 @@ const createStudent = ({
                   team_id: docRef.id,
                   first_name: students[i]['firstname'],
                   last_name: students[i]['lastname'],
-                  phone_number: students[i]['phonenumber'],
+                  mobile: students[i]['phonenumber'],
                   email: students[i]['email'],
                   badge_name: students[i]['badgename'],
                   dietary_restriction: students[i]['dietaryrestriction'],
@@ -158,9 +160,17 @@ const createStudent = ({
               name="students"
               render={arrayHelpers => (
                 <div>
-                  {values.students.map((students,index) => (
+                  {values.students.map((index) => (
                     <div key={index} style={{background:'#E6E6FA', paddingLeft:'10px'}}>
                       <p>Student #{index+1}</p>
+                      <div>
+                      <Field
+                        name={`students[${index}].school`}
+                        label="School"
+                        options={schools}
+                        component={Select}
+                      />
+                      </div>
                       <div>
                       <Field
                       name={`students[${index}].firstname`}
@@ -277,12 +287,13 @@ const createStudent = ({
   </Formik>
 );
 
-const mapStateToProps = state => ({
+const mapStateToProps = state => {console.log(state); return({
   authError: state.auth.authError,
   auth: state.firebase.auth,
   firestore: state.firestore,
   firebase: state.firebase,
-});
+  schoolsList: state.firestore.schoolsList,
+})};
 
 createStudent.defaultProps = {
   authError: '',

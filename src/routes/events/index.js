@@ -26,6 +26,9 @@ class Dashboard extends Component {
     const { history } = this.props;
     history.push('/events/create')
   }
+  refresh = () =>{
+    this.setState({})
+  }
   render() {
     const { eventsList , classes, isAuthenticated,user} = this.props;
     var type = "";
@@ -37,7 +40,7 @@ class Dashboard extends Component {
         <div>
         <h1>{user && isAuthenticated && `Welcome, ${user.firstName} ${user.lastName}`}</h1>
         <h1>Events </h1>
-        <CardList eventsList={eventsList} userType={type}/>
+        <CardList eventsList={eventsList} userType={type} />
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />

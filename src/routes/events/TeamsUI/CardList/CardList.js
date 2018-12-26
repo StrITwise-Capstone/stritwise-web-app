@@ -3,6 +3,7 @@ import {
   Grid,
   List,
   ListItem,
+  CircularProgress,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
@@ -27,89 +28,86 @@ const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: tru
 );
 class cardList extends React.Component {
     state = {
-      eventsList: null,
-      page: 0,
-      rowsPerPage: 5,
-      rows:3,
-      lastVisible: null,
-      firstVisible: null,
-      isLoading: false,
+        eventsList : null,
+        page: 0,
+        rowsPerPage: 5,
+        rows:3,
+        lastVisible:null,
+        firstVisible:null,
+        isNotLoading: true,
     }
 
     handleChangePage = (event, page) => {
-      const { firestore, eventuid } = this.props;
-      const { lastVisible, firstVisible } = this.state;
-      const callback = (array, lastVisible, page, firstVisible) => {
-        this.setState({ teamsList : array, lastVisible , page, firstVisible})
-      };
-      if (page > this.state.page) {
+        const { firestore, eventuid } = this.props;
+        const { lastVisible,firstVisible, teamsList } = this.state;
+        const callback = (array,lastVisible,page,firstVisible) => {
+            this.setState({teamsList : array, lastVisible , page, firstVisible})
+        }
+        if (page > this.state.page){
         var first = firestore.collection("events").doc(eventuid).collection("teams")
-          .orderBy("team_name",'asc')
-          .limit(5)
-          .startAfter(lastVisible);
+        .orderBy("team_name",'asc')
+        .limit(5)
+        .startAfter(lastVisible);
         var array = [];
         first.get().then(function (documentSnapshots) {
         // Get the last visible document
         var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
         var firstVisible = documentSnapshots.docs[0];
         documentSnapshots.forEach(function(documentSnapshots){
-          array.push({
-            uid: documentSnapshots.id,
-            data:documentSnapshots.data()});
-        }
-        );
-        callback(array,lastVisible,page,firstVisible);
+            array.push({
+                uid: documentSnapshots.id,
+                data:documentSnapshots.data()});
         })
+        })
+        callback(array.reverse(),lastVisible,page,firstVisible);
         }
         if (page < this.state.page){
             var first = firestore.collection("events").doc(eventuid).collection("teams")
-            .orderBy("team_name",'desc')
-            .limit(5)
-            .startAfter(firstVisible);
-            var array = [];
+                .orderBy("team_name",'desc')
+                .limit(5)
+                .startAfter(firstVisible);
+            this.setState({isNotLoading:false})
+            first.get().then(function (documentSnapshots){
+                var lastVisible = documentSnapshots.docs[0];
+                var firstVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+                documentSnapshots.forEach(function(documentSnapshots){
+                    teamsList.push({
+                        uid: documentSnapshots.id,
+                        data:documentSnapshots.data()});
+                }
+                );
+                callback(teamsList.reverse(),lastVisible,page,firstVisible);
+        })
+        }
+    }
+
+    mapping = () => {
+        const { match } = this.props;
+        const { teamsList } = this.state;
+         return Object.keys(teamsList).map(teamuid => (
+            <ListItem key={teamuid}>
+                <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id}/>
+            </ListItem>))
+    }
+
+    getData = () => {
+        const { firestore, eventuid } = this.props;
+        const callback = (array,lastVisible) => {
+            this.setState({teamsList : array, lastVisible, page:0 })
+        }
+        var first = firestore.collection("events").doc(eventuid).collection("teams")
+        .orderBy("team_name")
+        .limit(5);
+        var array = [];
         first.get().then(function (documentSnapshots) {
-        // Get the last visible document
-        var lastVisible = documentSnapshots.docs[0];
-        var firstVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+        var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
         documentSnapshots.forEach(function(documentSnapshots){
             array.push({
                 uid: documentSnapshots.id,
                 data:documentSnapshots.data()});
         }
         );
-        callback(array.reverse(),lastVisible,page,firstVisible);
-        })
-      }
-    }
-
-    mapping = () => {
-      const { match } = this.props;
-      const { teamsList } = this.state;
-      return Object.keys(teamsList).map(teamuid => (
-        <ListItem key={teamuid}>
-          <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id}/>
-        </ListItem>));
-    }
-
-    getData = () => {
-      const { firestore, eventuid } = this.props;
-      const callback = (array,lastVisible) => {
-          this.setState({teamsList : array, lastVisible })
-      }
-      var first = firestore.collection("events").doc(eventuid).collection("teams")
-      .orderBy("team_name")
-      .limit(5);
-      var array = [];
-      first.get().then(function (documentSnapshots) {
-      // Get the last visible document
-      var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
-      documentSnapshots.forEach(function(documentSnapshots){
-        array.push({
-          uid: documentSnapshots.id,
-          data:documentSnapshots.data()});
-      }
-      );
-      callback(array,lastVisible);
+        callback(array,lastVisible);
     })
 
     }
@@ -120,11 +118,10 @@ class cardList extends React.Component {
 
     render(){
         const {
-            teamsList,
-            page,
+            teamsList, isNotLoading, page
         } = this.state;
         const {
-            teamsListCount
+            teamsListCount, match
         } = this.props;
         return (
         <div>
@@ -148,9 +145,16 @@ class cardList extends React.Component {
             >
             <List
             >
-            
-            {teamsList
-                && this.mapping()
+            { !isNotLoading && 
+                <CircularProgress/>
+            }
+            {teamsList && isNotLoading
+                && Object.keys(teamsList).map(teamuid => (
+                    <ListItem key={teamuid}>
+                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
+                        update={()=>{this.getData()}}
+                        />
+                    </ListItem>))
             }
             </List>
             </Grid>
