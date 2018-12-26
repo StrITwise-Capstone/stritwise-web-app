@@ -116,8 +116,8 @@ class Navbar extends Component {
                   open={open}
                   onClose={this.handleClose}
                 >
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                  <MenuItem onClick={()=>{history.push('/profile')}}>Profile</MenuItem>
+                  {/* <MenuItem onClick={this.handleClose}>My account</MenuItem> */}
                   <MenuItem onClick={this.props.logOut}>Log Out</MenuItem>
                 </Menu>
               </div>

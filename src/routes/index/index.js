@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+
 import logo from '../../logo.svg';
 import '../../App.css';
+import Layout from '../../hoc/Layout/Layout';
 
 class Index extends Component {
   render() {
@@ -25,4 +27,4 @@ class Index extends Component {
   }
 }
 
-export default Index;
+export default compose(Layout)(Index);

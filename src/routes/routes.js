@@ -17,6 +17,7 @@ import CreateEvent from './events/create';
 import EditEvent from './events/edit';
 import RegisterEvent from './events/register';
 import CreateStudents from './events/register/create';
+import Profile from './profile'
 
 const routes = () => {
   const elements = [];
@@ -33,9 +34,12 @@ const routes = () => {
   elements.push(<Route exact path="/users/:id/edit" key="/users/edit" component={EditUser} />);
   elements.push(<Route exact path="/users/create" key="/users/create" component={AddUser} />);
 
-
+  /*PROFILE */
+  elements.push(<Route exact path="/profile" key="/profile" component={Profile} />);
   /* OTHERS */
   elements.push(<Route exact path="/test" key="/test" component={Test} />);
+
+  /* EVENTS */ 
   elements.push(<Route exact path="/events" key="/events" component={Dashboard} />);
   elements.push(<Route exact path="/events/create" key="/events/create" component={CreateEvent} />);
   elements.push(<Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />);

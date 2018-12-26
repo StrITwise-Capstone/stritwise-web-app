@@ -48,7 +48,7 @@ class teamCard extends React.Component {
   };
 
   deleteTeam = () =>{
-    const { firestore , teamuid ,eventuid, enqueueSnackbar, history, location, update } = this.props;
+    const { firestore , teamuid ,eventuid, enqueueSnackbar, update } = this.props;
     var ref = firestore.collection('events').doc(eventuid).collection('students').where('team_id','==',`${teamuid}`)
     ref.get().then((querySnapshot)=>
       querySnapshot.forEach(function(doc){
@@ -63,7 +63,6 @@ class teamCard extends React.Component {
       enqueueSnackbar('Team Deleted',{
         variant: 'success',
       })
-      
       update();
     }
     )

@@ -1,16 +1,5 @@
 
 import React from 'react';
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Button,
-  Typography,
-  CircularProgress,
-} from '@material-ui/core/';
-
 import RouteButton from './RouteButton/RouteButton';
 
 const ButtonList = ({ eventuid, userType}) => (

@@ -10,7 +10,6 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
@@ -65,6 +64,7 @@ const createEvent = ({
       const { image } = values;
       const imageuid = guid();
       const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
+
       uploadTask.on('state_changed',
         (snapshot) => {
           const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);

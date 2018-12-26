@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
   Card,
   CardActionArea,
@@ -17,7 +16,6 @@ import { withSnackbar } from 'notistack';
 import { compose } from 'redux';
 
 import { firebaseConnect } from 'react-redux-firebase';
-import RouteButton from './RouteButton/RouteButton';
 import Dialog from './Dialog/Dialog';
 import ButtonList from './ButtonList';
 
