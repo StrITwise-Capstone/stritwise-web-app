@@ -60,8 +60,9 @@ class ImportButton extends Component {
       return;
     
     const setData = (result)=>{
-      const { enqueueSnackbar, firestore, match} = this.props;
+      const { enqueueSnackbar, firestore, match, updatingStatus} = this.props;
       const { school_name } = this.state;
+      updatingStatus(false);
       const eventuid = match.params.id;
       var dataByTeamName = d3.nest()
       .key(function(d) { return d['Team Name']; })
@@ -107,6 +108,7 @@ class ImportButton extends Component {
                   });
                 })
               }
+              updatingStatus(true);
               return;
             }
             else{
@@ -140,6 +142,7 @@ class ImportButton extends Component {
                   })
                 }
               })
+              updatingStatus(true);
               return;
             }
           })

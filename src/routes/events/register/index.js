@@ -36,6 +36,7 @@ class Dashboard extends Component {
   state = {
     open: false,
     event: null,
+    isNotLoading: false,
   };
   handleOpen = () => {
     this.setState({ open: true });
@@ -57,6 +58,7 @@ class Dashboard extends Component {
       const imageFile = img;
       this.setState({
         imageFile,
+        isNotLoading: true,
       });
     }).catch((error) => {
       console.log(`Unable to retreive${error}`);
@@ -76,14 +78,14 @@ class Dashboard extends Component {
 
   render() {
     const { classes, currentevent, user } = this.props;
-    const { imageFile } = this.state;
+    const { imageFile, isNotLoading } = this.state;
     
     return (
       <React.Fragment>
-      {currentevent == null && imageFile == null &&
+      {isNotLoading == false && 
         <CircularProgress></CircularProgress>
       }
-      {currentevent && imageFile
+      {isNotLoading == true
         && 
         (<React.Fragment>
         <div>
@@ -102,7 +104,7 @@ class Dashboard extends Component {
           <Grid item xs={6}><img src={imageFile} style={{width:'500px',height:'300px'}} /> </Grid>
         </Grid>
         <Divider/>
-        <ImportButton teacherid={this.props.auth.id} />
+        <ImportButton teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />
         </div>
         </Paper>
         <Paper style={{background:'#E6E6FA'}}>
