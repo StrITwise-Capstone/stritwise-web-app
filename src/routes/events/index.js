@@ -28,8 +28,8 @@ class Dashboard extends Component {
   }
 
   componentDidMount(){
-    const { history, enqueueSnackbar, isAuthenticated } = this.props;
-    if (isAuthenticated === false){
+    const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
+    if (isAuthenticated === false && user == null ){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',
@@ -38,19 +38,15 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { eventsList , classes, isAuthenticated,user} = this.props;
-    var type = "";
-    if (user){
-      type = user.type;
-    }
+    const { eventsList , classes, isAuthenticated,user } = this.props;
     return (
       <div>
         <div>
         <h1>{user && isAuthenticated && `Welcome, ${user.firstName} ${user.lastName}`}</h1>
         <h1>Events </h1>
-        <CardList eventsList={eventsList} userType={type} />
+        { isAuthenticated && user && <CardList eventsList={eventsList} userType={user.type} />}
         </div>
-        { (type == 'admin' || type == 'orion member') && 
+        { isAuthenticated && (user.type == 'admin' || user.type == 'orion member') && 
         (<Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
         </Button>)}

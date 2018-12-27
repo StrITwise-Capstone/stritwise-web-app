@@ -14,8 +14,8 @@ import moment from 'moment';
 import { withFirebase } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { compose } from 'redux';
-
 import { firebaseConnect } from 'react-redux-firebase';
+
 import Dialog from './Dialog/Dialog';
 import ButtonList from './ButtonList';
 
@@ -66,7 +66,6 @@ class eventCard extends React.Component {
     const { eventuid, firebase } = this.props;
     const db = firebase.firestore();
     db.collection('events').doc(eventuid).delete().then(() => {
-      console.log('Document successfully deleted');
       this.setState({
         notDeleted: false,
       });

@@ -40,7 +40,7 @@ class editEvent extends Component {
     }
     
     if (isAuthenticated){
-      if (user.type !== 'admin' || user.type !== 'orion member'){
+      if (user.type === 'teacher'){
         history.push('/events');
         enqueueSnackbar('User does not have the administrative rights', {
           variant: 'error',
@@ -72,10 +72,6 @@ const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   user: state.firestore.data.user,
 });
-
-editEvent.propTypes = {
-  classes: PropTypes.node.isRequired,
-};
 
 
 const styles = () => ({
