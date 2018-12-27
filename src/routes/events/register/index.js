@@ -15,6 +15,7 @@ import {
 } from 'react-redux-firebase';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/Add';
+import { withSnackbar } from 'notistack';
 
 import CardList from '../TeamsUI/CardList/CardList';
 import ImportButton from './ImportButton/ImportButton';
@@ -61,6 +62,17 @@ class Dashboard extends Component {
     });
     }
   }
+
+  componentDidMount(){
+    const { history, enqueueSnackbar, isAuthenticated } = this.props;
+    if (isAuthenticated == false){
+      history.push('/auth/login');
+      enqueueSnackbar('User not logged in', {
+        variant: 'error',
+      });
+    }
+  }
+
   render() {
     const { classes, currentevent, user } = this.props;
     const { imageFile } = this.state;
@@ -86,10 +98,10 @@ class Dashboard extends Component {
               <p>{currentevent.desc}</p>
             </div>
           </Grid>
-          <Grid item xs={6}><img src={imageFile} alt={''} style={{width:'500px',height:'300px'}}> </img></Grid>
+          <Grid item xs={6}><img src={imageFile} style={{width:'500px',height:'300px'}}/> </Grid>
         </Grid>
         <Divider/>
-        <ImportButton teacherid={this.props.auth.id}/>
+        <ImportButton teacherid={this.props.auth.id} />
         </div>
         </Paper>
         <Paper style={{background:'#E6E6FA'}}>
@@ -112,8 +124,9 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
     return {
       currentevent: state.firestore.data.currentevent,
-      user: state.firestore.data.user,
       auth: state.firebase.auth,
+      isAuthenticated: state.auth.isAuthenticated,
+      user: state.firestore.data.user,
     }
 };
 
@@ -131,4 +144,5 @@ export default compose(
     },
     ]),
   firebaseConnect(),
+  withSnackbar,
 )(Dashboard);

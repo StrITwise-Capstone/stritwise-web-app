@@ -39,16 +39,17 @@ class cardList extends React.Component {
 
     handleChangePage = (event, page) => {
         const { firestore, eventuid } = this.props;
-        const { lastVisible,firstVisible, teamsList } = this.state;
+        const { lastVisible,firstVisible } = this.state;
+        this.setState({isNotLoading : false})
         const callback = (array,lastVisible,page,firstVisible) => {
-            this.setState({teamsList : array, lastVisible , page, firstVisible})
+            this.setState({teamsList : array, lastVisible , page, firstVisible, isNotLoading : true})
         }
+        var array = [];
         if (page > this.state.page){
         var first = firestore.collection("events").doc(eventuid).collection("teams")
         .orderBy("team_name",'asc')
         .limit(5)
         .startAfter(lastVisible);
-        var array = [];
         first.get().then(function (documentSnapshots) {
         // Get the last visible document
         var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
@@ -57,9 +58,9 @@ class cardList extends React.Component {
             array.push({
                 uid: documentSnapshots.id,
                 data:documentSnapshots.data()});
-        })
-        })
+        });
         callback(array.reverse(),lastVisible,page,firstVisible);
+        })
         }
         if (page < this.state.page){
             var first = firestore.collection("events").doc(eventuid).collection("teams")
@@ -71,23 +72,14 @@ class cardList extends React.Component {
                 var lastVisible = documentSnapshots.docs[0];
                 var firstVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
                 documentSnapshots.forEach(function(documentSnapshots){
-                    teamsList.push({
+                    array.push({
                         uid: documentSnapshots.id,
                         data:documentSnapshots.data()});
                 }
                 );
-                callback(teamsList.reverse(),lastVisible,page,firstVisible);
+            callback(array.reverse(),lastVisible,page,firstVisible);
         })
         }
-    }
-
-    mapping = () => {
-        const { match } = this.props;
-        const { teamsList } = this.state;
-         return Object.keys(teamsList).map(teamuid => (
-            <ListItem key={teamuid}>
-                <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id}/>
-            </ListItem>))
     }
 
     getData = () => {

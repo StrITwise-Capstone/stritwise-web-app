@@ -36,6 +36,7 @@ const routes = () => {
 
   /*PROFILE */
   elements.push(<Route exact path="/profile" key="/profile" component={Profile} />);
+  
   /* OTHERS */
   elements.push(<Route exact path="/test" key="/test" component={Test} />);
 

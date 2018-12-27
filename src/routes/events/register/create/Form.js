@@ -160,7 +160,7 @@ const createStudent = ({
               name="students"
               render={arrayHelpers => (
                 <div>
-                  {values.students.map((index) => (
+                  {values.students.map((student,index) => (
                     <div key={index} style={{background:'#E6E6FA', paddingLeft:'10px'}}>
                       <p>Student #{index+1}</p>
                       <div>

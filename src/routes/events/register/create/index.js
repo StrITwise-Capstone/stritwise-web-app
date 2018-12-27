@@ -8,6 +8,7 @@ import {
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import {firestoreConnect} from 'react-redux-firebase';
+import { withSnackbar } from 'notistack';
 
 import Form from './Form';
 
@@ -18,7 +19,14 @@ class createEvent extends Component {
   }
 
   componentDidMount() {
-    const { firestore } = this.props;
+    const { history, enqueueSnackbar, isAuthenticated, user, firestore } = this.props;
+    if (isAuthenticated == false){
+      history.push('/auth/login');
+      enqueueSnackbar('User not logged in', {
+        variant: 'error',
+      });
+    }
+
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
@@ -68,6 +76,8 @@ const mapStateToProps = (state) => {
   console.log(state);
   return {
       currentevent: state.firestore.data.currentevent,
+      isAuthenticated: state.auth.isAuthenticated,
+      user: state.firestore.data.user,
   }
 };
 
@@ -79,4 +89,5 @@ export default compose(
       collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
     },
   ]),
+  withSnackbar,
 )(createEvent);

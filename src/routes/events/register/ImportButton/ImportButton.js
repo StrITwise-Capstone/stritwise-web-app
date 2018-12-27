@@ -20,6 +20,7 @@ class ImportButton extends Component {
     file: null,
     school_name: '',
   }
+
   handleChange = (event) =>{
     var input = event.target.files[0];
     this.setState({ file : input});
@@ -55,7 +56,6 @@ class ImportButton extends Component {
           var teamRef = firestore.collection("events").doc(match.params.id).collection("teams");
           var teamName = team.key;
           var query = teamRef.where("team_name","==", `${teamName}`);
-          console.log(school_id);
           query.get().then(querySnapshot => {
             if (querySnapshot.empty === false){
               const teamuid = querySnapshot.docs[0].id;
@@ -147,8 +147,6 @@ class ImportButton extends Component {
 
   render() {
     const { schoolsList } = this.props;
-    console.log(schoolsList);
-    console.log(this.state.school_uid);
     return (
       <React.Fragment>
         <div>

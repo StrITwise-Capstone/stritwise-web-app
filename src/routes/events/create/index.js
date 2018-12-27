@@ -7,10 +7,30 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { withSnackbar } from 'notistack';
 
 import Form from './Form';
 
 class createEvent extends Component {
+  componentDidMount(){
+    const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
+    if (isAuthenticated == false){
+      history.push('/auth/login');
+      enqueueSnackbar('User not logged in', {
+        variant: 'error',
+      });
+    }
+    
+    if (isAuthenticated){
+      if (user.type != 'admin' || user.type != 'orion member'){
+        history.push('/events');
+        enqueueSnackbar('User does not have the administrative rights', {
+          variant: 'error',
+        });
+      }
+    }
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -27,12 +47,6 @@ class createEvent extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  authError: state.auth.authError,
-  auth: state.firebase.auth,
-});
-
 
 const styles = () => ({
   root: {
@@ -56,8 +70,16 @@ const styles = () => ({
   },
 });
 
+const mapStateToProps = (state) => { console.log(state)
+  return {
+    auth: state.firebase.auth,
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.firestore.data.user,
+  };
+};
 
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles)
+  withStyles(styles),
+  withSnackbar,
 )(createEvent);

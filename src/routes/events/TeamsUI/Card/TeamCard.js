@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
-import { withSnackbar } from 'notistack'
+import { withSnackbar } from 'notistack';
 
 import ExpansionPanel from './ExpansionPanel/ExpansionPanel';
 

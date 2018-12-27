@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
 import AddIcon from '@material-ui/icons/Add';
+import { withSnackbar } from 'notistack';
 
 import CardList from './EventsUI/CardList/CardList';
 
@@ -25,9 +26,17 @@ class Dashboard extends Component {
     const { history } = this.props;
     history.push('/events/create')
   }
-  refresh = () =>{
-    this.setState({})
+
+  componentDidMount(){
+    const { history, enqueueSnackbar, isAuthenticated } = this.props;
+    if (isAuthenticated == false){
+      history.push('/auth/login');
+      enqueueSnackbar('User not logged in', {
+        variant: 'error',
+      });
+    }
   }
+
   render() {
     const { eventsList , classes, isAuthenticated,user} = this.props;
     var type = "";
@@ -41,9 +50,10 @@ class Dashboard extends Component {
         <h1>Events </h1>
         <CardList eventsList={eventsList} userType={type} />
         </div>
-        <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
+        { (type == 'admin' || type == 'orion member') && 
+        (<Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
-        </Button>
+        </Button>)}
       </div>
     );
   }
@@ -72,4 +82,5 @@ export default compose(
     }
   ]),
   withStyles(styles),
+  withSnackbar,
 )(Dashboard);

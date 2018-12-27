@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
+import { withSnackbar } from 'notistack';
 
 import Form from './Form';
 
@@ -28,7 +29,25 @@ class editEvent extends Component {
       this.forceUpdate();
     }
   }
-
+  
+  componentDidMount(){
+    const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
+    if (isAuthenticated == false){
+      history.push('/auth/login');
+      enqueueSnackbar('User not logged in', {
+        variant: 'error',
+      });
+    }
+    
+    if (isAuthenticated){
+      if (user.type != 'admin' || user.type != 'orion member'){
+        history.push('/events');
+        enqueueSnackbar('User does not have the administrative rights', {
+          variant: 'error',
+        });
+      }
+    }
+  }
   render() {
     const { classes, match } = this.props;
     const { event } = this.state;
@@ -48,9 +67,10 @@ class editEvent extends Component {
 }
 
 const mapStateToProps = state => ({
-  authError: state.auth.authError,
-  auth: state.firebase.auth,
   events : state.firestore.data.events,
+  auth: state.firebase.auth,
+  isAuthenticated: state.auth.isAuthenticated,
+  user: state.firestore.data.user,
 });
 
 editEvent.propTypes = {
@@ -87,5 +107,6 @@ export default compose(
       collection:'events'
     }
   ]),
-  withStyles(styles)
+  withStyles(styles),
+  withSnackbar,
 )(editEvent);

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Button,
   Typography,
   Paper,
 } from '@material-ui/core';
@@ -8,6 +7,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
+import { withSnackbar } from 'notistack';
 
 import AdminLayout from '../../hoc/Layout/AdminLayout';
 
@@ -15,13 +15,13 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-class Layout extends Component {
+class Profile extends Component {
   state = {
     userSchool : null,
   }
 
   componentDidMount(){
-    const { user, firestore,isAuthenticated } = this.props;
+    const { user, firestore,isAuthenticated, history, enqueueSnackbar } = this.props;
     const callback = (name) => {
       this.setState({ userSchool : name})
     }
@@ -35,6 +35,13 @@ class Layout extends Component {
           }
         })
       }
+    }
+
+    if (isAuthenticated == false){
+      history.push('/auth/login');
+      enqueueSnackbar('User not logged in', {
+        variant: 'error',
+      });
     }
   }
   render() {
@@ -114,4 +121,5 @@ export default compose(
       doc: `${props.auth.uid}`,
     },
   ]),
-)(Layout);
+  withSnackbar,
+)(Profile);
