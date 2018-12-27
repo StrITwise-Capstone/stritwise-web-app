@@ -14,6 +14,30 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import * as d3 from 'd3';
 
+function validateEmail(email) {
+  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
+function validation(team){
+  var bool = true;
+  for (var i = 0; i < team.values.length; i++) {
+    if (team.values[i]['Team Name'] == '' && team.values[i]['Team Name'].length < 1)
+      bool = false;
+  
+    if (team.values[i]['First Name'].length < 1 && team.values[i]['Last Name'].length < 1)
+      bool = false;
+    if (team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length != 8)
+      bool = false;
+    if (team.values[i]['Email'] == '' && validateEmail(team.values[i]['Email']) == false)
+      bool = false;
+    if (team.values[i]['Emergency Contact Name'] == '' && team.values[i]['Emergency Contact Mobile'] == '' && team.values[i]['Relation to Participant'] == '')
+     bool = false;
+     if (team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length != 8)
+     bool = false;
+  }
+  return bool;
+}
+
 class ImportButton extends Component {
   state = {
     data: null,
@@ -52,6 +76,8 @@ class ImportButton extends Component {
         })
         Object.keys(dataByTeamName).map(TeamIndex => {
           var team = dataByTeamName[TeamIndex];
+          //Do verification
+          if (validation(team)){
           //Query for firestore where team name exist
           var teamRef = firestore.collection("events").doc(match.params.id).collection("teams");
           var teamName = team.key;
@@ -115,6 +141,7 @@ class ImportButton extends Component {
               })
             }
           })
+        }
         })
       }
       )
@@ -192,4 +219,4 @@ export default compose(withSnackbar,
     collection:'schools',storeAs:`schoolsList`
   },
   ]),
-  withRouter)(ImportButton);
+withRouter)(ImportButton);
