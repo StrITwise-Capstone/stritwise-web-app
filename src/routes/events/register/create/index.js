@@ -19,8 +19,8 @@ class createEvent extends Component {
   }
 
   componentDidMount() {
-    const { history, enqueueSnackbar, isAuthenticated, user, firestore } = this.props;
-    if (isAuthenticated == false){
+    const { history, enqueueSnackbar, isAuthenticated, firestore } = this.props;
+    if (isAuthenticated === false){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',
@@ -73,7 +73,6 @@ const styles = () => ({
 });
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
       currentevent: state.firestore.data.currentevent,
       isAuthenticated: state.auth.isAuthenticated,

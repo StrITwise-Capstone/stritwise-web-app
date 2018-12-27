@@ -21,18 +21,18 @@ function validateEmail(email) {
 function validation(team){
   var bool = true;
   for (var i = 0; i < team.values.length; i++) {
-    if (team.values[i]['Team Name'] == '' && team.values[i]['Team Name'].length < 1)
+    if (team.values[i]['Team Name'] === '' && team.values[i]['Team Name'].length < 1)
       bool = false;
   
     if (team.values[i]['First Name'].length < 1 && team.values[i]['Last Name'].length < 1)
       bool = false;
-    if (team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length != 8)
+    if (team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8)
       bool = false;
-    if (team.values[i]['Email'] == '' && validateEmail(team.values[i]['Email']) == false)
+    if (team.values[i]['Email'] === '' && validateEmail(team.values[i]['Email']) === false)
       bool = false;
-    if (team.values[i]['Emergency Contact Name'] == '' && team.values[i]['Emergency Contact Mobile'] == '' && team.values[i]['Relation to Participant'] == '')
+    if (team.values[i]['Emergency Contact Name'] === '' && team.values[i]['Emergency Contact Mobile'] === '' && team.values[i]['Relation to Participant'] === '')
      bool = false;
-     if (team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length != 8)
+     if (team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
      bool = false;
   }
   return bool;
@@ -107,6 +107,7 @@ class ImportButton extends Component {
                   });
                 })
               }
+              return;
             }
             else{
               firestore.collection("events").doc(eventuid).collection("teams").add({
@@ -139,6 +140,7 @@ class ImportButton extends Component {
                   })
                 }
               })
+              return;
             }
           })
         }

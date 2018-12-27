@@ -4,6 +4,7 @@ import {
   List,
   ListItem,
   CircularProgress,
+  Table,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
@@ -116,7 +117,8 @@ class cardList extends React.Component {
             teamsListCount, match
         } = this.props;
         return (
-        <div>
+        <React.Fragment>
+            <Table><tbody><tr>
             <TablePagination
                 colSpan={3}
                 rowsPerPageOptions={[5]}
@@ -129,6 +131,7 @@ class cardList extends React.Component {
                 onChangePage={this.handleChangePage}
                 ActionsComponent={TablePaginationActionsWrapped}
             />
+            </tr></tbody></Table>
             <div style={{ margin: '0 auto' }}/>
             <Grid
                 container
@@ -150,7 +153,7 @@ class cardList extends React.Component {
             }
             </List>
             </Grid>
-        </div>
+        </React.Fragment>
         );
     }
 }

@@ -22,7 +22,7 @@ class editEvent extends Component {
     const { events, match } = this.props;
     const { event } = this.state;
     const eventuid = match.params.id;
-    if ( events != null && event == null)
+    if ( events !== null && event === null)
     { this.setState({
         event: events[eventuid],
       })
@@ -32,7 +32,7 @@ class editEvent extends Component {
   
   componentDidMount(){
     const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
-    if (isAuthenticated == false){
+    if (isAuthenticated === false){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',
@@ -40,7 +40,7 @@ class editEvent extends Component {
     }
     
     if (isAuthenticated){
-      if (user.type != 'admin' || user.type != 'orion member'){
+      if (user.type !== 'admin' || user.type !== 'orion member'){
         history.push('/events');
         enqueueSnackbar('User does not have the administrative rights', {
           variant: 'error',

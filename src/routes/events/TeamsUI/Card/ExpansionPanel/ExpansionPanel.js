@@ -30,8 +30,7 @@ class SimpleExpansionPanel extends React.Component {
             <Typography className={classes.heading} style={{"paddingLeft":"10px"}}>{student.first_name} {student.last_name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-              {deletevalue}
-          <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
+            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
         }

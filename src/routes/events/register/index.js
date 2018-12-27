@@ -6,7 +6,8 @@ import {
   Paper,
   Divider, 
   CircularProgress,
-  Grid
+  Grid,
+  Table,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { 
@@ -65,7 +66,7 @@ class Dashboard extends Component {
 
   componentDidMount(){
     const { history, enqueueSnackbar, isAuthenticated } = this.props;
-    if (isAuthenticated == false){
+    if (isAuthenticated === false){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',
@@ -84,7 +85,7 @@ class Dashboard extends Component {
       }
       {currentevent && imageFile
         && 
-        (<div>
+        (<React.Fragment>
         <div>
         <Paper>
         <div style={{'marginLeft':'15px'}}>
@@ -98,7 +99,7 @@ class Dashboard extends Component {
               <p>{currentevent.desc}</p>
             </div>
           </Grid>
-          <Grid item xs={6}><img src={imageFile} style={{width:'500px',height:'300px'}}/> </Grid>
+          <Grid item xs={6}><img src={imageFile} style={{width:'500px',height:'300px'}} /> </Grid>
         </Grid>
         <Divider/>
         <ImportButton teacherid={this.props.auth.id} />
@@ -107,14 +108,16 @@ class Dashboard extends Component {
         <Paper style={{background:'#E6E6FA'}}>
         <div style={{'marginLeft':'15px'}}>
         <h1>Teams </h1>
+        <div>
         <CardList eventuid={this.props.match.params.id} schooluid={user.school_id}/>
+        </div>
         </div>
         </Paper>
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
         </Button>
-      </div>)
+      </React.Fragment>)
     }
     </React.Fragment>
     );

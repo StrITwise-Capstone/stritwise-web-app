@@ -14,7 +14,7 @@ import Form from './Form';
 class createEvent extends Component {
   componentDidMount(){
     const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
-    if (isAuthenticated == false){
+    if (isAuthenticated === false){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',
@@ -22,7 +22,7 @@ class createEvent extends Component {
     }
     
     if (isAuthenticated){
-      if (user.type != 'admin' || user.type != 'orion member'){
+      if (user.type !== 'admin' || user.type !== 'orion member'){
         history.push('/events');
         enqueueSnackbar('User does not have the administrative rights', {
           variant: 'error',

@@ -26,7 +26,7 @@ class Profile extends Component {
       this.setState({ userSchool : name})
     }
     if (isAuthenticated) {
-      if (user.type == 'teacher')
+      if (user.type === 'teacher')
       {
         firestore.collection('schools').doc(user.school_id).get().then(function(doc){
           if (doc.exists){
@@ -37,7 +37,7 @@ class Profile extends Component {
       }
     }
 
-    if (isAuthenticated == false){
+    if (isAuthenticated === false){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',

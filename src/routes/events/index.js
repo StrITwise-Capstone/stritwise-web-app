@@ -29,7 +29,7 @@ class Dashboard extends Component {
 
   componentDidMount(){
     const { history, enqueueSnackbar, isAuthenticated } = this.props;
-    if (isAuthenticated == false){
+    if (isAuthenticated === false){
       history.push('/auth/login');
       enqueueSnackbar('User not logged in', {
         variant: 'error',
