@@ -94,7 +94,7 @@ class routes extends Component {
   render(){
   return (
     <Switch>
-      {this.elements()}
+      {this.test()}
     </Switch>
   );
   }
