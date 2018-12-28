@@ -27,16 +27,6 @@ class Dashboard extends Component {
     history.push('/events/create')
   }
 
-  componentDidMount(){
-    const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
-    if (isAuthenticated === false && user == null ){
-      history.push('/auth/login');
-      enqueueSnackbar('User not logged in', {
-        variant: 'error',
-      });
-    }
-  }
-
   render() {
     const { eventsList , classes, isAuthenticated,user } = this.props;
     return (

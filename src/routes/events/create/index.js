@@ -12,25 +12,7 @@ import { withSnackbar } from 'notistack';
 import Form from './Form';
 
 class createEvent extends Component {
-  componentDidMount(){
-    const { history, enqueueSnackbar, isAuthenticated, user } = this.props;
-    if (isAuthenticated === false){
-      history.push('/auth/login');
-      enqueueSnackbar('User not logged in', {
-        variant: 'error',
-      });
-    }
-    
-    if (isAuthenticated){
-      if (user.type !== 'admin' || user.type !== 'orion member'){
-        history.push('/events');
-        enqueueSnackbar('User does not have the administrative rights', {
-          variant: 'error',
-        });
-      }
-    }
-  }
-
+  
   render() {
     const { classes } = this.props;
 

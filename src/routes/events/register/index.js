@@ -7,7 +7,6 @@ import {
   Divider, 
   CircularProgress,
   Grid,
-  Table,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { 
@@ -66,15 +65,6 @@ class Dashboard extends Component {
     }
   }
 
-  componentDidMount(){
-    const { history, enqueueSnackbar, isAuthenticated } = this.props;
-    if (isAuthenticated === false){
-      history.push('/auth/login');
-      enqueueSnackbar('User not logged in', {
-        variant: 'error',
-      });
-    }
-  }
 
   render() {
     const { classes, currentevent, user } = this.props;

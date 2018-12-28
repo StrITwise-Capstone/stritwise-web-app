@@ -19,14 +19,8 @@ class createEvent extends Component {
   }
 
   componentDidMount() {
-    const { history, enqueueSnackbar, isAuthenticated, firestore } = this.props;
-    if (isAuthenticated === false){
-      history.push('/auth/login');
-      enqueueSnackbar('User not logged in', {
-        variant: 'error',
-      });
-    }
-
+    const { firestore } = this.props;
+    
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
