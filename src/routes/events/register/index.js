@@ -47,7 +47,7 @@ class Dashboard extends Component {
 
   createEvent = () => {
     const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/register/create`)
+    history.push(`/events/${match.params.id}/teams/add`)
   }
   componentDidUpdate(){
     const { firebase, currentevent } = this.props;
@@ -64,7 +64,6 @@ class Dashboard extends Component {
     });
     }
   }
-
 
   render() {
     const { classes, currentevent, user } = this.props;
