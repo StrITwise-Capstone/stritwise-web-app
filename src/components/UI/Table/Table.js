@@ -1,155 +1,150 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { compose } from 'redux';
+import { Link } from 'react-router-dom';
 import {
+  Grid,
   Paper,
-  Menu,
-  MenuItem,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TablePagination,
+  Button,
   CircularProgress,
+  Typography,
+  MenuItem,
 } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import TableToolbar from './TableToolbar';
-import TablePaginationActions from './TablePaginationActions';
 
-const styles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
-  },
-  table: {
-    minWidth: 500,
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-});
-
-const CustomTableCell = withStyles(theme => ({
-  head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  body: {
-    fontSize: 14,
-  },
-}))(TableCell);
+import TableView from './TableView';
 
 class CustomTable extends Component {
+  state = {
+    docsList: [],
+    colRef: null,
+    colSize: 0,
+    filterRef: null,
+    filterSize: 0,
 
-  handleChangePage = (event, page) => {
-    this.setState({ page });
-  };
+    page: 0,
+    rowsPerPage: 5,
+    lastVisible: null,
+    firstVisible: null,
+  }
+
+  componentWillMount = () => {
+    const { firestore, colRef } = this.props;
+    let size = 0;
+    colRef.get().then((snap) => {
+      size = snap.size; // will return the collection size
+      this.setState({ colSize: size, filterSize: size, colRef, filterRef: colRef }, () => {
+        console.log(this.state);
+        this.getData();
+      });
+    });
+  }
+
+  getData = () => {
+    const { rowsPerPage, filterRef } = this.state;
+    const newRef = filterRef.orderBy('created_at', 'asc')
+      .limit(rowsPerPage);
+    const docsList = [];
+
+    newRef.get().then((documentSnapshot) => {
+      // Get the last and first visible document
+      const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+      const firstVisible = documentSnapshot.docs[0];
+      documentSnapshot.forEach((doc) => {
+        docsList.push({
+          uid: doc.id,
+          data: doc.data(),
+        });
+      });
+      this.setState({ docsList, lastVisible, firstVisible });
+    });
+  }
+
+  handleChangePage = (event, chosenPage) => {
+    const { firestore } = this.props;
+    const { lastVisible, firstVisible, page, rowsPerPage, filterRef } = this.state;
+    if (chosenPage > page) {
+      const newRef = filterRef.orderBy('created_at', 'asc')
+        .limit(rowsPerPage)
+        .startAfter(lastVisible);
+      const docsList = [];
+      newRef.get().then((documentSnapshot) => {
+        // Get the last and first visible document
+        const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+        const firstVisible = documentSnapshot.docs[0];
+        documentSnapshot.forEach((doc) => {
+          docsList.push({
+            uid: doc.id,
+            data: doc.data(),
+          });
+        });
+        this.setState({ docsList, lastVisible, page: chosenPage, firstVisible });
+      });
+    } else if (chosenPage < page) {
+      const newRef = filterRef.orderBy('created_at', 'desc')
+        .limit(rowsPerPage)
+        .startAfter(firstVisible);
+      const docsList = [];
+      newRef.get().then((documentSnapshot) => {
+        // Get the last and first visible document
+        const lastVisible = documentSnapshot.docs[0];
+        const firstVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+        documentSnapshot.forEach((doc) => {
+          docsList.push({
+            uid: doc.id,
+            data: doc.data(),
+          });
+        });
+        docsList.reverse();
+        this.setState({ docsList, lastVisible, page: chosenPage, firstVisible });
+      });
+    }
+  }
+
 
   handleChangeRowsPerPage = (event) => {
-    this.setState({ rowsPerPage: event.target.value });
+    this.setState({ rowsPerPage: event.target.value }, () => {
+      this.getData();
+    });
   };
 
   render() {
     const {
-      classes,
-      data,
       dataHeader,
       handleEdit,
       handleDelete,
+      handleDocsList,
       children,
-      title,
-      size,
-      rowsPerPage,
-      page,
-      handleChangePage,
-      handleChangeRowsPerPage,
     } = this.props;
-    let content = <CircularProgress />;
 
-    let dataContent = null;
-    if (data) {
-      dataContent = (data
-        //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row) => {
-          const rowCopy = { ...row };
-          return (
-            <TableRow key={rowCopy.id}>
-              {Object.keys(rowCopy).slice(1).map(key => (
-                <CustomTableCell>{rowCopy[key]}</CustomTableCell>
-              ))}
-              <CustomTableCell numeric>
-                <IconButton
-                  onClick={() => handleEdit(rowCopy.id)}
-                  color="inherit"
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleDelete(rowCopy.id)}
-                  color="inherit"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </CustomTableCell>
-            </TableRow>
-          );
-        }));
+    const { page, rowsPerPage, filterSize, docsList } = this.state;
+
+    let data = [];
+    if (docsList.length !== 0) {
+      data = handleDocsList(docsList);
     }
 
+    console.log(this.state);
 
-    if (data) {
-      const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-      content = (
-        <React.Fragment>
-          <Paper className={classes.root}>
-            <TableToolbar
-              title={title}
-            >
-              {children}
-            </TableToolbar>
-            <Table className={classes.table}>
-              <TableHead>
-                <TableRow>
-                  {dataHeader && dataHeader.map(header => (
-                    <CustomTableCell>{header}</CustomTableCell>
-                  ))}
-                  <CustomTableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {dataContent}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 49 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={size}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': 'Previous Page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'Next Page',
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </Paper>
-        </React.Fragment>
-      );
-    }
-    return content;
+    return (
+      <TableView
+        // for Pagination
+        page={page}
+        rowsPerPage={rowsPerPage}
+        size={filterSize}
+        handleChangePage={this.handleChangePage}
+        handleChangeRowsPerPage={this.handleChangeRowsPerPage}
+        // For Table
+        // title="Users"
+        dataHeader={dataHeader}
+        data={data}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      >
+        {children}
+      </TableView>
+    )
   }
 }
 
-export default withRouter(withStyles(styles)(CustomTable));
+export default CustomTable;

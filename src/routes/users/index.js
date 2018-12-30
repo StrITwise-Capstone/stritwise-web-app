@@ -5,105 +5,32 @@ import { compose } from 'redux';
 import { Link } from 'react-router-dom';
 import {
   Grid,
+  Paper,
   Button,
   CircularProgress,
+  Typography,
+  MenuItem,
 } from '@material-ui/core';
 
 import CustomTable from '../../components/UI/Table/Table';
 
+import * as Yup from 'yup';
+import { Formik, Form, Field } from 'formik';
+import * as util from '../../helper/util';
+import TextField from '../../components/UI/TextField/TextField';
+import Select from '../../components/UI/Select/Select';
+import Dropdown from '../../components/UI/Dropdown/Dropdown';
+
+const filterOptions = [
+  { label: 'Type' },
+  { label: 'School' },
+  { label: 'Name' },
+].map(option => ({
+  label: option.label,
+  value: option.label.toLowerCase(),
+}));
+
 class Users extends Component {
-
-  state = {
-    userList: [],
-    size: 0,
-    page: 0,
-    rowsPerPage: 5,
-    lastVisible: null,
-    firstVisible: null,
-  }
-
-  componentWillMount = () => {
-    const { firestore } = this.props;
-    firestore.collection('users').get().then((snap) => {
-      const size = snap.size; // will return the collection size
-      this.setState({ size }); 
-    });
-
-    this.getData();
-  }
-
-  getData = () => {
-    const { firestore, schools } = this.props;
-    const { rowsPerPage } = this.state;
-    const first = firestore.collection('users')
-      .orderBy('firstName')
-      .limit(rowsPerPage);
-    const userList = [];
-
-    first.get().then((documentSnapshot) => {
-      // Get the last visible document
-      const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-      const firstVisible = documentSnapshot.docs[0];
-      documentSnapshot.forEach((doc) => {
-        userList.push({
-          uid: doc.id,
-          data: doc.data(),
-        });
-      });
-      //const rowsUserList = this.createRows(userList, schools);
-      this.setState({ userList, lastVisible, firstVisible });
-    });
-  }
-
-  handleChangePage = (event, chosenPage) => {
-    const { firestore } = this.props;
-    const { lastVisible, firstVisible, page, rowsPerPage} = this.state;
-    if (chosenPage > page) {
-      const first = firestore.collection('users')
-        .orderBy('firstName', 'asc')
-        .limit(rowsPerPage)
-        .startAfter(lastVisible);
-      const userList = [];
-      first.get().then((documentSnapshot) => {
-        // Get the last visible document
-        const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-        const firstVisible = documentSnapshot.docs[0];
-        documentSnapshot.forEach((doc) => {
-          userList.push({
-            uid: doc.id,
-            data: doc.data(),
-          });
-        });
-        this.setState({ userList, lastVisible, page: chosenPage, firstVisible });
-      });
-    } else if (chosenPage < page) {
-      const first = firestore.collection('users')
-        .orderBy('firstName', 'desc')
-        .limit(rowsPerPage)
-        .startAfter(firstVisible);
-      const userList = [];
-      first.get().then((documentSnapshot) => {
-      // Get the last visible document
-        const lastVisible = documentSnapshot.docs[0];
-        const firstVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-        documentSnapshot.forEach((doc) => {
-          userList.push({
-            uid: doc.id,
-            data: doc.data(),
-          });
-        });
-        userList.reverse();
-        this.setState({ userList, lastVisible, page: chosenPage, firstVisible });
-      });
-    }
-  }
-
-
-  handleChangeRowsPerPage = (event) => {
-    this.setState({ rowsPerPage: event.target.value }, () => {
-      this.getData();
-    });
-  };
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (userID) => {
@@ -145,38 +72,153 @@ class Users extends Component {
     return data;
   }
 
-  render() {
-    let content = <CircularProgress />;
-    const { users, auth, schools } = this.props;
-    const { userList, size, rowsPerPage, page } = this.state;
-    console.log(this.state);
+  handleDocsList = (docsList) => {
     let data = [];
-    // console.log(this.props);
-    if (schools !== null && userList.length !== null) {
-      data = this.createRows(userList, schools);
+    if (docsList !== null) {
+      const toUserData = user => ({
+        id: user.uid,
+        Name: `${user.data.firstName} ${user.data.lastName}`,
+        Mobile: user.data.mobile,
+        Type: user.data.type,
+        School: user.data.school_id,
+      });
+      data = docsList.map(toUserData);
     }
+    return data;
+  }
+
+
+  render() {
+    //let content = <CircularProgress />;
+    const { schools, firestore } = this.props;
+
+    //console.log(this.state);
+    // console.log(this.props);
+    const colRef = firestore.collection('users');
     return (
       <Grid
         container
-        spacing={16}
+        spacing={24}
         direction="row"
         justify="center"
         alignItems="center"
       >
-        <Grid item xs={8}>
+        <Grid item xs={12} sm={10}>
           <CustomTable
-            page={page}
-            rowsPerPage={rowsPerPage}
-            size={size}
-            handleChangePage={this.handleChangePage}
-            handleChangeRowsPerPage={this.handleChangeRowsPerPage}
-            title="Users"
+            // For Table
+            // title="Users"
+            colRef={colRef}
             dataHeader={['Name', 'Mobile', 'Type', 'School']}
-            data={data}
+            handleDocsList={this.handleDocsList}
             handleEdit={this.handleEdit}
             handleDelete={this.handleDelete}
           >
+
             <div>
+              <Formik
+                enableReinitialize={true}
+                initialValues={{ search: '', filter: 'all' }}
+                validationSchema={Yup.object({
+                  search: Yup.string()
+                    .required('Required'),
+                  filter: Yup.mixed()
+                    .singleSelectRequired('Required'),
+                })}
+                onSubmit={(values, { setSubmitting, resetForm }) => {
+                  const { search, filter } = values;
+                  const { colRef, colSize, rowsPerPage } = this.state;
+                  let newRef = colRef;
+                  let newSize = colSize;
+
+                  if (filter === 'type') {
+                    console.log(filter, search);
+                    newRef = newRef.where(filter, '==', search.toLowerCase());
+                  } 
+                  else if (filter === 'name') {
+                    const name = search.split(' ');
+                    console.log(name);
+                    if (name.length === 2) {
+                      newRef = newRef.where('firstName', '==', name[0])
+                        .where('lastName', '==', name[1]);
+                    } else {
+                      console.log("name is length one");
+                      newRef = newRef.where('firstName', '==', name[0]);
+                    }
+                  }
+
+
+                  const filterRef = newRef.orderBy('created_at', 'asc').limit(rowsPerPage);
+                  const docsList = [];
+                  filterRef.get().then((documentSnapshot) => {
+                    if (filter !== 'all') {
+                      newSize = documentSnapshot.size;
+                    }
+                    // Get the last visible document
+                    const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+                    const firstVisible = documentSnapshot.docs[0];
+                    documentSnapshot.forEach((doc) => {
+                      docsList.push({
+                        uid: doc.id,
+                        data: doc.data(),
+                      });
+                    });
+                    console.log(docsList);
+                    this.setState({ docsList, lastVisible, firstVisible, filterRef: newRef, filterSize: newSize });
+                    //console.log(this.state);
+                    setSubmitting(false);
+                  });
+                }}
+              >
+                {({
+                  errors,
+                  touched,
+                  handleSubmit,
+                  isSubmitting,
+                  values,
+                }) => (
+                  <Form onSubmit={handleSubmit}>
+                    <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                      <Field
+                        required
+                        name="filter"
+                        label="Filter"
+                        component={Dropdown}
+                      >
+                        <MenuItem value="all">
+                          <em>All</em>
+                        </MenuItem>
+                        <MenuItem value="type">Type</MenuItem>
+                        <MenuItem value="school">School</MenuItem>
+                        <MenuItem value="name">Name</MenuItem>
+                      </Field>
+                    </div>
+                    {values.filter !== 'all' ? (
+                      <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                        <Field
+                          required
+                          name="search"
+                          label="Search"
+                          type="text"
+                          component={TextField}
+                        />
+                      </div>
+                    ) : (
+                      null
+                    )}
+
+                    <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        color="primary"
+                        disabled={util.isFormValid(errors, touched)}
+                      >
+                        Filter
+                      </Button>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
               <Button
                 variant="contained"
                 size="small"
@@ -192,6 +234,19 @@ class Users extends Component {
               </Button>
             </div>
           </CustomTable>
+        </Grid>
+        <Grid item xs={12} sm={2}>
+          <Paper style={{
+            padding: 4,
+            textAlign: 'center',
+            color: 'secondary',
+          }}
+          >
+            <Typography variant="h4" id="tableTitle">
+              Filter
+            </Typography>
+
+          </Paper>
         </Grid>
       </Grid>
     );
