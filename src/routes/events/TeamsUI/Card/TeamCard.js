@@ -10,9 +10,9 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { firebaseConnect , firestoreConnect } from 'react-redux-firebase';
+import { firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
-import { withSnackbar } from 'notistack'
+import { withSnackbar } from 'notistack';
 
 import ExpansionPanel from './ExpansionPanel/ExpansionPanel';
 
@@ -48,7 +48,7 @@ class teamCard extends React.Component {
   };
 
   deleteTeam = () =>{
-    const { firestore , teamuid ,eventuid, enqueueSnackbar } = this.props;
+    const { firestore , teamuid ,eventuid, enqueueSnackbar, update } = this.props;
     var ref = firestore.collection('events').doc(eventuid).collection('students').where('team_id','==',`${teamuid}`)
     ref.get().then((querySnapshot)=>
       querySnapshot.forEach(function(doc){
@@ -59,15 +59,17 @@ class teamCard extends React.Component {
               });
           });     
     }))
-    firestore.collection("events").doc(eventuid).collection("teams").doc(teamuid).delete().then(
+    firestore.collection("events").doc(eventuid).collection("teams").doc(teamuid).delete().then(()=>{
       enqueueSnackbar('Team Deleted',{
         variant: 'success',
-    })
+      })
+      update();
+    }
     )
   }
   
   render() {
-    const { classes, currentevent, team, eventuid, teamuid , studentsList,user } = this.props;
+    const { classes, currentevent, team, eventuid, teamuid , studentsList, user, } = this.props;
 
     return (
       <React.Fragment>

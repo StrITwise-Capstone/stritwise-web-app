@@ -9,7 +9,6 @@ import {
   Input,
   CircularProgress,
 } from '@material-ui/core';
-import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
@@ -21,6 +20,7 @@ import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from './ThumbNail';
+import yup from '../../../instances/yup';
 
 function timeConverter(UNIX_timestamp){
   return moment(new Date(UNIX_timestamp.seconds * 1000)).format('YYYY-MM-DDTHH:mm');
@@ -70,14 +70,14 @@ const editEvent = ({
   return (<Formik
     enableReinitialize={true}
     initialValues={initialValues(event)}
-    validationSchema={Yup.object({
-      name: Yup.string()
+    validationSchema={yup.object({
+      name: yup.string()
         .required('Required'),
-      description: Yup.string()
+      description: yup.string()
         .required('Required'),
-      image: Yup.mixed(),
-      startdate: Yup.date().required('Required'),
-      enddate: Yup.date().required('Required'),
+      image: yup.mixed(),
+      startdate: yup.date().required('Required'),
+      enddate: yup.date().required('Required'),
     })}
 
     onSubmit={(values, { setSubmitting, resetForm }) => {

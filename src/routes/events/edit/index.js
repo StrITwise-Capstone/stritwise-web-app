@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
+import { withSnackbar } from 'notistack';
 
 import Form from './Form';
 
@@ -21,14 +22,14 @@ class editEvent extends Component {
     const { events, match } = this.props;
     const { event } = this.state;
     const eventuid = match.params.id;
-    if ( events != null && event == null)
+    if ( events !== null && event === null)
     { this.setState({
         event: events[eventuid],
       })
       this.forceUpdate();
     }
   }
-
+  
   render() {
     const { classes, match } = this.props;
     const { event } = this.state;
@@ -48,14 +49,11 @@ class editEvent extends Component {
 }
 
 const mapStateToProps = state => ({
-  authError: state.auth.authError,
-  auth: state.firebase.auth,
   events : state.firestore.data.events,
+  auth: state.firebase.auth,
+  isAuthenticated: state.auth.isAuthenticated,
+  user: state.firestore.data.user,
 });
-
-editEvent.propTypes = {
-  classes: PropTypes.node.isRequired,
-};
 
 
 const styles = () => ({
@@ -87,5 +85,6 @@ export default compose(
       collection:'events'
     }
   ]),
-  withStyles(styles)
+  withStyles(styles),
+  withSnackbar,
 )(editEvent);

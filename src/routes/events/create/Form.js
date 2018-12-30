@@ -9,9 +9,7 @@ import {
   Input,
   CircularProgress,
 } from '@material-ui/core';
-import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
@@ -20,6 +18,7 @@ import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from './ThumbNail';
+import yup from '../../../instances/yup';
 
 const initialValues = {
   name: '',
@@ -49,22 +48,23 @@ const createEvent = ({
 }) => (
   <Formik
     initialValues={initialValues}
-    validationSchema={Yup.object({
-      name: Yup.string()
+    validationSchema={yup.object({
+      name: yup.string()
         .required('Required'),
-      description: Yup.string()
+      description: yup.string()
         .required('Required'),
-      image: Yup.mixed().required(),
-      startdate: Yup.date().required('Required'),
-      enddate: Yup.date().required('Required'),
-      min_student: Yup.number().integer().required('Required'),
-      max_student: Yup.number().integer().required('Required'),
+      image: yup.mixed().required(),
+      startdate: yup.date().required('Required'),
+      enddate: yup.date().required('Required'),
+      min_student: yup.number().integer().required('Required'),
+      max_student: yup.number().integer().required('Required'),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       // login user
       const { image } = values;
       const imageuid = guid();
       const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
+
       uploadTask.on('state_changed',
         (snapshot) => {
           const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);

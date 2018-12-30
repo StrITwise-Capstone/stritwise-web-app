@@ -6,12 +6,13 @@ import {
   withStyles,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { compose } from 'redux';
+import { withSnackbar } from 'notistack';
 
 import Form from './Form';
 
 class createEvent extends Component {
+  
   render() {
     const { classes } = this.props;
 
@@ -28,12 +29,6 @@ class createEvent extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  authError: state.auth.authError,
-  auth: state.firebase.auth,
-});
-
 
 const styles = () => ({
   root: {
@@ -57,8 +52,16 @@ const styles = () => ({
   },
 });
 
+const mapStateToProps = (state) => { console.log(state)
+  return {
+    auth: state.firebase.auth,
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.firestore.data.user,
+  };
+};
 
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles)
+  withStyles(styles),
+  withSnackbar,
 )(createEvent);

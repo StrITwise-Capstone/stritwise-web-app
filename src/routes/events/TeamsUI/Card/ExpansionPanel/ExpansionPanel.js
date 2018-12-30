@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -31,8 +30,7 @@ class SimpleExpansionPanel extends React.Component {
             <Typography className={classes.heading} style={{"paddingLeft":"10px"}}>{student.first_name} {student.last_name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-              {deletevalue}
-          <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
+            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
         }

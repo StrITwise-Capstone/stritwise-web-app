@@ -8,7 +8,7 @@ import {
 
 import './App.css';
 import Layout from './hoc/Layout/Layout';
-import Routes from './routes/routes';
+import Routes from './routes/routes/index';
 import styles from './App.styles';
 
 class App extends Component {

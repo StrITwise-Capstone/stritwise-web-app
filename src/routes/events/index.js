@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
 import AddIcon from '@material-ui/icons/Add';
-import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
 
 import CardList from './EventsUI/CardList/CardList';
 
@@ -26,22 +26,20 @@ class Dashboard extends Component {
     const { history } = this.props;
     history.push('/events/create')
   }
+
   render() {
-    const { eventsList , classes, isAuthenticated,user} = this.props;
-    var type = "";
-    if (user){
-      type = user.type;
-    }
+    const { eventsList , classes, isAuthenticated,user } = this.props;
     return (
       <div>
         <div>
         <h1>{user && isAuthenticated && `Welcome, ${user.firstName} ${user.lastName}`}</h1>
         <h1>Events </h1>
-        <CardList eventsList={eventsList} userType={type}/>
+        { isAuthenticated && user && <CardList eventsList={eventsList} userType={user.type} />}
         </div>
-        <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
+        { isAuthenticated && (user.type == 'admin' || user.type == 'orion member') && 
+        (<Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
-        </Button>
+        </Button>)}
       </div>
     );
   }
@@ -70,4 +68,5 @@ export default compose(
     }
   ]),
   withStyles(styles),
+  withSnackbar,
 )(Dashboard);

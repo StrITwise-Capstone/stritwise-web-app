@@ -6,7 +6,7 @@ export default [{
   route: ['Events', 'TimeLine', 'Auction', 'Volunteers', 'Participants', 'Teams'],
 }, {
   name: 'teacher',
-  route: ['Events', 'Registrations'],
+  route: ['Events'],
 }, {
   name: 'guest',
   route: ['Login'],

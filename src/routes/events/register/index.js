@@ -6,7 +6,7 @@ import {
   Paper,
   Divider, 
   CircularProgress,
-  Grid
+  Grid,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { 
@@ -15,6 +15,7 @@ import {
 } from 'react-redux-firebase';
 import moment from 'moment';
 import AddIcon from '@material-ui/icons/Add';
+import { withSnackbar } from 'notistack';
 
 import CardList from '../TeamsUI/CardList/CardList';
 import ImportButton from './ImportButton/ImportButton';
@@ -34,6 +35,7 @@ class Dashboard extends Component {
   state = {
     open: false,
     event: null,
+    isNotLoading: false,
   };
   handleOpen = () => {
     this.setState({ open: true });
@@ -45,7 +47,7 @@ class Dashboard extends Component {
 
   createEvent = () => {
     const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/register/create`)
+    history.push(`/events/${match.params.id}/teams/create`)
   }
   componentDidUpdate(){
     const { firebase, currentevent } = this.props;
@@ -55,24 +57,26 @@ class Dashboard extends Component {
       const imageFile = img;
       this.setState({
         imageFile,
+        isNotLoading: true,
       });
     }).catch((error) => {
       console.log(`Unable to retreive${error}`);
     });
     }
   }
+
   render() {
     const { classes, currentevent, user } = this.props;
-    const { imageFile } = this.state;
+    const { imageFile, isNotLoading } = this.state;
     
     return (
       <React.Fragment>
-      {currentevent == null && imageFile == null &&
+      {isNotLoading == false && 
         <CircularProgress></CircularProgress>
       }
-      {currentevent && imageFile
+      {isNotLoading == true
         && 
-        (<div>
+        (<React.Fragment>
         <div>
         <Paper>
         <div style={{'marginLeft':'15px'}}>
@@ -86,23 +90,25 @@ class Dashboard extends Component {
               <p>{currentevent.desc}</p>
             </div>
           </Grid>
-          <Grid item xs={6}><img src={imageFile}  style={{width:'500px',height:'300px'}}></img></Grid>
+          <Grid item xs={6}><img src={imageFile} style={{width:'500px',height:'300px'}} /> </Grid>
         </Grid>
         <Divider/>
-        <ImportButton teacherid={this.props.auth.id}/>
+        <ImportButton teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />
         </div>
         </Paper>
         <Paper style={{background:'#E6E6FA'}}>
         <div style={{'marginLeft':'15px'}}>
         <h1>Teams </h1>
+        <div>
         <CardList eventuid={this.props.match.params.id} schooluid={user.school_id}/>
+        </div>
         </div>
         </Paper>
         </div>
         <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
           <AddIcon />
         </Button>
-      </div>)
+      </React.Fragment>)
     }
     </React.Fragment>
     );
@@ -112,8 +118,9 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
     return {
       currentevent: state.firestore.data.currentevent,
-      user: state.firestore.data.user,
       auth: state.firebase.auth,
+      isAuthenticated: state.auth.isAuthenticated,
+      user: state.firestore.data.user,
     }
 };
 
@@ -131,4 +138,5 @@ export default compose(
     },
     ]),
   firebaseConnect(),
+  withSnackbar,
 )(Dashboard);

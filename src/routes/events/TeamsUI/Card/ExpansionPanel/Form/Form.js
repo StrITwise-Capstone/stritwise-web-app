@@ -7,18 +7,19 @@ import {
 import {
   Button,
   CircularProgress,
+  MenuItem,
 } from '@material-ui/core';
-import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 
 import TextField from '../../../../../../components/UI/TextField/TextField';
+import Dropdown from '../../../../../../components/UI/Dropdown/Dropdown';
 import DeleteButton from './DeleteButton/DeleteButton';
+import yup from '../../../../../../instances/yup';
 
 const editStudent = ({
-  authError,
   auth,
   firestore,
   enqueueSnackbar,
@@ -27,6 +28,8 @@ const editStudent = ({
   eventuid,
   teamuid,
   deletevalue,
+  school,
+  schoolsList,
 }) => (
   <Formik
     enableReinitialize={true}
@@ -40,22 +43,32 @@ const editStudent = ({
         mobile : student.mobile,
         studentuid: studentuid,
         eventuid: eventuid,
+        school: school ? school.name : '',
+        schools: schoolsList ? schoolsList : null,
         teamuid: teamuid,
         deletevalue: deletevalue,
         emergency_contact_name: student.emergency_contacts ? student.emergency_contacts['name']: null,
         emergency_contact_mobile: student.emergency_contacts ? student.emergency_contacts['mobile'] : null,
         emergency_contact_relation: student.emergency_contacts ? student.emergency_contacts['relation'] : null,
     }}
-    validationSchema={Yup.object({
-      firstname: Yup.string()
+    validationSchema={yup.object({
+      firstname: yup.string()
         .required('Required'),
-      lastname: Yup.string()
+      lastname: yup.string()
         .required('Required'),
-      badge_name: Yup.string(),
-      email: Yup.string().email("Email is not valid"),
+      badge_name: yup.string(),
+      email: yup.string().email("Email is not valid"),
     })}
     onSubmit={(values, { setSubmitting }) => {
-      firestore.collection('events').doc(eventuid).collection('teams').doc(teamuid).collection('students').doc(studentuid).update({
+      var schoolRef = firestore.collection("schools");
+      var schoolQuery = schoolRef.where("name",'==',`${values.school}`);
+      schoolQuery.get().then((querySnapshot) =>{
+        var school_id = '';
+        querySnapshot.forEach((docRef)=>{
+          school_id = docRef.id;
+        })
+      firestore.collection('events').doc(eventuid).collection('students').doc(studentuid).update({
+          school_id: school_id,
           first_name: values.firstname,
           last_name: values.lastname,
           badge_name: values.badgename,
@@ -68,13 +81,15 @@ const editStudent = ({
               variant: 'success',
           })
           setSubmitting(false);
-      }).catch(() => {
+      }).catch((err) => {
           enqueueSnackbar('Student Not Updated', {
               variant: 'error',
           });
+          console.log(err);
           setSubmitting(false);
       });
-    }}
+     });
+      }}
   >
     {({
       handleSubmit,
@@ -119,6 +134,15 @@ const editStudent = ({
               label="Badge Name"
               type="text"
               component={TextField}
+            />
+            <Field
+              required
+              name="school"
+              label="School"
+              children={initialValues.schools ? Object.keys(initialValues.schools).map(id => {
+                return <MenuItem key={id} value={initialValues.schools[id].name}>{initialValues.schools[id].name}</MenuItem>
+              }) : null}
+              component={Dropdown}
             />
             <Field
               required
@@ -169,11 +193,15 @@ const editStudent = ({
   </Formik>
 );
 
-const mapStateToProps = state => ({
-  authError: state.auth.authError,
-  auth: state.firebase.auth,
-  firestore: state.firestore,
-  firebase: state.firebase,
-});
+const mapStateToProps = state => {return({
+  school: state.firestore.data.school,
+  schoolsList: state.firestore.data.schoolsList,
+})};
 
-export default compose(withSnackbar,connect(mapStateToProps),firestoreConnect())(editStudent);
+export default compose(withSnackbar,connect(mapStateToProps),
+firestoreConnect((props) => {return[
+  {
+      collection:'schools', doc:`${props.student.school_id}`, storeAs: 'school'
+  },
+  ]}),
+)(editStudent);
