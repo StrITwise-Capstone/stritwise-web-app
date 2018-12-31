@@ -1,6 +1,6 @@
 export default () => ({
   root: {
-    margin: '1em 2em 2em 2em',
+    margin: '2em 2em 2em 2em',
   },
   header: {
     display: 'flex',

@@ -74,16 +74,23 @@ class Users extends Component {
 
   handleDocsList = (docsList) => {
     let data = [];
-    if (docsList !== null) {
-      const toUserData = user => ({
+    const { schools } = this.props;
+    const schoolsMap = schools.reduce((map, obj) => {
+      // Disabled eslint error for performance reasons
+      /* eslint no-param-reassign: "off" */
+      map[obj.id] = obj.name;
+      /* eslint-enable */
+      return map;
+    }, {});
+    data = docsList.map(user => (
+      {
         id: user.uid,
         Name: `${user.data.firstName} ${user.data.lastName}`,
         Mobile: user.data.mobile,
         Type: user.data.type,
-        School: user.data.school_id,
-      });
-      data = docsList.map(toUserData);
-    }
+        School: schoolsMap[user.data.school_id],
+      }
+    ));
     return data;
   }
 
@@ -133,7 +140,7 @@ class Users extends Component {
                   if (filter === 'type') {
                     console.log(filter, search);
                     newRef = newRef.where(filter, '==', search.toLowerCase());
-                  } 
+                  }
                   else if (filter === 'name') {
                     const name = search.split(' ');
                     console.log(name);
@@ -176,48 +183,48 @@ class Users extends Component {
                   isSubmitting,
                   values,
                 }) => (
-                  <Form onSubmit={handleSubmit}>
-                    <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                      <Field
-                        required
-                        name="filter"
-                        label="Filter"
-                        component={Dropdown}
-                      >
-                        <MenuItem value="all">
-                          <em>All</em>
-                        </MenuItem>
-                        <MenuItem value="type">Type</MenuItem>
-                        <MenuItem value="school">School</MenuItem>
-                        <MenuItem value="name">Name</MenuItem>
-                      </Field>
-                    </div>
-                    {values.filter !== 'all' ? (
+                    <Form onSubmit={handleSubmit}>
                       <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
                         <Field
                           required
-                          name="search"
-                          label="Search"
-                          type="text"
-                          component={TextField}
-                        />
+                          name="filter"
+                          label="Filter"
+                          component={Dropdown}
+                        >
+                          <MenuItem value="all">
+                            <em>All</em>
+                          </MenuItem>
+                          <MenuItem value="type">Type</MenuItem>
+                          <MenuItem value="school">School</MenuItem>
+                          <MenuItem value="name">Name</MenuItem>
+                        </Field>
                       </div>
-                    ) : (
-                      null
-                    )}
+                      {values.filter !== 'all' ? (
+                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                          <Field
+                            required
+                            name="search"
+                            label="Search"
+                            type="text"
+                            component={TextField}
+                          />
+                        </div>
+                      ) : (
+                          null
+                        )}
 
-                    <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
-                      <Button
-                        type="submit"
-                        variant="outlined"
-                        color="primary"
-                        disabled={util.isFormValid(errors, touched)}
-                      >
-                        Filter
+                      <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                        <Button
+                          type="submit"
+                          variant="outlined"
+                          color="primary"
+                          disabled={util.isFormValid(errors, touched)}
+                        >
+                          Filter
                       </Button>
-                    </div>
-                  </Form>
-                )}
+                      </div>
+                    </Form>
+                  )}
               </Formik>
               <Button
                 variant="contained"
