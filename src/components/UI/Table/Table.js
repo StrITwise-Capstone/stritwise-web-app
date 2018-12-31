@@ -17,9 +17,9 @@ import TableView from './TableView';
 class CustomTable extends Component {
   state = {
     docsList: [],
-    colRef: null,
+    colRef: this.props.colRef,
     colSize: 0,
-    filterRef: null,
+    filterRef: this.props.colRef,
     filterSize: 0,
 
     page: 0,
@@ -33,11 +33,16 @@ class CustomTable extends Component {
     let size = 0;
     colRef.get().then((snap) => {
       size = snap.size; // will return the collection size
-      this.setState({ colSize: size, filterSize: size, colRef, filterRef: colRef }, () => {
-        console.log(this.state);
+      this.setState({ colSize: size, filterSize: size }, () => {
         this.getData();
       });
     });
+  }
+
+  componentWillReceiveProps = () => {
+    console.log('hi');
+    const { filter, search } = this.props;
+    this.handleFilter(filter, search);
   }
 
   getData = () => {
@@ -108,6 +113,47 @@ class CustomTable extends Component {
     });
   };
 
+  handleFilter = (filter, search) => {
+    const { colSize, rowsPerPage } = this.state;
+    const { colRef } = this.props;
+    let newRef = colRef;
+    let newSize = colSize;
+
+    // check if Filter has been changed
+    if (filter === 'type') {
+      console.log(filter, search);
+      newRef = newRef.where(filter, '==', search.toLowerCase());
+    }
+    else if (filter === 'name') {
+      const name = search.split(' ');
+      console.log(name);
+      if (name.length === 2) {
+        newRef = newRef.where('firstName', '==', name[0])
+          .where('lastName', '==', name[1]);
+      } else {
+        console.log("name is length one");
+        newRef = newRef.where('firstName', '==', name[0]);
+      }
+    }
+
+    const filterRef = newRef.orderBy('created_at', 'asc').limit(rowsPerPage);
+    const docsList = [];
+    filterRef.get().then((documentSnapshot) => {
+      newSize = documentSnapshot.size;
+      // Get the last visible document
+      const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+      const firstVisible = documentSnapshot.docs[0];
+      documentSnapshot.forEach((doc) => {
+        docsList.push({
+          uid: doc.id,
+          data: doc.data(),
+        });
+      });
+      console.log(docsList);
+      this.setState({ docsList, lastVisible, firstVisible, filterRef: newRef, filterSize: newSize });
+    });
+  }
+
   render() {
     const {
       dataHeader,
@@ -115,16 +161,18 @@ class CustomTable extends Component {
       handleDelete,
       handleDocsList,
       children,
+      filter, 
+      search,
     } = this.props;
 
-    const { page, rowsPerPage, filterSize, docsList } = this.state;
-
+    const { page, rowsPerPage, filterSize, docsList, colRef, colSize } = this.state;
     let data = [];
+    //console.log(this.state);
     if (docsList.length !== 0) {
       data = handleDocsList(docsList);
     }
 
-    console.log(this.state);
+    //console.log(this.state);
 
     return (
       <TableView
@@ -143,7 +191,7 @@ class CustomTable extends Component {
       >
         {children}
       </TableView>
-    )
+    );
   }
 }
 

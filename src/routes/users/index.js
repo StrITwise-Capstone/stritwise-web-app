@@ -31,6 +31,10 @@ const filterOptions = [
 }));
 
 class Users extends Component {
+  state = {
+    filter: 'all',
+    search: '',
+  }
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (userID) => {
@@ -44,32 +48,6 @@ class Users extends Component {
     }).catch((error) => {
       console.error("Error removing document: ", error);
     });
-  }
-
-  getSchoolName = (schools, userSchoolId) => {
-    if (schools) {
-      const currentSchool = schools.find(schoolElement => (schoolElement.id === userSchoolId));
-      if (currentSchool) {
-        return currentSchool.name;
-      }
-      return 'N.A.';
-    }
-    return 'Loading...';
-  }
-
-  createRows = (userList, schools) => {
-    let data = [];
-    if (userList !== null && schools !== null) {
-      const toUserData = user => ({
-        id: user.uid,
-        Name: `${user.data.firstName} ${user.data.lastName}`,
-        Mobile: user.data.mobile,
-        Type: user.data.type,
-        School: this.getSchoolName(schools, user.data.school_id),
-      });
-      data = userList.map(toUserData);
-    }
-    return data;
   }
 
   handleDocsList = (docsList) => {
@@ -96,9 +74,8 @@ class Users extends Component {
 
 
   render() {
-    //let content = <CircularProgress />;
-    const { schools, firestore } = this.props;
-
+    const { firestore } = this.props;
+    const { filter, search } = this.state;
     //console.log(this.state);
     // console.log(this.props);
     const colRef = firestore.collection('users');
@@ -119,6 +96,8 @@ class Users extends Component {
             handleDocsList={this.handleDocsList}
             handleEdit={this.handleEdit}
             handleDelete={this.handleDelete}
+            filter={filter}
+            search={search}
           >
 
             <div>
@@ -132,48 +111,9 @@ class Users extends Component {
                     .singleSelectRequired('Required'),
                 })}
                 onSubmit={(values, { setSubmitting, resetForm }) => {
-                  const { search, filter } = values;
-                  const { colRef, colSize, rowsPerPage } = this.state;
-                  let newRef = colRef;
-                  let newSize = colSize;
-
-                  if (filter === 'type') {
-                    console.log(filter, search);
-                    newRef = newRef.where(filter, '==', search.toLowerCase());
-                  }
-                  else if (filter === 'name') {
-                    const name = search.split(' ');
-                    console.log(name);
-                    if (name.length === 2) {
-                      newRef = newRef.where('firstName', '==', name[0])
-                        .where('lastName', '==', name[1]);
-                    } else {
-                      console.log("name is length one");
-                      newRef = newRef.where('firstName', '==', name[0]);
-                    }
-                  }
-
-
-                  const filterRef = newRef.orderBy('created_at', 'asc').limit(rowsPerPage);
-                  const docsList = [];
-                  filterRef.get().then((documentSnapshot) => {
-                    if (filter !== 'all') {
-                      newSize = documentSnapshot.size;
-                    }
-                    // Get the last visible document
-                    const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-                    const firstVisible = documentSnapshot.docs[0];
-                    documentSnapshot.forEach((doc) => {
-                      docsList.push({
-                        uid: doc.id,
-                        data: doc.data(),
-                      });
-                    });
-                    console.log(docsList);
-                    this.setState({ docsList, lastVisible, firstVisible, filterRef: newRef, filterSize: newSize });
-                    //console.log(this.state);
-                    setSubmitting(false);
-                  });
+                  this.setState({ search: values.search, filter: values.filter });
+                  // console.log(this.state);
+                  setSubmitting(false);
                 }}
               >
                 {({
@@ -183,48 +123,48 @@ class Users extends Component {
                   isSubmitting,
                   values,
                 }) => (
-                    <Form onSubmit={handleSubmit}>
+                  <Form onSubmit={handleSubmit}>
+                    <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                      <Field
+                        required
+                        name="filter"
+                        label="Filter"
+                        component={Dropdown}
+                      >
+                        <MenuItem value="all">
+                          <em>All</em>
+                        </MenuItem>
+                        <MenuItem value="type">Type</MenuItem>
+                        <MenuItem value="school">School</MenuItem>
+                        <MenuItem value="name">Name</MenuItem>
+                      </Field>
+                    </div>
+                    {values.filter !== 'all' ? (
                       <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
                         <Field
                           required
-                          name="filter"
-                          label="Filter"
-                          component={Dropdown}
-                        >
-                          <MenuItem value="all">
-                            <em>All</em>
-                          </MenuItem>
-                          <MenuItem value="type">Type</MenuItem>
-                          <MenuItem value="school">School</MenuItem>
-                          <MenuItem value="name">Name</MenuItem>
-                        </Field>
+                          name="search"
+                          label="Search"
+                          type="text"
+                          component={TextField}
+                        />
                       </div>
-                      {values.filter !== 'all' ? (
-                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                          <Field
-                            required
-                            name="search"
-                            label="Search"
-                            type="text"
-                            component={TextField}
-                          />
-                        </div>
-                      ) : (
-                          null
-                        )}
+                    ) : (
+                      null
+                    )}
 
-                      <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
-                        <Button
-                          type="submit"
-                          variant="outlined"
-                          color="primary"
-                          disabled={util.isFormValid(errors, touched)}
-                        >
-                          Filter
+                    <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        color="primary"
+                        disabled={util.isFormValid(errors, touched)}
+                      >
+                        Filter
                       </Button>
-                      </div>
-                    </Form>
-                  )}
+                    </div>
+                  </Form>
+                )}
               </Formik>
               <Button
                 variant="contained"
