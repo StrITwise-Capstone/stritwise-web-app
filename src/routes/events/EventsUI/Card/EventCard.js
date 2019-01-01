@@ -88,7 +88,7 @@ class eventCard extends React.Component {
         {event
           && notDeleted
           && (
-            <Card style={{ width: '400px', height: '500px' }}>
+            <Card style={{ width: '370px', height: '500px' }}>
               <CardActionArea className={classes.cardActionArea} onClick={this.handleClickOpen}>
                 <div>
                   { imageFile === null
@@ -141,8 +141,8 @@ class eventCard extends React.Component {
                 </CardContent>
               </div>
               <CardActions className={classes.action}>
-              <ButtonList eventuid={eventuid} classes={classes} userType={userType}/>
-              {userType === 'admin' && <Button size="small" color="primary" onClick={this.deleteEvent}>Delete Event</Button>}
+              <ButtonList eventuid={eventuid} classes={classes} userType={userType} deleteEvent={()=>{this.deleteEvent()}}/>
+              
               </CardActions>
               <Dialog
                 open={open}

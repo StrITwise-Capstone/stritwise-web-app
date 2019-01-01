@@ -92,7 +92,6 @@ const createEvent = ({
             resetForm();
             setSubmitting(false);
           }).catch(() => {
-            // console.log(`Event not created: ${err}`);
             enqueueSnackbar('Event Not Created', {
               variant: 'error',
             });
@@ -144,14 +143,14 @@ const createEvent = ({
             <Field
               required
               name="min_student"
-              label="Minimum Student (Numbers only)"
+              label="Minimum Student Per Team (Numbers only)"
               type="text"
               component={TextField}
             />
             <Field
               required
               name="max_student"
-              label="Maximum Student (Numbers only)"
+              label="Maximum Student Per Team (Numbers only)"
               type="text"
               component={TextField}
             />

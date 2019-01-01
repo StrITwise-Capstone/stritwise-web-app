@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import AppBar from '@material-ui/core/AppBar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import {
-  AppBar,
-  Toolbar,
-  Typography,
   IconButton,
   MenuItem,
-  Menu
+  Menu,
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
@@ -20,44 +21,43 @@ import DrawerList from './Drawer/DrawerList'
 import { logIn, logOut, retrieveUser } from '../../../store/actions/authActions';
 import RouteButton from './Drawer/RouteButton/RouteButton'
 
-const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  grow: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-  },
-};
+const drawerWidth = 240;
 
-class Navbar extends Component {
+const styles = theme => ({
+  root: {
+    display: 'flex',
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing.unit * 3,
+  },
+  icons: {
+    'marginRight': '0px', 'marginLeft': 'auto'
+  },
+  toolbar: theme.mixins.toolbar,
+});
+
+class Navbar extends Component{
   state = {
     auth: true,
-    anchorEl: null,
-    isDrawerOpen: false,
   };
 
-  handleChange = event => {
-    this.setState({ auth: event.target.checked });
-  };
-
-  handleMenu = event => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleClose = () => {
-    this.setState({ anchorEl: null });
-  };
-
-  toggleDrawer = (side, open) => () => {
-    this.setState({
-      [side]: open,
-    });
-  };
-
+  handleMenu = event =>{
+    this.setState({anchorEl: event.currentTarget})
+  }
+  handleClose = () =>{
+    this.setState({anchorEl:null})
+  }
   componentDidMount(){
     this.props.retrieveUser(this.props.auth.uid);
   }
@@ -66,34 +66,21 @@ class Navbar extends Component {
     this.props.retrieveUser(this.props.auth.uid);
   }
 
-  render() {
-    const { classes, isAuthenticated, user, history } = this.props;
-    const { anchorEl, isDrawerOpen} = this.state;
-    const open = Boolean(this.state.anchorEl);
+  render(){
+  const { classes, isAuthenticated, user, history } = this.props;
+  const { anchorEl } = this.state;
+  const open = Boolean(this.state.anchorEl);
 
-    return (
-      <AppBar position="static">
-          <Toolbar>
-            {isAuthenticated && (
-            <div>
-              <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={this.toggleDrawer('isDrawerOpen', true)}>
-              <MenuIcon />
-            </IconButton>
-            <SwipeableDrawer
-              open={isDrawerOpen}
-              onClose={this.toggleDrawer('isDrawerOpen', false)}
-              onOpen={this.toggleDrawer('isDrawerOpen', true)}
-            >
-              <DrawerList auth={user.type}/>
-            </SwipeableDrawer>
-            </div>
-            )
-            }
-            <Typography variant="h6" color="inherit" className={classes.grow}>
+  return (
+    <div className={classes.root}>
+      <CssBaseline />
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+        <Typography variant="h6" color="inherit" className={classes.grow}>
               <img onClick={() => { history.push(`/`); }} src="/assets/logo.gif" alt="StrITwise Web Application" style={{ height: '50px',}} />
             </Typography>
             {isAuthenticated && (
-              <div>
+              <div className={classes.icons}>
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : null}
                   aria-haspopup="true"
@@ -123,16 +110,30 @@ class Navbar extends Component {
               </div>
             )}
             {isAuthenticated === false && (
-              <div>
+              <div className={classes.icons}>
                 <RouteButton route="Sign Up" routelink="auth/signup" />
                 <RouteButton route="Log In" routelink="auth/login" />
               </div>
             )}
-          </Toolbar>
-        </AppBar>
-    );
-  };
+        </Toolbar>
+      </AppBar>
+      {isAuthenticated &&<Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <div className={classes.toolbar} />
+        <DrawerList auth={user.type}/>
+        
+      </Drawer>
+      }
+    </div>
+  );
 }
+}
+
 
 const mapStateToProps = (state) => {
   return {
@@ -164,3 +165,4 @@ export default compose(
   ]),
   withStyles(styles)
 )(Navbar);
+

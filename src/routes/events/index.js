@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button, withStyles } from '@material-ui/core';
+import { 
+  Button, 
+  withStyles,
+} from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
 import AddIcon from '@material-ui/icons/Add';
 import { withSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 import CardList from './EventsUI/CardList/CardList';
+import AdminLayout from '../../hoc/Layout/AdminLayout';
 
 const styles = () => ({
   button: {
@@ -26,21 +31,35 @@ class Dashboard extends Component {
     const { history } = this.props;
     history.push('/events/create')
   }
+  
+  action = () => {
+    const { isAuthenticated,user } = this.props;
+    if (isAuthenticated && (user.type == 'admin' || user.type == 'orion member'))
+    {
+      
+    return(<React.Fragment>
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        component={Link}
+        to="/events/create"
+      >Create Event</Button>
+    </React.Fragment>)
+    }
+  }
 
   render() {
     const { eventsList , classes, isAuthenticated,user } = this.props;
+
     return (
-      <div>
-        <div>
-        <h1>{user && isAuthenticated && `Welcome, ${user.firstName} ${user.lastName}`}</h1>
-        <h1>Events </h1>
-        { isAuthenticated && user && <CardList eventsList={eventsList} userType={user.type} />}
-        </div>
-        { isAuthenticated && (user.type == 'admin' || user.type == 'orion member') && 
-        (<Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
-          <AddIcon />
-        </Button>)}
-      </div>
+      <AdminLayout
+        title='Events'
+        subtitle={user && `Welcome, ${user.firstName} ${user.lastName}`}
+        action={this.action()}
+      >
+       { isAuthenticated && user && <CardList eventsList={eventsList} userType={user.type} />}
+      </AdminLayout>
     );
   }
 }

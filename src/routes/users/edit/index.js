@@ -5,6 +5,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import EditUserForm from './EditUserForm';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 class EditUser extends Component {
   state = {
@@ -67,10 +68,11 @@ class EditUser extends Component {
       user.school.label = this.getSchoolName(schools, userSchoolId);
       console.log(user);
       content = (
-        <React.Fragment>
+        <AdminLayout
+        >
           <Typography variant="h4" id="title">Edit a User!</Typography>
           <EditUserForm schools={schools} user={user} />
-        </React.Fragment>
+        </AdminLayout>
       );
     }
     return (

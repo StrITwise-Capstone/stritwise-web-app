@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import { Home, Label } from '@material-ui/icons';
 
 import RouteList from './RoutesList/RouteList';
-import RouteButton from './RouteButton/RouteButton';
+import ListItemButton from './RouteButton/ListItem';
 
 const styles = {
   list: {
@@ -15,24 +15,31 @@ const styles = {
   },
 };
 
-const DrawerList = ({ auth }) => {
+class DrawerList extends Component {
+  state = {
+    selectedIndex : null,
+  }
+  handleListItemClick = (event, index) => {
+    this.setState({ selectedIndex: index });
+  };
+
+  render(){
+  const { auth } = this.props;
   const resultList = RouteList.filter(obj => obj.name === auth);
   return (
     <div>
       <List>
-        <ListItem key="Home">
-          <RouteButton route="Home" routelink="" />
-        </ListItem>
+        <ListItemButton selected={this.state.selectedIndex === 0} route="Home" routelink={''} onClick={event => this.handleListItemClick(event, 0)} children={Home}/>
         { auth &&
-          resultList[0].route.map(key => (
-            <ListItem key={key}>
-              <RouteButton route={key} routelink={key.replace(' ', '').toLowerCase()} />
-            </ListItem>
-          ))
+          resultList[0].route.map((key,index) => {
+            return(
+            <ListItemButton key={index} selected={this.state.selectedIndex === index+1} route={key} routelink={key.replace(' ', '').toLowerCase()} onClick={event => this.handleListItemClick(event, index+1)} children={Label}/>
+          )})
         }
       </List>
     </div>
   );
+  }
 };
 
 export default withStyles(styles)(DrawerList);

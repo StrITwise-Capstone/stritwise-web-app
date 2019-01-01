@@ -75,8 +75,8 @@ class teamCard extends React.Component {
       <React.Fragment>
         {team && studentsList && currentevent
           && (
-          <Card style={{ width: '700px', height: '580px' }}>
-              <CardContent className={classes.cardActionArea} onClick={this.handleClickOpen} style={{height:'450px'}}>
+          <Card style={{margin:'10px'}}>
+              <CardContent onClick={this.handleClickOpen} style={{height:'450px'}}>
                 <CardContent>
                   <Typography variant="h5" component="h2" className={classes.textField}>
                     {team.team_name}

@@ -34,7 +34,7 @@ const createStudent = ({
   <Formik
     initialValues={{
       team_name: '',
-      students:[],
+      students: Array.apply(null, Array(minStudent)).map(function () {}),
       schools: schools,
     }}
     validationSchema={yup.object({
@@ -161,8 +161,11 @@ const createStudent = ({
               render={arrayHelpers => (
                 <div>
                   {values.students.map((student,index) => (
-                    <div key={index} style={{background:'#E6E6FA', paddingLeft:'10px'}}>
-                      <p>Student #{index+1}</p>
+                    <div key={index} style={{background:'#E6E6FA', marginBottom:'10px',padding: '10px',paddingLeft:'15px'}}>
+                      <p>Student #{index+1}
+                      <Button style={{float:'right'}} type="button" size="small" color="primary" onClick={() => arrayHelpers.remove(index)}>
+                        Delete
+                      </Button></p>
                       <div>
                       <Field
                         name={`students[${index}].school`}
@@ -260,17 +263,16 @@ const createStudent = ({
                       <ErrorMessage name={`students[${index}].dietaryrestriction`}/>
                       <ErrorMessage name={`students[${index}].remarks`}/>
                       </div>
-                      <IconButton type="button" onClick={() => arrayHelpers.remove(index)}>
-                        <RemoveIcon fontSize="small" />
-                      </IconButton>
                     </div>
                   ))}
-                  <IconButton
+                  <Button
                     type="button"
                     onClick={() => {arrayHelpers.push({firstname:''})}}
+                    size="small"
+                    color="primary"
                   >
-                    <AddIcon fontSize="small" />
-                  </IconButton>
+                    Add Student
+                  </Button>
                 </div>
               )}
             />

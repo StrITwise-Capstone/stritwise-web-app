@@ -135,23 +135,19 @@ class cardList extends React.Component {
             <div style={{ margin: '0 auto' }}/>
             <Grid
                 container
-                alignContent="center"
-                justify="center"
-            >
-            <List
+                alignItems="center"
             >
             { !isNotLoading && 
                 <CircularProgress/>
             }
             {teamsList && isNotLoading
                 && Object.keys(teamsList).map(teamuid => (
-                    <ListItem key={teamuid}>
+                    <Grid item xs={6} key={teamuid}>
                         <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
                         update={()=>{this.getData()}}
                         />
-                    </ListItem>))
+                    </Grid>))
             }
-            </List>
             </Grid>
         </React.Fragment>
         );

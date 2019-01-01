@@ -6,12 +6,13 @@ import {
   withStyles,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 
 import Form from './Form';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
+
 
 class editEvent extends Component {
   state = {
@@ -35,6 +36,7 @@ class editEvent extends Component {
     const { event } = this.state;
     const eventuid = match.params.id;
     return (
+      <AdminLayout>
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <Typography variant="h4" className={classes.title}>Edit Event</Typography>
@@ -44,6 +46,7 @@ class editEvent extends Component {
           </div>
         </Paper>
       </div>
+      </AdminLayout>
     );
   }
 }
@@ -58,12 +61,11 @@ const mapStateToProps = state => ({
 
 const styles = () => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     height: '70vh',
+    margin: '0 auto',
+    maxWidth: '500px',
   },
   paper: {
     width: '100%',

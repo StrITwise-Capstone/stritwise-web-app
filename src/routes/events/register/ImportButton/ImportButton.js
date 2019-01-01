@@ -6,6 +6,7 @@ import {
   MenuItem,
   Select,
   OutlinedInput,
+  Typography,
 } from '@material-ui/core';
 import Papa from 'papaparse';
 import { withRouter } from 'react-router';
@@ -23,16 +24,15 @@ function validation(team){
   for (var i = 0; i < team.values.length; i++) {
     if (team.values[i]['Team Name'] === '' && team.values[i]['Team Name'].length < 1)
       bool = false;
-  
     if (team.values[i]['First Name'].length < 1 && team.values[i]['Last Name'].length < 1)
       bool = false;
-    if (team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8)
+    if (team.values[i]['Phone Number']&& team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8)
       bool = false;
     if (team.values[i]['Email'] === '' && validateEmail(team.values[i]['Email']) === false)
       bool = false;
-    if (team.values[i]['Emergency Contact Name'] === '' && team.values[i]['Emergency Contact Mobile'] === '' && team.values[i]['Relation to Participant'] === '')
+    if (team.values[i]['Emergency Contact Name'] == '' && team.values[i]['Emergency Contact Mobile'] == '' && team.values[i]['Relation to Participant'] == '')
      bool = false;
-     if (team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
+     if (team.values[i]['Emergency Contact Mobile'] &&team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
      bool = false;
   }
   return bool;
@@ -60,10 +60,9 @@ class ImportButton extends Component {
       return;
     
     const setData = (result)=>{
-      const { enqueueSnackbar, firestore, match, updatingStatus} = this.props;
+      const { enqueueSnackbar, firestore, updatingStatus, eventuid} = this.props;
       const { school_name } = this.state;
       updatingStatus(false);
-      const eventuid = match.params.id;
       var dataByTeamName = d3.nest()
       .key(function(d) { return d['Team Name']; })
       .entries(result);
@@ -80,7 +79,7 @@ class ImportButton extends Component {
           //Do verification
           if (validation(team)){
           //Query for firestore where team name exist
-          var teamRef = firestore.collection("events").doc(match.params.id).collection("teams");
+          var teamRef = firestore.collection("events").doc(eventuid).collection("teams");
           var teamName = team.key;
           var query = teamRef.where("team_name","==", `${teamName}`);
           query.get().then(querySnapshot => {
@@ -182,9 +181,10 @@ class ImportButton extends Component {
     return (
       <React.Fragment>
         <div>
-        <h3>Upload Excel For Teams (*Only CSV*)</h3> 
-        <p><a href="https://drive.google.com/file/d/1FlHPvk59R1W3b9Q-XFxuXTWduyzseQGo/view?usp=sharing">Download the excel here</a></p>
+        <Typography variant="h6" component="h5">Upload Excel For Teams (*Only CSV*)</Typography> 
+        <Typography component="p"><a href="https://drive.google.com/file/d/1FlHPvk59R1W3b9Q-XFxuXTWduyzseQGo/view?usp=sharing">Download template excel</a></Typography>
         <div>
+          <Typography component="p">Select school</Typography>
           <Select
             value={this.state.school_name}
             onChange={this.handleDropboxChange}
@@ -223,5 +223,5 @@ export default compose(withSnackbar,
   {
     collection:'schools',storeAs:`schoolsList`
   },
-  ]),
-withRouter)(ImportButton);
+  ])
+  )(ImportButton);

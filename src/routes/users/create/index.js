@@ -4,7 +4,7 @@ import { withSnackbar } from 'notistack';
 import { Typography } from '@material-ui/core';
 
 import AddUserForm from './AddUserForm';
-
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 class AddUser extends Component {
   render() {
@@ -14,10 +14,11 @@ class AddUser extends Component {
     });
 
     return (
-      <React.Fragment>
+      <AdminLayout
+      >
         <Typography variant="h4" id="title">Add a New User!</Typography>
         <AddUserForm />
-      </React.Fragment>
+      </AdminLayout>
     );
   }
 }

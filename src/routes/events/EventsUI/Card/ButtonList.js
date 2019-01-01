@@ -1,12 +1,16 @@
 
 import React from 'react';
 import RouteButton from './RouteButton/RouteButton';
+import {
+Button,
+} from '@material-ui/core/';
 
-const ButtonList = ({ eventuid, userType}) => (
+const ButtonList = ({ eventuid, userType, deleteEvent}) => (
   <div>
     {userType === 'teacher' && <RouteButton route="Register" routelink="teams/register" eventuid={eventuid} />}
     {userType === 'admin' && <RouteButton route="Participants" routelink="teams/register" eventuid={eventuid} />}
     {userType === 'admin' && <RouteButton route="Edit Event" routelink="edit" eventuid={eventuid} />}
+    {userType === 'admin' && <Button size="small" color="primary" onClick={deleteEvent}>Delete Event</Button>}
   </div>
 );
 

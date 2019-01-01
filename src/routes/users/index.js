@@ -20,6 +20,7 @@ import * as util from '../../helper/util';
 import TextField from '../../components/UI/TextField/TextField';
 import Select from '../../components/UI/Select/Select';
 import Dropdown from '../../components/UI/Dropdown/Dropdown';
+import AdminLayout from '../../hoc/Layout/AdminLayout';
 
 const filterOptions = [
   { label: 'Type' },
@@ -80,6 +81,9 @@ class Users extends Component {
     // console.log(this.props);
     const colRef = firestore.collection('users');
     return (
+      <AdminLayout
+        title="Users"
+      >
       <Grid
         container
         spacing={24}
@@ -196,6 +200,7 @@ class Users extends Component {
           </Paper>
         </Grid>
       </Grid>
+      </AdminLayout>
     );
   }
 }

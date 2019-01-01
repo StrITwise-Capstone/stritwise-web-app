@@ -7,28 +7,39 @@ import {
   Divider, 
   CircularProgress,
   Grid,
+  Typography,
 } from '@material-ui/core';
 import { compose } from 'redux';
+import { withRouter } from 'react-router';
 import { 
   firestoreConnect,
   firebaseConnect 
 } from 'react-redux-firebase';
 import moment from 'moment';
-import AddIcon from '@material-ui/icons/Add';
 import { withSnackbar } from 'notistack';
 
 import CardList from '../TeamsUI/CardList/CardList';
 import ImportButton from './ImportButton/ImportButton';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 const styles = () => ({
   button: {
-    margin: 0,
-    top: 'auto',
-    right: 20,
-    bottom: 20,
-    left: 'auto',
-    position: 'fixed',
-  }
+    backgroundColor:"#7b1fa2",
+    color:"white",
+    float:'right',
+  },
+  p:{
+    paddingTop:'10px',
+  },
+  gridItem:{
+    paddingTop:'20px'
+  },
+  paper:{
+    marginLeft:'20px',
+    paddingLeft:'15px',
+    paddingRight:'15px',
+
+  },
 });
 
 class Dashboard extends Component {
@@ -45,7 +56,7 @@ class Dashboard extends Component {
     this.setState({ open: false });
   };
 
-  createEvent = () => {
+  createTeam = () => {
     const { history, match } = this.props;
     history.push(`/events/${match.params.id}/teams/create`)
   }
@@ -77,37 +88,34 @@ class Dashboard extends Component {
       {isNotLoading == true
         && 
         (<React.Fragment>
-        <div>
-        <Paper>
-        <div style={{'marginLeft':'15px'}}>
-        <h1>{currentevent && currentevent.name}</h1>
-        <Grid container>
-          <Grid item xs={6}>
-            <div>
-              <p>Start Date: {moment(currentevent.start_date.toDate()).calendar()}</p>
-              <p>End Date: {moment(currentevent.end_date.toDate()).calendar()}</p>
-              <p>Description: </p>
-              <p>{currentevent.desc}</p>
-            </div>
-          </Grid>
-          <Grid item xs={6}><img src={imageFile} style={{width:'500px',height:'300px'}} /> </Grid>
-        </Grid>
-        <Divider/>
-        <ImportButton teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />
-        </div>
-        </Paper>
-        <Paper style={{background:'#E6E6FA'}}>
-        <div style={{'marginLeft':'15px'}}>
-        <h1>Teams </h1>
-        <div>
-        <CardList eventuid={this.props.match.params.id} schooluid={user.school_id}/>
-        </div>
-        </div>
-        </Paper>
-        </div>
-        <Button variant="fab" color="primary" aria-label="Add" onClick={() => {this.createEvent()}} className={classes.button}>
-          <AddIcon />
-        </Button>
+          <AdminLayout
+            title={currentevent.name}
+          >
+            <Paper className={classes.paper}>
+              <Grid container >
+                <Grid item xs={6} className={classes.gridItem}>
+                  <div>
+                    <Typography className={classes.p} component="p">Start Date: {moment(currentevent.start_date.toDate()).calendar()}</Typography>
+                    <Typography className={classes.p} component="p">End Date: {moment(currentevent.end_date.toDate()).calendar()}</Typography>
+                    <Typography className={classes.p} component="p">Description: </Typography>
+                    <Typography className={classes.p} component="p">{currentevent.desc}</Typography>
+                  </div>
+                </Grid>
+                <Grid item xs={6} className={classes.gridItem}><img src={imageFile} style={{maxWidth:'100%', 'maxHeight':'100%'}} /> </Grid>
+              </Grid>
+              <Divider/>
+              <ImportButton eventuid={this.props.match.params.id} teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />
+            </Paper>
+            <div style={{height:'20px'}}></div>
+            <Paper className={classes.paper} style={{background:'#E6E6FA'}}>
+            <Typography variant="h5" component="h1">Teams  
+              <Button size="small" onClick={() => {this.createTeam()}} className={classes.button}>
+                Create Teams
+              </Button>
+            </Typography>
+            <CardList eventuid={this.props.match.params.id} schooluid={user.school_id}/>
+            </Paper>
+          </AdminLayout>
       </React.Fragment>)
     }
     </React.Fragment>
@@ -139,4 +147,5 @@ export default compose(
     ]),
   firebaseConnect(),
   withSnackbar,
+  withRouter,
 )(Dashboard);

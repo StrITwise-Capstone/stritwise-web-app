@@ -11,8 +11,9 @@ import {firestoreConnect} from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 
 import Form from './Form';
+import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
-class createEvent extends Component {
+class createTeam extends Component {
   state = {
     schools: [],
     user: {},
@@ -39,6 +40,7 @@ class createEvent extends Component {
     const { classes, currentevent } = this.props;
     const { schools } = this.state;
     return (
+      <AdminLayout>
       <div className={classes.root}>
         <Paper>
           <Typography variant="h4" className={classes.title}>Add Team and Students</Typography>
@@ -48,6 +50,7 @@ class createEvent extends Component {
            }</div>
         </Paper>
       </div>
+      </AdminLayout>
     );
   }
 }
@@ -83,4 +86,4 @@ export default compose(
     },
   ]),
   withSnackbar,
-)(createEvent);
+)(createTeam);
