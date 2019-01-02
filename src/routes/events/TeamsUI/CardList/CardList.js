@@ -114,7 +114,7 @@ class cardList extends React.Component {
             teamsList, isNotLoading, page
         } = this.state;
         const {
-            teamsListCount, match
+            teamsListCount, match, schools
         } = this.props;
         return (
         <React.Fragment>
@@ -143,10 +143,10 @@ class cardList extends React.Component {
             {teamsList && isNotLoading
                 && Object.keys(teamsList).map(teamuid => (
                     <Grid item xs={6} key={teamuid}>
-                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
+                        <TeamCard schools={schools} teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
                         update={()=>{this.getData()}}
                         />
-                    </Grid>))
+                </Grid>))
             }
             </Grid>
         </React.Fragment>

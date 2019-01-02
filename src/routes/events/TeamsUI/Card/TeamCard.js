@@ -69,8 +69,7 @@ class teamCard extends React.Component {
   }
   
   render() {
-    const { classes, currentevent, team, eventuid, teamuid , studentsList, user, } = this.props;
-
+    const { classes, currentevent, team, eventuid, teamuid , studentsList, user, schools} = this.props;
     return (
       <React.Fragment>
         {team && studentsList && currentevent
@@ -86,11 +85,11 @@ class teamCard extends React.Component {
                 <CardContent style={{height:'300px'}}>
                   <List>
                 <div style={{"overflowY":"auto", "maxHeight":"350px",}}>
-                {studentsList 
+                {studentsList
                   && Object.keys(studentsList).map(student => 
                 (
                   <React.Fragment key={student}>
-                    <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
+                    <ExpansionPanel schools={schools} student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
                   </React.Fragment>
                 ))
                 }

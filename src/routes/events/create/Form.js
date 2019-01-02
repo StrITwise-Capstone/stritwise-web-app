@@ -85,6 +85,8 @@ const createEvent = ({
             image_path: `images/${imageuid}`,
             min_student: parseInt(values.min_student),
             max_student: parseInt(values.max_student),
+            created_At: new Date(Date.now()),
+            modified_At: new Date(Date.now()),
           }).then(() => {
             enqueueSnackbar('Event Created', {
               variant: 'success',

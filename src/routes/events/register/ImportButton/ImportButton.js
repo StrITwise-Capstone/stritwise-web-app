@@ -4,16 +4,25 @@ import {
   Input, 
   Button,
   MenuItem,
-  Select,
   OutlinedInput,
   Typography,
+  TextField,
+  FormControl,
 } from '@material-ui/core';
 import Papa from 'papaparse';
-import { withRouter } from 'react-router';
 import { firestoreConnect } from 'react-redux-firebase';
+import { withStyles } from '@material-ui/core/styles'
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import * as d3 from 'd3';
+import classNames from 'classnames';
+import NoSsr from '@material-ui/core/NoSsr';
+import Paper from '@material-ui/core/Paper';
+import Chip from '@material-ui/core/Chip';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { emphasize } from '@material-ui/core/styles/colorManipulator';
+
+import Select from '../../../../components/UI/DropdownField/DropdownField';
 
 function validateEmail(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -50,30 +59,23 @@ class ImportButton extends Component {
     this.setState({ file : input});
   }
 
-  handleDropboxChange = event => {
-    this.setState({ [event.target.name]: event.target.value});
+  handleDropboxChange = name => value => {
+    this.setState({ [name]: value});
   };
 
   uploadTeams = () =>{
+    
     const input = this.state.file;
     if (!input)
       return;
-    
     const setData = (result)=>{
-      const { enqueueSnackbar, firestore, updatingStatus, eventuid} = this.props;
+      const { enqueueSnackbar, firestore, updatingStatus, eventuid } = this.props;
       const { school_name } = this.state;
       updatingStatus(false);
       var dataByTeamName = d3.nest()
       .key(function(d) { return d['Team Name']; })
       .entries(result);
       //Query for school where school name matches
-      var schoolRef = firestore.collection("schools");
-      var schoolQuery = schoolRef.where("name",'==',`${school_name}`);
-      schoolQuery.get().then((querySnapshot) =>{
-        var school_id = '';
-        querySnapshot.forEach((docRef)=>{
-          school_id = docRef.id;
-        })
         Object.keys(dataByTeamName).map(TeamIndex => {
           var team = dataByTeamName[TeamIndex];
           //Do verification
@@ -87,7 +89,7 @@ class ImportButton extends Component {
               const teamuid = querySnapshot.docs[0].id;
               for (var i = 0; i < team.values.length; i++) {
                 firestore.collection("events").doc(eventuid).collection("students").add({
-                  school_id: school_id,
+                  school_id: school_name.value,
                   team_id: teamuid,
                   first_name: team.values[i]['First Name'],
                   last_name: team.values[i]['Last Name'],
@@ -100,7 +102,9 @@ class ImportButton extends Component {
                     name: team.values[i]['Emergency Contact Name'],
                     mobile: team.values[i]['Emergency Contact Mobile'],
                     relation: team.values[i]['Relation to Participant'],
-                  }
+                  },
+                  created_At: new Date(Date.now()),
+                  modified_At: new Date(Date.now()),
                 }).then(()=>{
                   enqueueSnackbar('Added 1 student...', {
                     variant: 'info',
@@ -114,6 +118,8 @@ class ImportButton extends Component {
               firestore.collection("events").doc(eventuid).collection("teams").add({
                 team_name: team.key,
                 credit:0,
+                created_At: new Date(Date.now()),
+                modified_At: new Date(Date.now()),
               }).then((docRef)=>{
                 enqueueSnackbar('Added Team...', {
                   variant: 'info',
@@ -121,7 +127,7 @@ class ImportButton extends Component {
                 for (var i = 0; i < team.values.length; i++) {
                   firestore.collection("events").doc(eventuid).collection("students").add({
                     team_id: docRef.id,
-                    school_id: school_id,
+                    school_id: school_name.value,
                     first_name: team.values[i]['First Name'],
                     last_name: team.values[i]['Last Name'],
                     mobile: team.values[i]['Phone Number'],
@@ -133,7 +139,9 @@ class ImportButton extends Component {
                       name: team.values[i]['Emergency Contact Name'],
                       mobile: team.values[i]['Emergency Contact Mobile'],
                       relation: team.values[i]['Relation to Participant'],
-                    }
+                    },
+                    created_At: new Date(Date.now()),
+                    modified_At: new Date(Date.now()),
                   }).then(()=>{
                     enqueueSnackbar('Added 1 student...', {
                       variant: 'info',
@@ -146,7 +154,6 @@ class ImportButton extends Component {
             }
           })
         }
-        })
       }
       )
     }
@@ -177,7 +184,7 @@ class ImportButton extends Component {
 
 
   render() {
-    const { schoolsList } = this.props;
+    const { schools, classes } = this.props;
     return (
       <React.Fragment>
         <div>
@@ -186,22 +193,13 @@ class ImportButton extends Component {
         <div>
           <Typography component="p">Select school</Typography>
           <Select
+            name="school_name"
+            options={schools}
             value={this.state.school_name}
-            onChange={this.handleDropboxChange}
-            input={
-              <OutlinedInput
-                labelWidth={100}
-                name="school_name"
-            />
-            }
-          >
-            {schoolsList && 
-              Object.keys(schoolsList).map(school => 
-            (
-              <MenuItem key={school} value={schoolsList[school].name}>{schoolsList[school].name}</MenuItem>
-            ))
-            }
-          </Select>
+            onChange={this.handleDropboxChange('school_name')}
+            placeholder="Select a school"
+            label="Select a school"
+          />
           </div>
         <Input type="file" onChange={this.handleChange}></Input>
         <Button onClick={this.uploadTeams}>Upload</Button>
@@ -211,17 +209,6 @@ class ImportButton extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    schoolsList: state.firestore.data.schoolsList,
-  }
-};
 
-export default compose(withSnackbar,
-  connect(mapStateToProps),
-  firestoreConnect((props) => [
-  {
-    collection:'schools',storeAs:`schoolsList`
-  },
-  ])
+export default compose(withSnackbar,firestoreConnect(),
   )(ImportButton);
