@@ -57,11 +57,19 @@ const styles = theme => ({
 });
 
 class PointSystem extends Component {
+
+
   render() {
     const { currentevent, rankings, classes } = this.props;
-    console.log(rankings);
-    if (rankings)
     console.log();
+    var array=[];
+    for (var team in rankings) {
+      array.push([rankings[team].team_name, rankings[team].credit]);
+    }
+    array.sort(function(a, b) {
+      return b[1] - a[1];
+    });
+    console.log(array)
     const action = (
       <React.Fragment>
         <Button
@@ -75,39 +83,32 @@ class PointSystem extends Component {
         </Button>
       </React.Fragment>
     );
-
     return (
-      <AdminLayout
-        title={currentevent && `${currentevent.name}`}
-        subtitle="Point System"
-        action={action}
-      >
-        <Paper style={{ minHeight: '1000px', paddingTop:'30px'}}>
+      <div style={{'background-color':'black'}}>
+          <Typography variant="h1">Title</Typography>
           <Grid 
             container  
             direction="row"
             justify="center"  
             alignItems="center"
-            style={{height:'500px', alignItems:'center',backgroundColor:'black'}}
+            style={{height:'500px', alignItems:'center'}}
           >
-             <img src='/assets/fireworks.png' style={{position:'absolute', height:'inherit'}}></img>
-
             <Grid item xs={3} className={classes.gridItem}>
-              <Typography variant="h4" className={classes.rankingHeadings}>{rankings && rankings[Object.keys(rankings)[1]].team_name}</Typography>
-              <Typography variant="h5" className={classes.rankingHeadings}>{rankings && rankings[Object.keys(rankings)[1]].credit} pts</Typography>
+              <Typography variant="h4" className={classes.rankingHeadings}>{rankings && array[1][0]}</Typography>
+              <Typography variant="h5" className={classes.rankingHeadings}>{rankings && array[1][1]} pts</Typography>
               <div style={{backgroundColor:'purple' ,width: '100%', height:'50%', display:'inline-block',position:'absolute',bottom:'0'}}>
               <Typography variant="h3" style={{'textAlign':'center', 'color':'white'}}>2</Typography>
               </div>
             </Grid>
             <Grid item xs={3} className={classes.gridItem} >
-              <Typography variant="h4"  className={classes.rankingHeadings}>{rankings && rankings[Object.keys(rankings)[0]].team_name}</Typography>
-              <Typography variant="h5" className={classes.rankingHeadings}>{rankings && rankings[Object.keys(rankings)[0]].credit} pts</Typography>
+              <Typography variant="h4"  className={classes.rankingHeadings}>{rankings && array[0][0]}</Typography>
+              <Typography variant="h5" className={classes.rankingHeadings}>{rankings && array[0][1]} pts</Typography>
               <div style={{backgroundColor:'purple' ,width: '100%', height:'80%', display:'inline-block',position:'absolute',bottom:'0'}}>
               <Typography variant="h3" style={{'textAlign':'center', 'color':'white'}}>1</Typography>
               </div>
             </Grid><Grid item xs={3} className={classes.gridItem}>
-              <Typography variant="h4" className={classes.rankingHeadings}>{rankings && rankings[Object.keys(rankings)[2]].team_name}</Typography>
-              <Typography variant="h5" className={classes.rankingHeadings}>{rankings && rankings[Object.keys(rankings)[2]].credit} pts</Typography>
+              <Typography variant="h4" className={classes.rankingHeadings}>{rankings && array[2][0]}</Typography>
+              <Typography variant="h5" className={classes.rankingHeadings}>{rankings && array[2][1]} pts</Typography>
               <div style={{backgroundColor:'purple' ,width: '100%', height:'30%', display:'inline-block',position:'absolute',bottom:'0'}}>
               <Typography variant="h3" className={classes.rankingHeadings} style={{'color':'white'}}>3</Typography>
               </div>
@@ -115,21 +116,18 @@ class PointSystem extends Component {
           </Grid>
           <List style={{'textAlign':'center'}}>
           <Typography variant="h5">Remaining Teams</Typography>
-          {rankings && Object.keys(rankings).length > 3 &&
-            Object.keys(rankings).map((key, index) => 
-              (
-                <div style={{width:'80%', height:'30%', backgroundColor:'purple',display:'inline-block',margin:'1em'}}>
-                  <div style={{padding:'1em',display:'inline-block',width:'100%'}}>
-                    <Typography variant="h5" className={classes.heading} style={{"color":'white',"paddingLeft":"10px", "textAlign":'left'}}>{index+4}. {rankings[key].team_name}</Typography>
-                    <Typography component="p" className={classes.heading} style={{"color":'white',"paddingLeft":"10px", "textAlign":'right'}}>Credits: {rankings[key].credit} pts</Typography>    
-                  </div>
+          {rankings && 
+            (
+              <div style={{width:'80%', height:'30%', backgroundColor:'purple',display:'inline-block',margin:'1em'}}>
+                <div style={{padding:'1em'}}>
+                  <Typography variant="h5" className={classes.heading} style={{"color":'white',"paddingLeft":"10px", "textAlign":'left'}}>4. {array[3][0]}</Typography>
+                  <Typography component="p" className={classes.heading} style={{"color":'white',"paddingLeft":"10px", "textAlign":'right'}}>Credits: {array[3][1]} pts</Typography>    
                 </div>
-              )
+              </div>
             )
           }
-          </List>
-        </Paper>
-      </AdminLayout>
+        </List>
+      </div>
     );
   }
 }
@@ -145,10 +143,11 @@ const mapStateToProps = (state) => {
 
 export default compose(
   connect(mapStateToProps),
+  withRouter,
   withStyles(styles),
   firestoreConnect((props) => [
     {
-      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
+      collection:'events',doc:`${props.location.pathname.replace('/events/','').replace('/pointsystem','')}`,storeAs:`currentevent`
     },
     {
       collection: 'users',
@@ -156,10 +155,9 @@ export default compose(
       doc: `${props.auth.uid}`,
     },
     {
-      collection:'events',doc:`${props.match.params.id}`, subcollections: [{ collection: 'teams' , orderBy: ['credit','desc'],}], storeAs:'rankings'
+      collection:'events',doc:`${props.location.pathname.replace('/events/','').replace('/pointsystem','')}`, subcollections: [{ collection: 'teams',}], storeAs:'rankings'
     },
     ]),
   firebaseConnect(),
   withSnackbar,
-  withRouter,
 )(PointSystem);

@@ -166,7 +166,7 @@ const components = {
   ValueContainer,
 };
 
-const DropdownField = ({children, classes, theme, onChange, name, placeholder, value, options, label }) => {
+const DropdownField = ({ classes, theme, onChange, name, placeholder, value, options, label }) => {
     const selectStyles = {
       input: base => ({
         ...base,
@@ -188,6 +188,7 @@ const DropdownField = ({children, classes, theme, onChange, name, placeholder, v
           onChange={onChange}
           placeholder={placeholder}
           label={label}
+          name={name}
         />
       </div>
     );
