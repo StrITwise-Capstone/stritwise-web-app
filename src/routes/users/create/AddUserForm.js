@@ -18,6 +18,7 @@ import * as util from '../../../helper/util';
 import * as reduxAction from '../../../store/actions';
 import TextField from '../../../components/UI/TextField/TextField';
 import Dropdown from '../../../components/UI/Dropdown/Dropdown';
+import Select from '../../../components/UI/Select/Select';
 
 
 const initialValues = {
@@ -27,10 +28,11 @@ const initialValues = {
   type: '',
   email: '',
   password: '',
+  school: {},
 };
 
 const AddUserForm = ({
-  auth, logOut, enqueueSnackbar
+  auth, logOut, enqueueSnackbar, schools,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -50,15 +52,28 @@ const AddUserForm = ({
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const firebase = getFirebase();
       const firestore = getFirestore();
-      firebase.auth().createUserWithEmailAndPassword(
-        values.email,
-        values.password,
-      ).then(resp => firestore.collection('users').doc(resp.user.uid).set({
+      const now = new Date();
+      const timestamp = now.getTime();
+
+      // update user values
+      const addValues = {
         firstName: values.firstName,
         lastName: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
+        created_at: timestamp,
         type: values.type,
+      };
+      console.log(values.school.value);
+      if (typeof (values.school.value) !== 'undefined') {
+        addValues.school_id = values.school.value;
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(
+        values.email,
+        values.password,
+      ).then(resp => firestore.collection('users').doc(resp.user.uid).set({ 
+        ...addValues,
       })).then(() => {
         const user = firebase.auth().currentUser;
         if (user != null) {
@@ -80,6 +95,7 @@ const AddUserForm = ({
           logOut();
         })
         .catch((err) => {
+          console.log(err);
           enqueueSnackbar('Invalid Credentials for New User. Please try again.', {
             variant: 'error',
           });
@@ -133,12 +149,9 @@ const AddUserForm = ({
             required
             name="school"
             label="School"
-            component={Dropdown}
-          >
-            <MenuItem value="10">TKSS</MenuItem>
-            <MenuItem value="20">Anglican High</MenuItem>
-            <MenuItem value="30">Some other School</MenuItem>
-          </Field>
+            options={schools}
+            component={Select}
+          />
         ) : (
           null
         )}
