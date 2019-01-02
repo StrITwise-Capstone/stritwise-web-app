@@ -90,6 +90,7 @@ const editEvent = ({
           desc: values.description,
           start_date: new Date(values.startdate),
           end_date: new Date(values.enddate),
+          modified_At: new Date(Date.now()),
         }).then(() => {
           // console.log('Event created');
           enqueueSnackbar('Event Updated', {
@@ -127,6 +128,7 @@ const editEvent = ({
               start_date: new Date(values.startdate),
               end_date: new Date(values.enddate),
               image_path: `images/${imageuid}`,
+              modified_At: new Date(Date.now()),
             }).then(() => {
               // console.log('Event created');
               enqueueSnackbar('Event Updated', {

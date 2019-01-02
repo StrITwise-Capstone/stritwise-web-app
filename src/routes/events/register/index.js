@@ -17,6 +17,7 @@ import {
 } from 'react-redux-firebase';
 import moment from 'moment';
 import { withSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 import CardList from '../TeamsUI/CardList/CardList';
 import ImportButton from './ImportButton/ImportButton';
@@ -47,7 +48,25 @@ class Dashboard extends Component {
     open: false,
     event: null,
     isNotLoading: false,
+    schools : null,
   };
+
+  action = () => {
+    const { isAuthenticated,user, match } = this.props;
+    // if (isAuthenticated)
+    // {
+      
+    return(<React.Fragment>
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        component={Link}
+        to={`/events/${match.params.id}/pointsystem`}
+      >Point System</Button>
+    </React.Fragment>)
+    //}
+  }
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -76,9 +95,26 @@ class Dashboard extends Component {
     }
   }
 
+  componentDidMount() {
+    const { firestore } = this.props;
+    
+    firestore.collection('schools').get().then((querySnapshot) => {
+      const schools = [];
+      querySnapshot.forEach((doc) => {
+      schools.push({
+          label: doc.data().name,
+          value: doc.id,
+        });
+      });
+      this.setState({ schools });
+    }).catch((error) => {
+      console.log(error);
+      });
+  }
+
   render() {
     const { classes, currentevent, user } = this.props;
-    const { imageFile, isNotLoading } = this.state;
+    const { imageFile, isNotLoading, schools } = this.state;
     
     return (
       <React.Fragment>
@@ -90,6 +126,7 @@ class Dashboard extends Component {
         (<React.Fragment>
           <AdminLayout
             title={currentevent.name}
+            action={this.action()}
           >
             <Paper className={classes.paper}>
               <Grid container >
@@ -104,7 +141,7 @@ class Dashboard extends Component {
                 <Grid item xs={6} className={classes.gridItem}><img src={imageFile} style={{maxWidth:'100%', 'maxHeight':'100%'}} /> </Grid>
               </Grid>
               <Divider/>
-              <ImportButton eventuid={this.props.match.params.id} teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />
+              {schools && <ImportButton schools={schools} eventuid={this.props.match.params.id} teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />}
             </Paper>
             <div style={{height:'20px'}}></div>
             <Paper className={classes.paper} style={{background:'#E6E6FA'}}>
@@ -113,7 +150,7 @@ class Dashboard extends Component {
                 Create Teams
               </Button>
             </Typography>
-            <CardList eventuid={this.props.match.params.id} schooluid={user.school_id}/>
+            {schools && <CardList schools={schools} eventuid={this.props.match.params.id} schooluid={user.school_id}/>}
             </Paper>
           </AdminLayout>
       </React.Fragment>)

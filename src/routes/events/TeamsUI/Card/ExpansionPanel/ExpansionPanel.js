@@ -22,7 +22,7 @@ const styles = theme => ({
 class SimpleExpansionPanel extends React.Component {
 
     render(){
-    const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
+    const { classes, student, teamuid, studentuid, eventuid, deletevalue, schools } = this.props;
     return (
       <div className={classes.root}>
         {student && <ExpansionPanel>
@@ -30,7 +30,7 @@ class SimpleExpansionPanel extends React.Component {
             <Typography className={classes.heading} style={{"paddingLeft":"10px"}}>{student.first_name} {student.last_name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
+            <Form student={student} schoola={''} schools={schools} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
         }
@@ -39,6 +39,4 @@ class SimpleExpansionPanel extends React.Component {
     );
 }
 }
-
-
 export default withStyles(styles)(SimpleExpansionPanel);

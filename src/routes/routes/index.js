@@ -21,6 +21,7 @@ import CreateEvent from '../events/create';
 import EditEvent from '../events/edit';
 import RegisterEvent from '../events/register';
 import CreateStudents from '../events/register/create';
+import PointSystem from '../events/register/pointsystem';
 import Profile from '../profile';
 
 import AdminRoutes from './adminRoutes';
@@ -63,6 +64,8 @@ class routes extends Component {
   
     elements.push(<Route exact path="/events/:id/teams/register" key="/events/register" component={RegisterEvent} />);
     elements.push(<Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateStudents}/>)
+    
+    elements.push(<Route exact path="/events/:id/pointsystem" key="/events/pointsystem" component={PointSystem}/>)
   
     /* ERRORS */
     elements.push(<Route path="/" key="/404" component={NotFound} />);

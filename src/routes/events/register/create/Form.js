@@ -81,6 +81,8 @@ const createStudent = ({
                 dietary_restriction: students[i]['dietaryrestriction'],
                 remarks: students[i]['remarks'],
                 school_id: students[i]['school'].value,
+                created_At: new Date(Date.now()),
+                modified_At: new Date(Date.now()),
               }).then(()=>{
                 enqueueSnackbar('Added 1 student...', {
                   variant: 'info',
@@ -99,7 +101,8 @@ const createStudent = ({
             firestore.collection("events").doc(match.params.id).collection("teams").add({
               team_name: values.team_name,
               credit:0,
-              
+              created_At: new Date(Date.now()),
+              modified_At: new Date(Date.now()),
             }).then((docRef)=>{
               enqueueSnackbar('Added Team...', {
                 variant: 'info',
@@ -119,6 +122,8 @@ const createStudent = ({
                     mobile:students[i]['emergency_contact_mobile'],
                     relation: students[i]['emergency_contact_relation'],
                   },
+                  created_At: new Date(Date.now()),
+                  modified_At: new Date(Date.now()),
                 }).then(()=>{
                   enqueueSnackbar('Added 1 student...', {
                     variant: 'info',

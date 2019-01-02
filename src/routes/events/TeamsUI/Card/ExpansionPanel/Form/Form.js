@@ -17,6 +17,7 @@ import { withSnackbar } from 'notistack';
 import TextField from '../../../../../../components/UI/TextField/TextField';
 import Dropdown from '../../../../../../components/UI/Dropdown/Dropdown';
 import DeleteButton from './DeleteButton/DeleteButton';
+import Select from '../../../../../../components/UI/Select/Select';
 import yup from '../../../../../../instances/yup';
 
 const editStudent = ({
@@ -29,7 +30,8 @@ const editStudent = ({
   teamuid,
   deletevalue,
   school,
-  schoolsList,
+  schoola,
+  schools,
 }) => (
   <Formik
     enableReinitialize={true}
@@ -43,8 +45,10 @@ const editStudent = ({
         mobile : student.mobile,
         studentuid: studentuid,
         eventuid: eventuid,
-        school: school ? school.name : '',
-        schools: schoolsList ? schoolsList : null,
+        school: {
+          label: school ? school.name : '',
+          value: student.school_id,
+        },
         teamuid: teamuid,
         deletevalue: deletevalue,
         emergency_contact_name: student.emergency_contacts ? student.emergency_contacts['name']: null,
@@ -60,15 +64,8 @@ const editStudent = ({
       email: yup.string().email("Email is not valid"),
     })}
     onSubmit={(values, { setSubmitting }) => {
-      var schoolRef = firestore.collection("schools");
-      var schoolQuery = schoolRef.where("name",'==',`${values.school}`);
-      schoolQuery.get().then((querySnapshot) =>{
-        var school_id = '';
-        querySnapshot.forEach((docRef)=>{
-          school_id = docRef.id;
-        })
       firestore.collection('events').doc(eventuid).collection('students').doc(studentuid).update({
-          school_id: school_id,
+          school_id: values.school.value,
           first_name: values.firstname,
           last_name: values.lastname,
           badge_name: values.badgename,
@@ -76,6 +73,7 @@ const editStudent = ({
           dietary_restriction: values.dietary_restriction,
           remarks: values.remarks,
           email: values.email,
+          modified_At: new Date(Date.now()),
       }).then(() => {
           enqueueSnackbar('Student Updated',{
               variant: 'success',
@@ -88,8 +86,8 @@ const editStudent = ({
           console.log(err);
           setSubmitting(false);
       });
-     });
-      }}
+     }
+    }
   >
     {({
       handleSubmit,
@@ -136,13 +134,10 @@ const editStudent = ({
               component={TextField}
             />
             <Field
-              required
               name="school"
               label="School"
-              children={initialValues.schools ? Object.keys(initialValues.schools).map(id => {
-                return <MenuItem key={id} value={initialValues.schools[id].name}>{initialValues.schools[id].name}</MenuItem>
-              }) : null}
-              component={Dropdown}
+              options={schools}
+              component={Select}
             />
             <Field
               required
@@ -193,15 +188,14 @@ const editStudent = ({
   </Formik>
 );
 
-const mapStateToProps = state => {return({
-  school: state.firestore.data.school,
-  schoolsList: state.firestore.data.schoolsList,
+const mapStateToProps = (state, ownProps) => {return({
+  school: state.firestore.data[`school${ownProps.student.school_id}`],
 })};
 
 export default compose(withSnackbar,connect(mapStateToProps),
 firestoreConnect((props) => {return[
   {
-      collection:'schools', doc:`${props.student.school_id}`, storeAs: 'school'
+      collection:'schools', doc:`${props.student.school_id}`, storeAs: `school${props.student.school_id}`
   },
   ]}),
 )(editStudent);
