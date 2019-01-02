@@ -6,15 +6,35 @@ import {
   MuiThemeProvider,
 } from '@material-ui/core/styles';
 
+
+import PointSystem from './routes/events/register/pointsystem';
 import './App.css';
 import Layout from './hoc/Layout/Layout';
 import Routes from './routes/routes/index';
 import styles from './App.styles';
 
+function getRoutes(location) {
+  var help = null;
+  if (!location.pathname.includes("pointsystem"))
+  { 
+    help = 
+  (<Layout>
+    <Routes />
+  </Layout>)
+  }
+  else{
+    console.log("here")
+    help = (<PointSystem/>)
+  }
+  return help;
+}
+
 class App extends Component {
   theme = createMuiTheme(styles);
-
+  
   render() {
+    const { location } = this.props;
+    const help = getRoutes(location);
     return (
       <React.Fragment>
         <MuiThemeProvider theme={this.theme}>
@@ -25,9 +45,9 @@ class App extends Component {
               horizontal: 'left',
             }}
           >
-            <Layout>
-              <Routes />
-            </Layout>
+          {
+            help
+          }
           </SnackbarProvider>
         </MuiThemeProvider>
       </React.Fragment>
