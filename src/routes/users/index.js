@@ -67,18 +67,33 @@ class Users extends Component {
         Name: `${user.data.firstName} ${user.data.lastName}`,
         Mobile: user.data.mobile,
         Type: user.data.type,
-        School: schoolsMap[user.data.school_id],
+        School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
       }
     ));
     return data;
+  }
+
+  // Non-custom filter implmentation
+  handleCustomFilter = (collection, filter, search) => {
+    // check if Filter has been changed
+    if (filter === 'type') {
+      collection = collection.where(filter, '==', search.toLowerCase());
+    } else if (filter === 'name') {
+      const name = search.split(' ');
+      if (name.length === 2) {
+        collection = collection.where('firstName', '==', name[0])
+          .where('lastName', '==', name[1]);
+      } else {
+        collection = collection.where('firstName', '==', name[0]);
+      }
+    }
+    return collection;
   }
 
 
   render() {
     const { firestore } = this.props;
     const { filter, search } = this.state;
-    //console.log(this.state);
-    // console.log(this.props);
     const colRef = firestore.collection('users');
     return (
       <AdminLayout
@@ -100,13 +115,14 @@ class Users extends Component {
             handleDocsList={this.handleDocsList}
             handleEdit={this.handleEdit}
             handleDelete={this.handleDelete}
+            handleCustomFilter={this.handleCustomFilter}
             filter={filter}
             search={search}
           >
 
             <div>
               <Formik
-                enableReinitialize={true}
+                enableReinitialize
                 initialValues={{ search: '', filter: 'all' }}
                 validationSchema={Yup.object({
                   search: Yup.string()
@@ -116,7 +132,6 @@ class Users extends Component {
                 })}
                 onSubmit={(values, { setSubmitting, resetForm }) => {
                   this.setState({ search: values.search, filter: values.filter });
-                  // console.log(this.state);
                   setSubmitting(false);
                 }}
               >
