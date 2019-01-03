@@ -49,13 +49,11 @@ class Dashboard extends Component {
     event: null,
     isNotLoading: false,
     schools : null,
+    imageFile: null,
   };
 
   action = () => {
-    const { isAuthenticated,user, match } = this.props;
-    // if (isAuthenticated)
-    // {
-      
+    const { match } = this.props;      
     return(<React.Fragment>
       <Button
         type="button"
@@ -65,7 +63,7 @@ class Dashboard extends Component {
         to={`/events/${match.params.id}/pointsystem`}
       >Point System</Button>
     </React.Fragment>)
-    //}
+    
   }
   handleOpen = () => {
     this.setState({ open: true });
@@ -82,7 +80,7 @@ class Dashboard extends Component {
   componentDidUpdate(){
     const { firebase, currentevent } = this.props;
     const { imageFile } = this.state;
-    if (imageFile == null && currentevent){
+    if (imageFile === null && currentevent){
     firebase.storage().ref(`${currentevent.image_path}`).getDownloadURL().then((img) => {
       const imageFile = img;
       this.setState({
@@ -115,13 +113,12 @@ class Dashboard extends Component {
   render() {
     const { classes, currentevent, user } = this.props;
     const { imageFile, isNotLoading, schools } = this.state;
-    
     return (
       <React.Fragment>
-      {isNotLoading == false && 
+      {isNotLoading === false && 
         <CircularProgress></CircularProgress>
       }
-      {isNotLoading == true
+      {isNotLoading === true
         && 
         (<React.Fragment>
           <AdminLayout

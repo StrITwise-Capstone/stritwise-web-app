@@ -53,14 +53,14 @@ class Profile extends Component {
       >
         <Paper style={{ minHeight: '1000px' , textAlign:'center'}}>
         <div style={{'position':'center'}}>
-          <img src='/assets/profile.png' style={{display: 'block', 'marginLeft':'auto', 'marginRight':'auto','position':'center','paddingTop':'50px'}}></img>
+          <img src='/assets/profile.png' alt='Profile Image' style={{display: 'block', 'marginLeft':'auto', 'marginRight':'auto','position':'center','paddingTop':'50px'}}></img>
         { isAuthenticated !== true &&  
         (
           <Typography variant="h5" component="h3" style={{'position':'relative'}}>
             User is not logged in. 
           </Typography>
         )}
-        { isAuthenticated && user && (user.type == 'admin' || user.type == 'orion member') && 
+        { isAuthenticated && user && (user.type === 'admin' || user.type === 'orion member') && 
         (<div>
           <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
             Name : {user.firstName+ ' '+ user.lastName} 
@@ -76,7 +76,7 @@ class Profile extends Component {
           </Typography>
           </div>
         )}
-        { isAuthenticated && user && user.type == 'teacher' && userSchool &&
+        { isAuthenticated && user && user.type === 'teacher' && userSchool &&
         (
           <div>
           <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>

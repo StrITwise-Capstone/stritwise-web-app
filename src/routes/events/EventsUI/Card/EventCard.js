@@ -5,7 +5,6 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  Button,
   Typography,
   CircularProgress,
 } from '@material-ui/core/';
@@ -88,7 +87,7 @@ class eventCard extends React.Component {
         {event
           && notDeleted
           && (
-            <Card style={{ width: '370px', height: '500px' }}>
+            <Card>
               <CardActionArea className={classes.cardActionArea} onClick={this.handleClickOpen}>
                 <div>
                   { imageFile === null

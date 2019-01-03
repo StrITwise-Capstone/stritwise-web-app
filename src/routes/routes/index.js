@@ -4,7 +4,6 @@ import {
   Switch,
 } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
@@ -64,7 +63,8 @@ class routes extends Component {
   
     elements.push(<Route exact path="/events/:id/teams/register" key="/events/register" component={RegisterEvent} />);
     elements.push(<Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateStudents}/>)
-    
+    elements.push(<Route exact path="/events/:id/crews" key="/events/crews" component={CreateStudents}/>)
+
     elements.push(<Route exact path="/events/:id/pointsystem" key="/events/pointsystem" component={PointSystem}/>)
   
     /* ERRORS */
@@ -73,16 +73,21 @@ class routes extends Component {
   }
 
   elements(){
-    const { isAuthenticated , user , auth } = this.props;
+    const { isAuthenticated , user } = this.props;
     var result = [];
     if (isAuthenticated){
       switch(user.type){
         case userType.ADMIN:
           result = AdminRoutes;
+          break;
         case userType.TEACHER:
           result = TeacherRoutes
+          break;
         case userType.ORIONMEMBER:
           result = OrionMemberRoutes;
+          break;
+        default:
+          break;
       }
       result.push(<Route path="/" key="/404" component={NotFound} />);
       return result;

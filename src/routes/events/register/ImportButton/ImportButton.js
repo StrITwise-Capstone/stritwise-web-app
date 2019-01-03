@@ -1,26 +1,14 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { 
   Input, 
   Button,
-  MenuItem,
-  OutlinedInput,
   Typography,
-  TextField,
-  FormControl,
 } from '@material-ui/core';
 import Papa from 'papaparse';
 import { firestoreConnect } from 'react-redux-firebase';
-import { withStyles } from '@material-ui/core/styles'
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import * as d3 from 'd3';
-import classNames from 'classnames';
-import NoSsr from '@material-ui/core/NoSsr';
-import Paper from '@material-ui/core/Paper';
-import Chip from '@material-ui/core/Chip';
-import CancelIcon from '@material-ui/icons/Cancel';
-import { emphasize } from '@material-ui/core/styles/colorManipulator';
 
 import Select from '../../../../components/UI/DropdownField/DropdownField';
 
@@ -39,7 +27,7 @@ function validation(team){
       bool = false;
     if (team.values[i]['Email'] === '' && validateEmail(team.values[i]['Email']) === false)
       bool = false;
-    if (team.values[i]['Emergency Contact Name'] == '' && team.values[i]['Emergency Contact Mobile'] == '' && team.values[i]['Relation to Participant'] == '')
+    if (team.values[i]['Emergency Contact Name'] === '' && team.values[i]['Emergency Contact Mobile'] === '' && team.values[i]['Relation to Participant'] === '')
      bool = false;
      if (team.values[i]['Emergency Contact Mobile'] &&team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
      bool = false;
@@ -184,7 +172,7 @@ class ImportButton extends Component {
 
 
   render() {
-    const { schools, classes } = this.props;
+    const { schools } = this.props;
     return (
       <React.Fragment>
         <div>

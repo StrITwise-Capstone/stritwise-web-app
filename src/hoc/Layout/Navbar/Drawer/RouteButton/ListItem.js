@@ -6,9 +6,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import ListItem from '@material-ui/core/ListItem';
 
-const RouteButton = withRouter(({ history, route, routelink,onClick, selected, children }) => {
+const RouteButton = withRouter(({ history, route, routelink,onClick, selected }) => {
   const label = () =>{
-    if (route == "Home"){
+    if (route === "Home"){
       return <Home style={{margin:'2px', color:'purple'}}></Home>
     }
     else

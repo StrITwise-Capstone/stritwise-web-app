@@ -69,7 +69,7 @@ class teamCard extends React.Component {
   }
   
   render() {
-    const { classes, currentevent, team, eventuid, teamuid , studentsList, user, schools} = this.props;
+    const { classes, currentevent, team, eventuid, teamuid , studentsList, schools} = this.props;
     return (
       <React.Fragment>
         {team && studentsList && currentevent

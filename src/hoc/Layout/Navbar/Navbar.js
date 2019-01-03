@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -125,7 +124,7 @@ class Navbar extends Component{
         }}
       >
         <div className={classes.toolbar} />
-        <DrawerList auth={user.type}/>
+        {user && <DrawerList auth={user.type}/>}
         
       </Drawer>
       }
@@ -133,7 +132,6 @@ class Navbar extends Component{
   );
 }
 }
-
 
 const mapStateToProps = (state) => {
   return {
@@ -156,6 +154,7 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
   withRouter,
   connect(mapStateToProps,mapDispatchToProps),
+  withStyles(styles),
   firestoreConnect(props => [
     {
       collection: 'users',
@@ -163,6 +162,5 @@ export default compose(
       doc: `${props.auth.uid}`,
     },
   ]),
-  withStyles(styles)
 )(Navbar);
 
