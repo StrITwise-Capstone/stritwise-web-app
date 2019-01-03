@@ -8,10 +8,7 @@ import {
 import {
   Button,
   CircularProgress,
-  IconButton,
 } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';

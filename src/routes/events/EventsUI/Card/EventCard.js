@@ -5,7 +5,6 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  Button,
   Typography,
   CircularProgress,
 } from '@material-ui/core/';

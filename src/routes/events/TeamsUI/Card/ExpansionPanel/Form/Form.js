@@ -7,7 +7,6 @@ import {
 import {
   Button,
   CircularProgress,
-  MenuItem,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
@@ -15,7 +14,6 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 
 import TextField from '../../../../../../components/UI/TextField/TextField';
-import Dropdown from '../../../../../../components/UI/Dropdown/Dropdown';
 import DeleteButton from './DeleteButton/DeleteButton';
 import Select from '../../../../../../components/UI/Select/Select';
 import yup from '../../../../../../instances/yup';

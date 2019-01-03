@@ -40,7 +40,6 @@ const guid = () => {
 };
 
 const createEvent = ({
-  authError,
   auth,
   firestore,
   enqueueSnackbar,

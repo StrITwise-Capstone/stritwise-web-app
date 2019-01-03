@@ -1,29 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { 
-  Button, 
-  withStyles,
+  Button,
 } from '@material-ui/core';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
-import AddIcon from '@material-ui/icons/Add';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 
 import CardList from './EventsUI/CardList/CardList';
 import AdminLayout from '../../hoc/Layout/AdminLayout';
-
-const styles = () => ({
-  button: {
-    margin: 0,
-    top: 'auto',
-    right: 20,
-    bottom: 20,
-    left: 'auto',
-    position: 'fixed',
-  }
-});
 
 class Dashboard extends Component {
 
@@ -34,7 +21,7 @@ class Dashboard extends Component {
   
   action = () => {
     const { isAuthenticated,user } = this.props;
-    if (isAuthenticated && (user.type == 'admin' || user.type == 'orion member'))
+    if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member'))
     {
       
     return(<React.Fragment>
@@ -50,7 +37,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { eventsList , classes, isAuthenticated,user } = this.props;
+    const { eventsList , isAuthenticated,user } = this.props;
 
     return (
       <AdminLayout
@@ -86,6 +73,5 @@ export default compose(
       collection: 'events',
     }
   ]),
-  withStyles(styles),
   withSnackbar,
 )(Dashboard);

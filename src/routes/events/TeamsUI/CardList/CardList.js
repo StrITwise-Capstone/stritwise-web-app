@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   Grid,
-  List,
-  ListItem,
   CircularProgress,
   Table,
 } from '@material-ui/core/';
@@ -46,25 +44,26 @@ class cardList extends React.Component {
             this.setState({teamsList : array, lastVisible , page, firstVisible, isNotLoading : true})
         }
         var array = [];
-        if (page > this.state.page){
-        var first = firestore.collection("events").doc(eventuid).collection("teams")
-        .orderBy("team_name",'asc')
-        .limit(5)
-        .startAfter(lastVisible);
-        first.get().then(function (documentSnapshots) {
-        // Get the last visible document
-        var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
-        var firstVisible = documentSnapshots.docs[0];
-        documentSnapshots.forEach(function(documentSnapshots){
-            array.push({
-                uid: documentSnapshots.id,
-                data:documentSnapshots.data()});
-        });
-        callback(array.reverse(),lastVisible,page,firstVisible);
-        })
+        var first = null;
+        if (page > this.state.page) {
+            first = firestore.collection("events").doc(eventuid).collection("teams")
+            .orderBy("team_name",'asc')
+            .limit(5)
+            .startAfter(lastVisible);
+            first.get().then(function (documentSnapshots) {
+            // Get the last visible document
+            var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+            var firstVisible = documentSnapshots.docs[0];
+            documentSnapshots.forEach(function(documentSnapshots){
+                array.push({
+                    uid: documentSnapshots.id,
+                    data:documentSnapshots.data()});
+            });
+            callback(array.reverse(),lastVisible,page,firstVisible);
+            })
         }
-        if (page < this.state.page){
-            var first = firestore.collection("events").doc(eventuid).collection("teams")
+        if (page < this.state.page) {
+            first = firestore.collection("events").doc(eventuid).collection("teams")
                 .orderBy("team_name",'desc')
                 .limit(5)
                 .startAfter(firstVisible);

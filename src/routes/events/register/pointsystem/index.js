@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { 
-  Button, 
+import {
   withStyles,
-  Paper,
-  Divider, 
-  CircularProgress,
   Grid,
   Typography,
-  ExpansionPanel,
-  ExpansionPanelSummary,
   List,
 } from '@material-ui/core';
 import { compose } from 'redux';
@@ -19,10 +12,8 @@ import {
   firestoreConnect,
   firebaseConnect 
 } from 'react-redux-firebase';
-import moment from 'moment';
 import { withSnackbar } from 'notistack';
 
-import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
 const styles = theme => ({
   button: {
@@ -60,7 +51,7 @@ class PointSystem extends Component {
 
 
   render() {
-    const { currentevent, rankings, classes } = this.props;
+    const { rankings, classes } = this.props;
     console.log();
     var array=[];
     for (var team in rankings) {
@@ -69,23 +60,10 @@ class PointSystem extends Component {
     array.sort(function(a, b) {
       return b[1] - a[1];
     });
-    console.log(array)
-    const action = (
-      <React.Fragment>
-        <Button
-          type="button"
-          variant="contained"
-          color="secondary"
-          component={Link}
-          to=''
-        >
-          Back
-        </Button>
-      </React.Fragment>
-    );
+    
     return (
       <div style={{'background-color':'black'}}>
-          <Typography variant="h1">Title</Typography>
+          {/* <Typography variant="h1">Title</Typography> */}
           <Grid 
             container  
             direction="row"
