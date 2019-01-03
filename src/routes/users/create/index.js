@@ -38,7 +38,7 @@ class AddUser extends Component {
       >
         <Typography variant="h4" id="title">Add a New User!</Typography>
         <AddUserForm schools={schools}/>
-      </React.Fragment>
+      </AdminLayout>
     );
   }
 }

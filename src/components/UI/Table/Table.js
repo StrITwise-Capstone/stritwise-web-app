@@ -4,12 +4,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Link } from 'react-router-dom';
 import {
-  Grid,
-  Paper,
-  Button,
   CircularProgress,
-  Typography,
-  MenuItem,
 } from '@material-ui/core';
 
 import TableView from './TableView';
@@ -26,10 +21,11 @@ class CustomTable extends Component {
     rowsPerPage: 5,
     lastVisible: null,
     firstVisible: null,
+    isLoading: false,
   }
 
   componentWillMount = () => {
-    const { firestore, colRef } = this.props;
+    const { colRef } = this.props;
     colRef.get().then((snap) => {
       this.setState({ colSize: snap.size, filterSize: snap.size }, () => {
         this.getData();
@@ -40,80 +36,77 @@ class CustomTable extends Component {
   componentDidUpdate(prevProps) {
     const { filter, search } = this.props;
     if (filter !== prevProps.filter || search !== prevProps.search) {
-      this.getData();
+      /* eslint-disable */
+      this.setState({ page: 0 }, () => {
+      /* eslint-enable */
+        this.getData();
+      });
     }
   }
 
-  getData = () => {
-    const { rowsPerPage, filterRef } = this.state;
+  getData = (startAfter = null, chosenPage = null, orderByDir = 'asc') => {
+    const { rowsPerPage, filterRef, page } = this.state;
     const { handleCustomFilter, filter, search } = this.props;
-    let newRef = handleCustomFilter(filterRef, filter, search).orderBy('created_at', 'asc');
+    let startAt = null;
+    let newRef = handleCustomFilter(filterRef, filter, search).orderBy('created_at', orderByDir);
     newRef.get().then((documentSnapshot) => {
-      this.setState({ filterSize: documentSnapshot.size });
-    });
+      if (startAfter === null) {
+        startAt = documentSnapshot.docs[0];
+      }
+      this.setState({ filterSize: documentSnapshot.size }, () => {
+        if (startAt === null) { 
+          newRef = newRef.limit(rowsPerPage).startAfter(startAfter);
+        } else {
+          newRef = newRef.limit(rowsPerPage).startAt(startAt);
+        }
 
-    newRef = newRef.limit(rowsPerPage);
-    const docsList = [];
+        const docsList = [];
+        this.setState({ isLoading: true });
+        newRef.get().then((documentSnapshot) => {
+          // Get the last and first visible document
+          let newLastVisible = null;
+          let newFirstVisible = null;
+          if (chosenPage < page) {
+            newLastVisible = documentSnapshot.docs[0];
+            newFirstVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+          } else {
+            newLastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+            newFirstVisible = documentSnapshot.docs[0];
+          }
 
-    newRef.get().then((documentSnapshot) => {
-      // Get the last and first visible document
-      const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-      const firstVisible = documentSnapshot.docs[0];
-      documentSnapshot.forEach((doc) => {
-        docsList.push({
-          uid: doc.id,
-          data: doc.data(),
+          documentSnapshot.forEach((doc) => {
+            docsList.push({
+              uid: doc.id,
+              data: doc.data(),
+            });
+          });
+          
+          if (chosenPage === null) {
+            this.setState({ docsList, lastVisible: newLastVisible, firstVisible: newFirstVisible });
+          } else {
+            if (chosenPage < page) {
+              docsList.reverse();
+            }
+            this.setState({
+              docsList,
+              page: chosenPage,
+              lastVisible: newLastVisible,
+              firstVisible: newFirstVisible,
+            });
+          }
+          this.setState({ isLoading: false });
         });
       });
-      this.setState({ docsList, lastVisible, firstVisible });
     });
   }
 
   handleChangePage = (event, chosenPage) => {
     console.log('handleChangePage() Called');
-    const { firestore, handleCustomFilter, filter, search } = this.props;
-    const { lastVisible, firstVisible, page, rowsPerPage, filterRef } = this.state;
-    let newRef = handleCustomFilter(filterRef, filter, search);
+    const { lastVisible, firstVisible, page } = this.state;
     if (chosenPage > page) {
-      newRef = newRef.orderBy('created_at', 'asc')
-        .limit(rowsPerPage)
-        .startAfter(lastVisible);
-      const docsList = [];
-      newRef.get().then((documentSnapshot) => {
-        // Get the last and first visible document
-        const lastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-        const firstVisible = documentSnapshot.docs[0];
-        documentSnapshot.forEach((doc) => {
-          docsList.push({
-            uid: doc.id,
-            data: doc.data(),
-          });
-        });
-        this.setState({ docsList, lastVisible, page: chosenPage, firstVisible });
-      });
+      this.getData(lastVisible, chosenPage, 'asc');
     } else if (chosenPage < page) {
-      newRef = newRef.orderBy('created_at', 'desc')
-        .limit(rowsPerPage)
-        .startAfter(firstVisible);
-      const docsList = [];
-      newRef.get().then((documentSnapshot) => {
-        // Get the last and first visible document
-        const lastVisible = documentSnapshot.docs[0];
-        const firstVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-        documentSnapshot.forEach((doc) => {
-          docsList.push({
-            uid: doc.id,
-            data: doc.data(),
-          });
-        });
-        docsList.reverse();
-        this.setState({
-          docsList,
-          lastVisible,
-          page: chosenPage,
-          firstVisible,
-        });
-      });
+      this.getData(firstVisible, chosenPage, 'desc');
     }
   }
 
@@ -127,22 +120,19 @@ class CustomTable extends Component {
   render() {
     const {
       dataHeader,
+      enableEdit,
       handleEdit,
+      enableDelete,
       handleDelete,
       handleDocsList,
       children,
-      filter, 
-      search,
     } = this.props;
 
-    const { page, rowsPerPage, filterSize, docsList, colRef, colSize } = this.state;
+    const { page, rowsPerPage, filterSize, docsList, isLoading } = this.state;
+    let content = null;
     let data = [];
-    if (docsList.length !== 0) {
-      data = handleDocsList(docsList);
-    }
 
-    console.log(this.state);
-
+    data = handleDocsList(docsList);
     return (
       <TableView
         // for Pagination
@@ -155,8 +145,11 @@ class CustomTable extends Component {
         // title="Users"
         dataHeader={dataHeader}
         data={data}
+        enableEdit={enableEdit}
         handleEdit={handleEdit}
+        enableDelete={enableDelete}
         handleDelete={handleDelete}
+        isLoading={isLoading}
       >
         {children}
       </TableView>

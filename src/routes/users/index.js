@@ -4,32 +4,17 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Link } from 'react-router-dom';
 import {
-  Grid,
-  Paper,
   Button,
-  CircularProgress,
-  Typography,
   MenuItem,
 } from '@material-ui/core';
-
-import CustomTable from '../../components/UI/Table/Table';
 
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import * as util from '../../helper/util';
 import TextField from '../../components/UI/TextField/TextField';
-import Select from '../../components/UI/Select/Select';
 import Dropdown from '../../components/UI/Dropdown/Dropdown';
 import AdminLayout from '../../hoc/Layout/AdminLayout';
-
-const filterOptions = [
-  { label: 'Type' },
-  { label: 'School' },
-  { label: 'Name' },
-].map(option => ({
-  label: option.label,
-  value: option.label.toLowerCase(),
-}));
+import CustomTable from '../../components/UI/Table/Table';
 
 class Users extends Component {
   state = {
@@ -39,21 +24,25 @@ class Users extends Component {
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (userID) => {
-    this.props.history.push(`/users/${userID}/edit`);
+    const { history } = this.props;
+    history.push(`/users/${userID}/edit`);
   }
 
   handleDelete = (userID) => {
     const { firestore } = this.props;
     firestore.collection('users').doc(userID).delete().then(() => {
-      console.log("Document successfully deleted!");
+      console.log('Document successfully deleted!');
     }).catch((error) => {
-      console.error("Error removing document: ", error);
+      console.error('Error removing document: ', error);
     });
   }
 
   handleDocsList = (docsList) => {
     let data = [];
     const { schools } = this.props;
+    if (!schools) {
+      return null;
+    }
     const schoolsMap = schools.reduce((map, obj) => {
       // Disabled eslint error for performance reasons
       /* eslint no-param-reassign: "off" */
@@ -95,126 +84,107 @@ class Users extends Component {
     const { firestore } = this.props;
     const { filter, search } = this.state;
     const colRef = firestore.collection('users');
+    const action = (
+      <React.Fragment>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to="/users/create"
+          //style={{ display: 'inline-block' }}
+        >
+          Add User
+        </Button>
+      </React.Fragment>
+    );
     return (
       <AdminLayout
         title="Users"
+        //subtitle="Some longer subtitle here"
+        action={action}
       >
-      <Grid
-        container
-        spacing={24}
-        direction="row"
-        justify="center"
-        alignItems="center"
-      >
-        <Grid item xs={12} sm={10}>
-          <CustomTable
-            // For Table
-            // title="Users"
-            colRef={colRef}
-            dataHeader={['Name', 'Mobile', 'Type', 'School']}
-            handleDocsList={this.handleDocsList}
-            handleEdit={this.handleEdit}
-            handleDelete={this.handleDelete}
-            handleCustomFilter={this.handleCustomFilter}
-            filter={filter}
-            search={search}
-          >
-
-            <div>
-              <Formik
-                enableReinitialize
-                initialValues={{ search: '', filter: 'all' }}
-                validationSchema={Yup.object({
-                  search: Yup.string()
-                    .required('Required'),
-                  filter: Yup.mixed()
-                    .singleSelectRequired('Required'),
-                })}
-                onSubmit={(values, { setSubmitting, resetForm }) => {
-                  this.setState({ search: values.search, filter: values.filter });
-                  setSubmitting(false);
-                }}
-              >
-                {({
-                  errors,
-                  touched,
-                  handleSubmit,
-                  isSubmitting,
-                  values,
-                }) => (
-                  <Form onSubmit={handleSubmit}>
+        <CustomTable
+          // For Table
+          // title="Users"
+          colRef={colRef}
+          dataHeader={['Name', 'Mobile', 'Type', 'School']}
+          handleDocsList={this.handleDocsList}
+          enableEdit={true}
+          handleEdit={this.handleEdit}
+          enableDelete={true}
+          handleDelete={this.handleDelete}
+          handleCustomFilter={this.handleCustomFilter}
+          filter={filter}
+          search={search}
+        >
+          <div>
+            <Formik
+              enableReinitialize
+              initialValues={{ search: '', filter: 'all' }}
+              validationSchema={Yup.object({
+                search: Yup.string()
+                  .required('Required'),
+                filter: Yup.mixed()
+                  .singleSelectRequired('Required'),
+              })}
+              onSubmit={(values, { setSubmitting }) => {
+                this.setState({ search: values.search, filter: values.filter });
+                setSubmitting(false);
+              }}
+            >
+              {({
+                errors,
+                touched,
+                handleSubmit,
+                values,
+              }) => (
+                <Form onSubmit={handleSubmit}>
+                  <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                    <Field
+                      required
+                      name="filter"
+                      label="Filter"
+                      component={Dropdown}
+                    >
+                      <MenuItem value="all">
+                        <em>All</em>
+                      </MenuItem>
+                      <MenuItem value="type">Type</MenuItem>
+                      <MenuItem value="school">School</MenuItem>
+                      <MenuItem value="name">Name</MenuItem>
+                    </Field>
+                  </div>
+                  {values.filter !== 'all' ? (
                     <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
                       <Field
                         required
-                        name="filter"
-                        label="Filter"
-                        component={Dropdown}
-                      >
-                        <MenuItem value="all">
-                          <em>All</em>
-                        </MenuItem>
-                        <MenuItem value="type">Type</MenuItem>
-                        <MenuItem value="school">School</MenuItem>
-                        <MenuItem value="name">Name</MenuItem>
-                      </Field>
+                        name="search"
+                        label="Search"
+                        type="text"
+                        component={TextField}
+                      />
                     </div>
-                    {values.filter !== 'all' ? (
-                      <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                        <Field
-                          required
-                          name="search"
-                          label="Search"
-                          type="text"
-                          component={TextField}
-                        />
-                      </div>
-                    ) : (
-                      null
-                    )}
+                  ) : (
+                    null
+                  )}
 
-                    <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
-                      <Button
-                        type="submit"
-                        variant="outlined"
-                        color="primary"
-                        disabled={util.isFormValid(errors, touched)}
-                      >
-                        Filter
-                      </Button>
-                    </div>
-                  </Form>
-                )}
-              </Formik>
-              <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                component={Link}
-                to="/users/create"
-                style={{ display: 'inline-block' }}
-              >
-                Add User
-              </Button>
-              <Button variant="contained" size="small" color="primary" href="/gifts" style={{ display: 'inline-block' }}>
-                Gift User
-              </Button>
-            </div>
-          </CustomTable>
-        </Grid>
-        <Grid item xs={12} sm={2}>
-          <Paper style={{
-            padding: 4,
-            textAlign: 'center',
-            color: 'secondary',
-          }}
-          >
-            <Typography variant="h4" id="tableTitle">
-              Filter
-            </Typography>
+                  <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                    <Button
+                      type="submit"
+                      variant="outlined"
+                      color="primary"
+                      disabled={util.isFormValid(errors, touched)}
+                    >
+                      Filter
+                    </Button>
+                  </div>
+                </Form>
+              )}
+            </Formik>
 
-          </Paper>
-        </Grid>
-      </Grid>
+          </div>
+        </CustomTable>
       </AdminLayout>
     );
   }

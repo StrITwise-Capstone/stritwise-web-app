@@ -48,7 +48,9 @@ const TableView = ({
   classes,
   data,
   dataHeader,
+  enableEdit,
   handleEdit,
+  enableDelete,
   handleDelete,
   children,
   title,
@@ -57,10 +59,10 @@ const TableView = ({
   page,
   handleChangePage,
   handleChangeRowsPerPage,
+  isLoading,
 }) => {
 
   let content = <CircularProgress />;
-
   // convert the data into TableRows (dataContent)
   let dataContent = null;
   if (data) {
@@ -70,22 +72,28 @@ const TableView = ({
         return (
           <TableRow key={rowCopy.id}>
             {Object.keys(rowCopy).slice(1).map(key => (
-              <CustomTableCell>{rowCopy[key]}</CustomTableCell>
+              <CustomTableCell key={key}>{rowCopy[key]}</CustomTableCell>
             ))}
-            <CustomTableCell numeric>
-              <IconButton
-                onClick={() => handleEdit(rowCopy.id)}
-                color="inherit"
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => handleDelete(rowCopy.id)}
-                color="inherit"
-              >
-                <DeleteIcon />
-              </IconButton>
-            </CustomTableCell>
+            {(enableEdit || enableDelete) ? (
+              <CustomTableCell numeric>
+                {enableEdit ? (
+                  <IconButton
+                    onClick={() => handleEdit(rowCopy.id)}
+                    color="inherit"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                ) : null}
+                {enableDelete ? (
+                  <IconButton
+                    onClick={() => handleDelete(rowCopy.id)}
+                    color="inherit"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                ) : null}
+              </CustomTableCell>
+            ) : null}
           </TableRow>
         );
       }));
@@ -108,7 +116,7 @@ const TableView = ({
               <TableHead>
                 <TableRow>
                   {dataHeader && dataHeader.map(header => (
-                    <CustomTableCell>{header}</CustomTableCell>
+                    <CustomTableCell key={header}>{header}</CustomTableCell>
                   ))}
                   <CustomTableCell />
                 </TableRow>
