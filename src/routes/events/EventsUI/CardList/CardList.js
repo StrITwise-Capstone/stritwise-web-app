@@ -24,13 +24,13 @@ const cardList = (props) => {
       <div style={{ margin: '0 auto' }}/>
       <Grid
         container
-        spacing={24}
+        spacing={8}
         justify="space-evenly"
         alignItems="center"
       >
         {eventsList
           && Object.keys(eventsList).map(eventuid => (
-            <Grid item key={eventuid} >
+            <Grid item xs={3} key={eventuid} >
               <EventCard event={eventsList[eventuid]} eventuid={eventuid} userType={userType}/>
             </Grid>))
           }

@@ -22,6 +22,7 @@ const authReducer = (state = initState, action) => {
       return {
         ...state,
         userRole: action.userRole,
+        isAuthenticated: action.isAuthenticated,
       };
     default:
       return state;

@@ -12,13 +12,14 @@ export const logOut = () => ((dispatch, getstate, { getFirebase }) => {
 
 export const retrieveUser = authId => (dispatch, getState, { getFirestore }) => {
   let userRole = null;
-  if (authId && getState().auth.isAuthenticated) {
+  console.log(authId);
+  if (authId) {
     const firestore = getFirestore();
     firestore.collection('users').doc(authId).get().then((user) => {
       userRole = user.data().type;
-      dispatch({ type: actionTypes.RETRIEVE_USER, userRole });
+      dispatch({ type: actionTypes.RETRIEVE_USER, userRole, isAuthenticated: true });
     });
   } else {
-    dispatch({ type: actionTypes.RETRIEVE_USER, userRole });
+    dispatch({ type: actionTypes.RETRIEVE_USER, userRole, isAuthenticated: false });
   }
 };
