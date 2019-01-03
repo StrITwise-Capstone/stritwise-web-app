@@ -10,6 +10,7 @@ const ButtonList = ({ eventuid, userType, deleteEvent}) => (
     {userType === 'teacher' && <RouteButton route="Register" routelink="teams/register" eventuid={eventuid} />}
     {userType === 'admin' && <RouteButton route="Participants" routelink="teams/register" eventuid={eventuid} />}
     {userType === 'admin' && <RouteButton route="Edit Event" routelink="edit" eventuid={eventuid} />}
+    {userType === 'admin' && <RouteButton route="Crews" routelink="crews" eventuid={eventuid} />}
     {userType === 'admin' && <Button size="small" color="primary" onClick={deleteEvent}>Delete Event</Button>}
   </div>
 );
