@@ -12,6 +12,9 @@ import { connect } from 'react-redux';
 import styles from './EventLayout.styles';
 
 class EventLayout extends Component {
+  state = {
+    index : 0,
+  }
   render() {
     const {
       children,
