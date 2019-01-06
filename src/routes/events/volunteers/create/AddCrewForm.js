@@ -1,5 +1,5 @@
 import React from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, validateYupSchema } from 'formik';
 import {
   MenuItem,
   Button,
@@ -10,14 +10,14 @@ import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { getFirebase } from 'react-redux-firebase';
+import { withRouter } from 'react-router-dom';
 import { getFirestore } from 'redux-firestore';
 
-import * as util from '../../../helper/util';
-import * as reduxAction from '../../../store/actions';
-import TextField from '../../../components/UI/TextField/TextField';
-import Dropdown from '../../../components/UI/Dropdown/Dropdown';
-import Select from '../../../components/UI/Select/Select';
+import * as util from '../../../../helper/util';
+//import * as reduxAction from '../../../store/actions';
+import TextField from '../../../../components/UI/TextField/TextField';
+import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
+import Select from '../../../../components/UI/Select/Select';
 
 
 const initialValues = {
@@ -26,12 +26,13 @@ const initialValues = {
   mobile: '',
   type: '',
   email: '',
-  password: '',
-  school: {},
+  school: '',
+  studentNo: '',
+  dietary: '',
 };
 
-const AddUserForm = ({
-  auth, logOut, enqueueSnackbar, schools,
+const AddCrewForm = ({
+  auth, enqueueSnackbar, match,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -44,63 +45,48 @@ const AddUserForm = ({
       email: Yup.string()
         .email('Email not valid')
         .required('Required'),
-      password: Yup.string()
-        .min(8, 'Password must be 8 characters or longer')
-        .required('Required'),
+      school: Yup.string().required('Required'),
+      studentNo: Yup.string().required('Required'),
+      dietary: Yup.string(),
+      type: Yup.mixed()
+        .singleSelectRequired('Required'),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
-      const firebase = getFirebase();
       const firestore = getFirestore();
       const now = new Date();
       const timestamp = now.getTime();
 
       // update user values
       const addValues = {
-        firstName: values.firstName,
-        lastName: values.lastName,
+        first_name: values.firstName,
+        last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
         created_at: timestamp,
         type: values.type,
+        school: values.school,
+        email: values.email,
+        student_no: values.studentNo,
       };
-      console.log(values.school.value);
-      if (typeof (values.school.value) !== 'undefined') {
-        addValues.school_id = values.school.value;
+      if (typeof (values.dietary) !== 'undefined') {
+        addValues.dietary_restriction = values.dietary;
       }
-
-      firebase.auth().createUserWithEmailAndPassword(
-        values.email,
-        values.password,
-      ).then(resp => firestore.collection('users').doc(resp.user.uid).set({ 
+      
+      firestore.collection('events').doc(match.params.id).collection('volunteers').add({ 
         ...addValues,
-      })).then(() => {
-        const user = firebase.auth().currentUser;
-        if (user != null) {
-          user.sendEmailVerification().then(() => {
-          // Email sent.
-            resetForm();
-            enqueueSnackbar('New User Added. Hooray!', {
-              variant: 'success',
-            });
-          }).catch(() => {
-            // An error happened.
-            enqueueSnackbar('New User was not sent Verfication Email...', {
-              variant: 'error',
-            });
-          });
-        }
-      })
-        .then(() => {
-          logOut();
-        })
-        .catch((err) => {
-          console.log(err);
-          enqueueSnackbar('Invalid Credentials for New User. Please try again.', {
-            variant: 'error',
-          });
-        }).finally(() => {
-          setSubmitting(false);
+      }).then(() => {
+        resetForm();
+        enqueueSnackbar('New Volunteer Added. Hooray!', {
+          variant: 'success',
         });
+      }).catch((err) => {
+        console.log(err);
+        enqueueSnackbar('Invalid Credentials for New User. Please try again.', {
+          variant: 'error',
+        });
+      }).finally(() => {
+        setSubmitting(false);
+      });
     }}
   >
     {({
@@ -128,6 +114,13 @@ const AddUserForm = ({
         />
         <Field
           required
+          name="studentNo"
+          label="Student Number"
+          type="text"
+          component={TextField}
+        />
+        <Field
+          required
           name="mobile"
           label="Mobile Number"
           type="text"
@@ -136,24 +129,19 @@ const AddUserForm = ({
         <Field
           required
           name="type"
-          label="Type of User"
+          label="Type of Volunteer"
           component={Dropdown}
         >
-          <MenuItem value="orion">Orion Member</MenuItem>
-          <MenuItem value="admin">Admin</MenuItem>
-          <MenuItem value="teacher">Secondary School Teacher</MenuItem>
+          <MenuItem value="GL">Group Leader</MenuItem>
+          <MenuItem value="GM">Game Master</MenuItem>
         </Field>
-        {values.type === 'teacher' ? (
-          <Field
-            required
-            name="school"
-            label="School"
-            options={schools}
-            component={Select}
-          />
-        ) : (
-          null
-        )}
+        <Field
+          required
+          name="school"
+          label="School"
+          type="text"
+          component={TextField}
+        />
         <Field
           required
           name="email"
@@ -162,10 +150,9 @@ const AddUserForm = ({
           component={TextField}
         />
         <Field
-          required
-          name="password"
-          label="Password"
-          type="password"
+          name="dietary"
+          label="Dietary Restrictions"
+          type="text"
           component={TextField}
         />
         <div className="align-right">
@@ -174,7 +161,7 @@ const AddUserForm = ({
             variant="outlined"
             color="secondary"
             component={Link}
-            to="/users"
+            to={`/events/${match.params.id}/volunteers`}
           >
             <ArrowBack />
             BACK TO VOLUNTEERS
@@ -199,8 +186,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-AddUserForm.propTypes = {
+AddCrewForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
 };
 
-export default withSnackbar(connect(mapStateToProps)(AddUserForm));
+export default withSnackbar(withRouter(connect(mapStateToProps)(AddCrewForm)));

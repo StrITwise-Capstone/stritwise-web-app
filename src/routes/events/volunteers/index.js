@@ -25,17 +25,8 @@ class Volunteers extends Component {
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (volunteerID) => {
-    const { history } = this.props;
-    history.push(`/volunteers/${volunteerID}/edit`);
-  }
-
-  handleDelete = (volunteerID) => {
-    const { firestore } = this.props;
-    firestore.collection('volunteers').doc(volunteerID).delete().then(() => {
-      console.log('Document successfully deleted!');
-    }).catch((error) => {
-      console.error('Error removing document: ', error);
-    });
+    const { history, match} = this.props;
+    history.push(`/events/${match.params.id}/volunteers/${volunteerID}/edit`);
   }
 
   handleDocsList = (docsList) => {
@@ -47,8 +38,8 @@ class Volunteers extends Component {
         Mobile: volunteer.data.mobile,
         Type: volunteer.data.type,
         School: volunteer.data.school,
-        Dietary: volunteer.data.dietary_restriction ? volunteer.data.dietary_restriction : 'N.A.',
-        StudentNo: volunteer.data.student_no,
+        'Dietary Restrictions': volunteer.data.dietary_restriction ? volunteer.data.dietary_restriction : 'Nil',
+        'Student Number': volunteer.data.student_no,
         Email: volunteer.data.email,
       }
     ));
@@ -59,7 +50,8 @@ class Volunteers extends Component {
   handleCustomFilter = (collection, filter, search) => {
     // check if Filter has been changed
     if (filter === 'type') {
-      collection = collection.where(filter, '==', search.toLowerCase());
+      console.log('hi');
+      collection = collection.where(filter, '==', search);
     } else if (filter === 'name') {
       const name = search.split(' ');
       if (name.length === 2) {
@@ -76,7 +68,6 @@ class Volunteers extends Component {
   render() {
     const { firestore, match } = this.props;
     const { filter, search } = this.state;
-    console.log(match.params.id);
     const colRef = firestore.collection('events').doc(match.params.id).collection('volunteers');
     const action = (
       <React.Fragment>
@@ -85,10 +76,10 @@ class Volunteers extends Component {
           variant="contained"
           color="secondary"
           component={Link}
-          to="/Volunteers/create"
+          to={`/events/${match.params.id}/volunteers/create`}
           //style={{ display: 'inline-block' }}
         >
-          Add User
+          Add Volunteer
         </Button>
       </React.Fragment>
     );
@@ -102,20 +93,10 @@ class Volunteers extends Component {
           // For Table
           // title="Volunteers"
           colRef={colRef}
-          dataHeader={[
-            'Name',
-            'Mobile',
-            'Type',
-            'School',
-            'Dietary Restrictions',
-            'Student Number',
-            'Email',
-          ]}
           handleDocsList={this.handleDocsList}
           enableEdit={true}
           handleEdit={this.handleEdit}
           enableDelete={true}
-          handleDelete={this.handleDelete}
           handleCustomFilter={this.handleCustomFilter}
           filter={filter}
           search={search}
@@ -154,7 +135,7 @@ class Volunteers extends Component {
                       </MenuItem>
                       <MenuItem value="type">Type</MenuItem>
                       <MenuItem value="school">School</MenuItem>
-                      <MenuItem value="name">Nam e</MenuItem>
+                      <MenuItem value="name">Name</MenuItem>
                     </Field>
                   </div>
                   {values.filter !== 'all' ? (

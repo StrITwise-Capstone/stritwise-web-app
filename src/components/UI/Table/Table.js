@@ -42,6 +42,16 @@ class CustomTable extends Component {
     }
   }
 
+  handleDelete = (volunteerID) => {
+    const { filterRef } = this.state;
+    filterRef.doc(volunteerID).delete().then(() => {
+      console.log('Document successfully deleted!');
+      this.getData();
+    }).catch((error) => {
+      console.error('Error removing document: ', error);
+    });
+  }
+
   getData = (startAfter = null, chosenPage = null, orderByDir = 'asc') => {
     const { rowsPerPage, filterRef, page } = this.state;
     const { handleCustomFilter, filter, search } = this.props;
@@ -121,37 +131,39 @@ class CustomTable extends Component {
       enableEdit,
       handleEdit,
       enableDelete,
-      handleDelete,
       handleDocsList,
       children,
     } = this.props;
 
     const { page, rowsPerPage, filterSize, docsList, isLoading } = this.state;
-    let content = null;
+    let content = <CircularProgress />;
     let data = [];
 
-    data = handleDocsList(docsList);
-    return (
-      <TableView
-        // for Pagination
-        page={page}
-        rowsPerPage={rowsPerPage}
-        size={filterSize}
-        handleChangePage={this.handleChangePage}
-        handleChangeRowsPerPage={this.handleChangeRowsPerPage}
-        // For Table
-        // title="Users"
-        dataHeader={dataHeader}
-        data={data}
-        enableEdit={enableEdit}
-        handleEdit={handleEdit}
-        enableDelete={enableDelete}
-        handleDelete={handleDelete}
-        isLoading={isLoading} //Not used as of now
-      >
-        {children}
-      </TableView>
-    );
+    if (docsList.length !== 0) {
+      data = handleDocsList(docsList);
+      content = (
+        <TableView
+          // for Pagination
+          page={page}
+          rowsPerPage={rowsPerPage}
+          size={filterSize}
+          handleChangePage={this.handleChangePage}
+          handleChangeRowsPerPage={this.handleChangeRowsPerPage}
+          // For Table
+          // title="Users"
+          dataHeader={dataHeader}
+          data={data}
+          enableEdit={enableEdit}
+          handleEdit={handleEdit}
+          enableDelete={enableDelete}
+          handleDelete={this.handleDelete}
+          isLoading={isLoading} //Not used as of now
+        >
+          {children}
+        </TableView>
+      );
+    }
+    return content;
   }
 }
 

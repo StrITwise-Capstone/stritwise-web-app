@@ -23,7 +23,6 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3,
   },
   table: {
-    minWidth: 1020,
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -47,7 +46,6 @@ const CustomTableCell = withStyles(theme => ({
 const TableView = ({
   classes,
   data,
-  dataHeader,
   enableEdit,
   handleEdit,
   enableDelete,
@@ -65,7 +63,12 @@ const TableView = ({
   let content = <CircularProgress />;
   // convert the data into TableRows (dataContent)
   let dataContent = null;
+  let dataHeader = null;
   if (data) {
+    dataHeader = Object.keys(data[0]).slice(1).map(header => (
+      <CustomTableCell key={header}>{header}</CustomTableCell>
+    ));
+
     dataContent = (data
       .map((row) => {
         const rowCopy = { ...row };
@@ -100,7 +103,7 @@ const TableView = ({
   }
 
   // Generate the Table
-  if (dataContent) {
+  if (dataContent !== null && dataHeader !== null) {
     // console.log(this.state);
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length);
     content = (
@@ -115,9 +118,7 @@ const TableView = ({
             <Table className={classes.table}>
               <TableHead>
                 <TableRow>
-                  {dataHeader && dataHeader.map(header => (
-                    <CustomTableCell key={header}>{header}</CustomTableCell>
-                  ))}
+                  {dataHeader}
                   <CustomTableCell />
                 </TableRow>
               </TableHead>
