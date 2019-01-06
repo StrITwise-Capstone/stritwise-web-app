@@ -1,10 +1,31 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-const notFound = () => (
-  <React.Fragment>
-    <h1>Whoops, page could not be found!</h1>
-    <p>Please design this page</p>
-  </React.Fragment>
-);
+const styles = () => ({
+  middle: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    textAlign: 'center',
+  },
+});
 
-export default notFound;
+const notFound = (props) => {
+  const { classes } = props;
+  return (
+    <div className={classes.middle}>
+      <h1>Error 404.</h1>
+      <p>The page requested is not found.</p>
+    </div>
+  );
+};
+
+notFound.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  classes: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+export default withStyles(styles)(notFound);
