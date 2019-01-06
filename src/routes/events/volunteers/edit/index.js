@@ -43,7 +43,7 @@ class EditVolunteer extends Component {
       content = (
         <AdminLayout
         >
-          <Typography variant="h4" id="title">Edit Volunteer!</Typography>
+          <Typography variant="h4" id="title">Edit Volunteer</Typography>
           <EditCrewForm volunteer={volunteer} volunteerRef={volunteerRef} />
         </AdminLayout>
       );

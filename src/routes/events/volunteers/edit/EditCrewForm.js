@@ -6,7 +6,6 @@ import {
 } from 'formik';
 import {
   Button,
-  Typography,
   MenuItem,
   CircularProgress,
 } from '@material-ui/core';
