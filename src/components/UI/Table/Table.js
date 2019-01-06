@@ -12,8 +12,6 @@ import TableView from './TableView';
 class CustomTable extends Component {
   state = {
     docsList: [],
-    colRef: this.props.colRef,
-    colSize: 0,
     filterRef: this.props.colRef,
     filterSize: 0,
 
@@ -25,9 +23,9 @@ class CustomTable extends Component {
   }
 
   componentWillMount = () => {
-    const { colRef } = this.props;
-    colRef.get().then((snap) => {
-      this.setState({ colSize: snap.size, filterSize: snap.size }, () => {
+    const { filterRef } = this.state;
+    filterRef.get().then((snap) => {
+      this.setState({ filterSize: snap.size }, () => {
         this.getData();
       });
     });
@@ -54,7 +52,7 @@ class CustomTable extends Component {
         startAt = documentSnapshot.docs[0];
       }
       this.setState({ filterSize: documentSnapshot.size }, () => {
-        if (startAt === null) { 
+        if (startAt === null) {
           newRef = newRef.limit(rowsPerPage).startAfter(startAfter);
         } else {
           newRef = newRef.limit(rowsPerPage).startAt(startAt);
@@ -62,19 +60,19 @@ class CustomTable extends Component {
 
         const docsList = [];
         this.setState({ isLoading: true });
-        newRef.get().then((documentSnapshot) => {
+        newRef.get().then((snapWithLimit) => {
           // Get the last and first visible document
           let newLastVisible = null;
           let newFirstVisible = null;
           if (chosenPage < page) {
-            newLastVisible = documentSnapshot.docs[0];
-            newFirstVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
+            newLastVisible = snapWithLimit.docs[0];
+            newFirstVisible = snapWithLimit.docs[snapWithLimit.docs.length - 1];
           } else {
-            newLastVisible = documentSnapshot.docs[documentSnapshot.docs.length - 1];
-            newFirstVisible = documentSnapshot.docs[0];
+            newLastVisible = snapWithLimit.docs[snapWithLimit.docs.length - 1];
+            newFirstVisible = snapWithLimit.docs[0];
           }
 
-          documentSnapshot.forEach((doc) => {
+          snapWithLimit.forEach((doc) => {
             docsList.push({
               uid: doc.id,
               data: doc.data(),
@@ -149,7 +147,7 @@ class CustomTable extends Component {
         handleEdit={handleEdit}
         enableDelete={enableDelete}
         handleDelete={handleDelete}
-        isLoading={isLoading}
+        isLoading={isLoading} //Not used as of now
       >
         {children}
       </TableView>
