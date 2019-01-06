@@ -30,6 +30,10 @@ import GuestRoutes from './guestRoutes';
 import OrionMemberRoutes from './orionmemRoutes';
 import TeacherRoutes from './teacherRoutes';
 
+import Volunteers from '../events/volunteers';
+import CreateVolunteer from '../events/volunteers/create';
+import EditVolunteer from '../events/volunteers/edit';
+
 const userType = {
   ADMIN : 'admin',
   ORIONMEMBER: 'orion member',
@@ -67,8 +71,11 @@ class routes extends Component {
     elements.push(<Route exact path="/events/:id/teams/view" key="/events/teams/view" component={ViewTeam} />);
     elements.push(<Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateTeam}/>)
     elements.push(<Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>)
+    
+    elements.push(<Route exact path="/events/:id/volunteers" key="/events/volunteers/"  component={Volunteers}/>)
+    elements.push(<Route exact path="/events/:id/volunteers/create" key="/events/volunteers/create"  component={CreateVolunteer}/>)
+    elements.push(<Route exact path="/events/:id/volunteers/edit" key="/events/volunteers/edit"  component={EditVolunteer}/>)
 
-    elements.push(<Route exact path="/events/:id/volunteers" key="/events/volunteers" component={ViewTeam}/>)
     elements.push(<Route exact path="/events/:id/pointsystem" key="/events/pointsystem" component={PointSystem}/>)
   
     /* ERRORS */

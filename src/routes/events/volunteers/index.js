@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
+import { withFirestore } from 'react-redux-firebase';
+import { withRouter } from 'react-router';
 import { compose } from 'redux';
 import { Link } from 'react-router-dom';
 import {
@@ -73,9 +74,10 @@ class Volunteers extends Component {
 
 
   render() {
-    const { firestore } = this.props;
+    const { firestore, match } = this.props;
     const { filter, search } = this.state;
-    const colRef = firestore.collection('Volunteers');
+    console.log(match.params.id);
+    const colRef = firestore.collection('events').doc(match.params.id).collection('volunteers');
     const action = (
       <React.Fragment>
         <Button
@@ -207,7 +209,6 @@ Volunteers.defaultProps = {
 
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect([
-    { collection: 'schools' },
-  ]),
+  withFirestore,
+  withRouter,
 )(Volunteers);

@@ -3,7 +3,6 @@ import { Formik, Form, Field } from 'formik';
 import {
   MenuItem,
   Button,
-  Typography,
 } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
 import { withSnackbar } from 'notistack';

@@ -11,11 +11,6 @@ import CreateEvent from '../events/create';
 import EditEvent from '../events/edit';
 import ViewTeam from '../events/teams/view';
 import CreateTeam from '../events/teams/create';
-import RegisterEvent from '../events/register';
-import CreateStudents from '../events/register/create';
-import Volunteers from '../events/volunteers';
-import CreateVolunteer from '../events/volunteers/create';
-import EditVolunteer from '../events/volunteers/edit';
 import Profile from '../profile';
 
 export default [
@@ -35,8 +30,5 @@ export default [
   <Route exact path="/events/:id/teams/view" key="/events/teams/view" component={ViewTeam} />,
   <Route exact path="/events/:id/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
 
-  <Route exact path="/events/:id/volunteers" key="/events/volunteers/"  component={Volunteers}/>,
-  <Route exact path="/events/:id/volunteers/create" key="/events/volunteers/create"  component={CreateVolunteer}/>,
-  <Route exact path="/events/:id/volunteers/edit" key="/events/volunteers/edit"  component={EditVolunteer}/>,
 
 ]
