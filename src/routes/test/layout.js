@@ -7,6 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 
 
+import EventLayout from '../../hoc/Layout/EventLayout/EventLayout';
 import AdminLayout from '../../hoc/Layout/AdminLayout';
 
 export class Layout extends Component {
@@ -35,11 +36,12 @@ export class Layout extends Component {
     );
 
     return (
-      <AdminLayout
-        title="Some Title"
-        subtitle="Some longer subtitle here"
-        action={action}
+      <EventLayout
       >
+        <AdminLayout
+          title="Some title"
+          subtitle="Some longer subtitle here"  
+        >
         <Paper style={{ minHeight: '1000px' }}>
           <Typography variant="h5" component="h3">
             This paper is just a sample.
@@ -48,7 +50,8 @@ export class Layout extends Component {
             Replace this area with cards, tables and etc. This is long to test scrolling.
           </Typography>
         </Paper>
-      </AdminLayout>
+        </AdminLayout>
+      </EventLayout>
     );
   }
 }

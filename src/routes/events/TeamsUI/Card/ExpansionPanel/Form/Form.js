@@ -15,7 +15,6 @@ import { withSnackbar } from 'notistack';
 
 import TextField from '../../../../../../components/UI/TextField/TextField';
 import DeleteButton from './DeleteButton/DeleteButton';
-import Select from '../../../../../../components/UI/Select/Select';
 import yup from '../../../../../../instances/yup';
 
 const editStudent = ({
@@ -27,9 +26,6 @@ const editStudent = ({
   eventuid,
   teamuid,
   deletevalue,
-  school,
-  schoola,
-  schools,
 }) => (
   <Formik
     enableReinitialize={true}
@@ -43,10 +39,6 @@ const editStudent = ({
         mobile : student.mobile,
         studentuid: studentuid,
         eventuid: eventuid,
-        school: {
-          label: school ? school.name : '',
-          value: student.school_id,
-        },
         teamuid: teamuid,
         deletevalue: deletevalue,
         emergency_contact_name: student.emergency_contacts ? student.emergency_contacts['name']: null,
@@ -63,7 +55,6 @@ const editStudent = ({
     })}
     onSubmit={(values, { setSubmitting }) => {
       firestore.collection('events').doc(eventuid).collection('students').doc(studentuid).update({
-          school_id: values.school.value,
           first_name: values.firstname,
           last_name: values.lastname,
           badge_name: values.badgename,
@@ -132,12 +123,6 @@ const editStudent = ({
               component={TextField}
             />
             <Field
-              name="school"
-              label="School"
-              options={schools}
-              component={Select}
-            />
-            <Field
               required
               name="dietary_restriction"
               label="Dietary Restriction"
@@ -191,9 +176,5 @@ const mapStateToProps = (state, ownProps) => {return({
 })};
 
 export default compose(withSnackbar,connect(mapStateToProps),
-firestoreConnect((props) => {return[
-  {
-      collection:'schools', doc:`${props.student.school_id}`, storeAs: `school${props.student.school_id}`
-  },
-  ]}),
+  firestoreConnect()
 )(editStudent);

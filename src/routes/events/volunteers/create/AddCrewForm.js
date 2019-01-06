@@ -177,7 +177,7 @@ const AddUserForm = ({
             to="/users"
           >
             <ArrowBack />
-            BACK TO USERS
+            BACK TO VOLUNTEERS
           </Button>
           <Button
             type="submit"
@@ -185,7 +185,7 @@ const AddUserForm = ({
             color="primary"
             disabled={util.isFormValid(errors, touched)}
           >
-            ADD USER
+            ADD VOLUNTEER
           </Button>
         </div>
       </Form>
@@ -199,14 +199,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  logOut: () => dispatch(reduxAction.logOut()),
-});
-
 AddUserForm.propTypes = {
-  // auth: PropTypes.objectOf(PropTypes.string).isRequired,
-  logOut: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
 };
 
-export default withSnackbar(connect(mapStateToProps, mapDispatchToProps)(AddUserForm));
+export default withSnackbar(connect(mapStateToProps)(AddUserForm));

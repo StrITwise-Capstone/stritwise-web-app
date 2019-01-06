@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 
-class Thumb extends React.Component {
+class Thumb extends Component {
   state = {
     loading: false,
     thumb: undefined,
@@ -31,13 +31,16 @@ class Thumb extends React.Component {
     if (loading) { return <p>loading...</p>; }
 
     return (
+    <div style={{'alignItems':'center',display:'flex','margin':'1em'}}>
       <img
         src={thumb}
         alt={file.name}
         className="img-thumbnail mt-2"
         height={300}
         width={480}
+        style={{margin:'auto'}}
       />
+    </div>
     );
   }
 }

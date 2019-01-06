@@ -1,18 +1,30 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { Home, Label } from '@material-ui/icons';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import { 
+  Home,
+  Label,
+  Schedule,
+  AccountBox
+} from '@material-ui/icons';
+import {
+  ListItemIcon,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
 
-import ListItem from '@material-ui/core/ListItem';
-
-const RouteButton = withRouter(({ history, route, routelink,onClick, selected }) => {
+const RouteButton = withRouter(({ history, route, routelink, onClick, selected }) => {
   const label = () =>{
     if (route === "Home"){
-      return <Home style={{margin:'2px', color:'purple'}}></Home>
+      return <Home style={{margin:'2px', color:'purple'}}/>
+    }
+    else if (route === "Events"){
+      return <Schedule style={{margin:'2px',fill:'purple'}}/>
+    }
+    else if (route === "Users"){
+      return <AccountBox style={{margin:'2px',fill:'purple'}}/>
     }
     else
-      return <Label style={{margin:'2px', color:'purple'}}></Label>
+      return <Label style={{margin:'2px', color:'purple'}}/>
   }
   return(
   <ListItem

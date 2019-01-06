@@ -7,26 +7,26 @@ import {
 } from '@material-ui/core/styles';
 
 
-import PointSystem from './routes/events/register/pointsystem';
+import PointSystem from './routes/events/pointsystem';
 import './App.css';
 import Layout from './hoc/Layout/Layout';
 import Routes from './routes/routes/index';
 import styles from './App.styles';
 
 function getRoutes(location) {
-  var help = null;
+  var getRoute = null;
   if (!location.pathname.includes("pointsystem"))
   { 
-    help = 
+    getRoute = 
   (<Layout>
     <Routes />
   </Layout>)
   }
   else{
     console.log("here")
-    help = (<PointSystem/>)
+    getRoute = (<PointSystem/>)
   }
-  return help;
+  return getRoute;
 }
 
 class App extends Component {
@@ -34,7 +34,7 @@ class App extends Component {
   
   render() {
     const { location } = this.props;
-    const help = getRoutes(location);
+    const getRoute = getRoutes(location);
     return (
       <React.Fragment>
         <MuiThemeProvider theme={this.theme}>
@@ -46,7 +46,7 @@ class App extends Component {
             }}
           >
           {
-            help
+            getRoute
           }
           </SnackbarProvider>
         </MuiThemeProvider>

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
+import {
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  Typography,
+} from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Form from './Form/Form';
@@ -16,21 +18,21 @@ const styles = theme => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
     color: "white",
+    paddingLeft:'10px',
   },
 });
 
-class SimpleExpansionPanel extends React.Component {
-
+class SimpleExpansionPanel extends Component {
     render(){
-    const { classes, student, teamuid, studentuid, eventuid, deletevalue, schools } = this.props;
+    const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
     return (
       <div className={classes.root}>
         {student && <ExpansionPanel>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ "backgroundColor":"purple", padding:"5px"}}>
-            <Typography className={classes.heading} style={{"paddingLeft":"10px"}}>{student.first_name} {student.last_name}</Typography>
+            <Typography className={classes.heading}>{student.first_name} {student.last_name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Form student={student} schoola={''} schools={schools} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
+            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
         }

@@ -17,7 +17,7 @@ import { withSnackbar } from 'notistack';
 import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
-import Thumb from './ThumbNail';
+import Thumb from '../../../components/UI/Thumb/Thumbnail';
 import yup from '../../../instances/yup';
 
 const initialValues = {
@@ -107,7 +107,6 @@ const createEvent = ({
       handleSubmit,
       isSubmitting,
       setFieldValue,
-      /* and other goodies */
     }) => {
       let content = <CircularProgress />;
       if (!isSubmitting) {
@@ -185,10 +184,7 @@ const createEvent = ({
 );
 
 const mapStateToProps = state => ({
-  authError: state.auth.authError,
   auth: state.firebase.auth,
-  firestore: state.firestore,
-  firebase: state.firebase,
 });
 
 createEvent.defaultProps = {

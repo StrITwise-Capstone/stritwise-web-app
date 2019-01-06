@@ -25,7 +25,7 @@ class Profile extends Component {
     const callback = (name) => {
       this.setState({ userSchool : name})
     }
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       if (user.type === 'teacher')
       {
         firestore.collection('schools').doc(user.school_id).get().then(function(doc){
@@ -53,7 +53,7 @@ class Profile extends Component {
       >
         <Paper style={{ minHeight: '1000px' , textAlign:'center'}}>
         <div style={{'position':'center'}}>
-          <img src='/assets/profile.png' alt='Profile Image' style={{display: 'block', 'marginLeft':'auto', 'marginRight':'auto','position':'center','paddingTop':'50px'}}></img>
+          <img src='/assets/profile.png' alt='Profile' style={{display: 'block', 'marginLeft':'auto', 'marginRight':'auto','position':'center','paddingTop':'50px'}}></img>
         { isAuthenticated !== true &&  
         (
           <Typography variant="h5" component="h3" style={{'position':'relative'}}>
