@@ -15,6 +15,7 @@ import EditUser from '../users/edit';
 import createUser from '../users/create';
 import Forgot from '../auth/forgot';
 import NotFound from '../../components/Error/404';
+import Unknown from '../../components/Error/unknown';
 import Dashboard from '../events';
 import CreateEvent from '../events/create';
 import EditEvent from '../events/edit';
@@ -100,20 +101,18 @@ class routes extends Component {
         default:
           break;
       }
-      result.push(<Route path="/" key="/404" component={NotFound} />);
-      return result;
+    } else {
+      result = GuestRoutes;      
     }
-    if (isAuthenticated !== true){
-      result = GuestRoutes;
-      result.push(<Route path="/" key="/404" component={NotFound} />);
-      return result;
-    }
+    result.push(<Route exact path="/404" key="/404" component={NotFound} />);
+    result.push(<Route path="/" key="/unknown" component={Unknown} />);
+    return result;
   }
 
   render(){
   return (
     <Switch>
-      {this.test()}
+      {this.elements()}
     </Switch>
   );
   }
