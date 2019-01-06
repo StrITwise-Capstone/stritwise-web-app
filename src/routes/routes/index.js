@@ -69,7 +69,7 @@ class routes extends Component {
     elements.push(<Route exact path="/events/:id/overview" key="/events/edit" component={Overview} />);
     elements.push(<Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />);
   
-    elements.push(<Route exact path="/events/:id/teams/view" key="/events/teams/view" component={ViewTeam} />);
+    elements.push(<Route exact path="/events/:id/teams" key="/events/teams" component={ViewTeam} />);
     elements.push(<Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateTeam}/>)
     elements.push(<Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>)
     

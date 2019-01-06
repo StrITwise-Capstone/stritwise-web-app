@@ -48,6 +48,18 @@ class AddUserForm extends React.Component {
       var dataByTeamName = d3.nest()
       .key(function(d) { return d['Team Name']; })
       .entries(result);
+      var validation = false;
+      Object.keys(dataByTeamName).map(TeamIndex=>{
+        var team = dataByTeamName[TeamIndex];
+        if(!validation(team)){
+          enqueueSnackbar('Error Adding Team...',{
+            variant:'error',
+          })
+        }
+        else
+          validation = true;
+      });
+      if (validation){
       //Query for school where school name matches
         Object.keys(dataByTeamName).map(TeamIndex => {
           var team = dataByTeamName[TeamIndex];
@@ -61,7 +73,7 @@ class AddUserForm extends React.Component {
               modified_At: new Date(Date.now()),
               school_id: school_id,
             }).then((docRef)=>{
-              enqueueSnackbar('Added Team...', {
+              enqueueSnackbar('Added 1 Team...', {
                 variant: 'info',
               });
               for (var i = 0; i < team.values.length; i++) {
@@ -82,17 +94,20 @@ class AddUserForm extends React.Component {
                   },
                   created_At: new Date(Date.now()),
                   modified_At: new Date(Date.now()),
-                }).then(()=>{
-                  enqueueSnackbar('Added 1 student...', {
+                }).finally(()=>{
+                  if (i === team.values.length){
+                  enqueueSnackbar(`Added ${i} student...`, {
                     variant: 'info',
                   });
                   refreshState();
+                  }
                 })
               }
               handleClose();
             })
           }
         })
+      }
     }
    const input = values.file;
    if (!input)

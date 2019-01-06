@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { List } from '@material-ui/core';
-import { Home, Label } from '@material-ui/icons';
+import { Label } from '@material-ui/icons';
 
 import RouteList from './RoutesList/RouteList';
 import ListItemButton from './RouteButton/ListItem';
@@ -29,7 +29,6 @@ class DrawerList extends Component {
   return (
     <div>
       <List>
-        <ListItemButton selected={this.state.selectedIndex === 0} route="Home" routelink={''} onClick={event => this.handleListItemClick(event, 0)} children={Home}/>
         { auth &&
           resultList[0].route.map((key,index) => {
             return(

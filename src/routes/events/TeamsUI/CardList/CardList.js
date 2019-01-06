@@ -84,13 +84,15 @@ class cardList extends React.Component {
 
     getData = () => {
         const { firestore, eventuid } = this.props;
+        const { isNotLoading } = this.state;
         const callback = (array,lastVisible) => {
-            this.setState({teamsList : array, lastVisible, page:0 })
+            this.setState({teamsList : array, lastVisible, page:0, isNotLoading: true });
         }
         var first = firestore.collection("events").doc(eventuid).collection("teams")
         .orderBy("team_name")
         .limit(5);
         var array = [];
+        this.setState({isNotLoading: false});
         first.get().then(function (documentSnapshots) {
         var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
         documentSnapshots.forEach(function(documentSnapshots){
@@ -104,7 +106,7 @@ class cardList extends React.Component {
 
     }
 
-    componentWillMount = () =>{
+    componentDidMount = () =>{
         this.getData();
     }
 
@@ -113,8 +115,9 @@ class cardList extends React.Component {
             teamsList, isNotLoading, page
         } = this.state;
         const {
-            teamsListCount, match
+            teamsListCount, match, currentevent
         } = this.props;
+        
         return (
         <React.Fragment>
             <Table><tbody><tr>
@@ -141,12 +144,12 @@ class cardList extends React.Component {
                 <CircularProgress/>
             }
             {teamsList && isNotLoading
-                && Object.keys(teamsList).map(teamuid => (
-                    <Grid item xs={6} key={teamuid}>
-                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
+                && Object.keys(teamsList).map(teamuid => {
+                    return <Grid item xs={6} key={teamuid}>
+                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} currentevent={currentevent}
                         update={()=>{this.getData()}}
                         />
-                </Grid>))
+            </Grid>;})
             }
             </Grid>
         </React.Fragment>
@@ -163,10 +166,10 @@ const mapStateToProps = (state) => {
 
 
 export default compose(withRouter,
-firestoreConnect((props) => [
+    connect(mapStateToProps),
+    firestoreConnect((props) => [
     {
         collection:'events', doc:`${props.match.params.id}`, subcollections: [{collection:'teams'}], storeAs: 'teamsListCount'
     },
     ]),
-    connect(mapStateToProps)
 )(cardList);

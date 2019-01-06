@@ -12,6 +12,7 @@ import EditEvent from '../events/edit';
 import ViewTeam from '../events/teams/view';
 import CreateTeam from '../events/teams/create';
 import Profile from '../profile';
+import Overview from '../events/overview';
 
 export default [
   /* USERS */

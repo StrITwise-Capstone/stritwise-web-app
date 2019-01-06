@@ -7,6 +7,7 @@ import Dashboard from '../events';
 import ViewTeam from '../events/teams/view';
 import CreateTeam from '../events/teams/create';
 import Profile from '../profile';
+import Overview from '../events/overview';
 
 export default [
 
@@ -14,7 +15,9 @@ export default [
   <Route exact path="/profile" key="/profile" component={Profile} />,
   /* EVENTS */ 
   <Route exact path="/events" key="/events" component={Dashboard}/>,
-  <Route exact path="/events/:id/teams/view" key="/events/teams/view" component={ViewTeam} />,
+  <Route exact path="/events/:id/teams" key="/events/teams" component={ViewTeam} />,
   <Route exact path="/events/:id/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
+  <Route exact path="/events/:id/overview" key="/events/edit" component={Overview} />,
+
 
 ]

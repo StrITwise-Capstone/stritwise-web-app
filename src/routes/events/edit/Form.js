@@ -181,6 +181,7 @@ const editEvent = ({
               name="description"
               label="Description"
               type="text"
+              multiline
               component={TextField}
             />
             <p>Upload Event Image</p>

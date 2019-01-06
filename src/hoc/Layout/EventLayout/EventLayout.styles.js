@@ -14,5 +14,6 @@ export default () => ({
   selected: {
     color:'purple',
     backgroundColor:'transparent !important',
+    fontWeight:'bold !important',
   }
 });

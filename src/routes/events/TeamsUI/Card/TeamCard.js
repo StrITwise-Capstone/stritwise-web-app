@@ -34,7 +34,6 @@ const styles = {
 class teamCard extends React.Component {
   state = {
     open: false,
-    studentsList: null,
   };
 
   handleClickOpen = () => {
@@ -115,7 +114,6 @@ const mapStateToProps = (state,props) => {
   return {
       team: state.firestore.data[`team${props.teamuid}`],
       studentsList: state.firestore.data[`studentsList${props.teamuid}`],
-      currentevent: state.firestore.data.currentevent,
       schools: state.firestore.data.schools,
   }
 };

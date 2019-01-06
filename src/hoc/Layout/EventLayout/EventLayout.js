@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   ListItem,
   Typography,
+  Grid,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
@@ -28,11 +29,11 @@ class EventLayout extends Component {
     const userType = userRole;
     const eventuid = location.pathname.replace('/events/','').substring(0,20);
     return (
-      <div style={{'display':'flex'}}>
-        <div style={{'display':'inline-block','width':'80%'}}>
+      <Grid container>
+        <Grid item xs={10}>
         {children}
-        </div>
-        <div style={{'display':'inline-block'}}>
+        </Grid>
+        <Grid item xs={2}>
             { userType === 'admin' &&
               (
                 <div style={{'display':'inline-block','paddingTop':'35%'}}>
@@ -44,26 +45,17 @@ class EventLayout extends Component {
                     selected={index === 0} 
                     onClick={()=>{history.push(`/events/${eventuid}/overview`); this.setState({index : 0})}}
                     >
-                    <Typography component="p" style={{color:'inherit'}}>
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Overview
                     </Typography>
                   </ListItem>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
                     selected={index === 1} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams/view`); this.setState({index : 1})}}
+                    onClick={()=>{history.push(`/events/${eventuid}/teams`); this.setState({index : 1})}}
                   >
-                    <Typography component="p" style={{color:'inherit'}}>
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Teams
-                    </Typography>
-                  </ListItem>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={index === 2} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams/create`); this.setState({index : 2})}}
-                  >
-                    <Typography component="p" style={{color:'inherit'}}>
-                      Register
                     </Typography>
                   </ListItem>
                   <ListItem 
@@ -71,7 +63,7 @@ class EventLayout extends Component {
                     selected={index === 3} 
                     onClick={()=>{history.push(`/events/${eventuid}/volunteers`); this.setState({index : 3})}}
                   >
-                    <Typography component="p" style={{color:'inherit'}}>
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Volunteers
                     </Typography>
                   </ListItem>
@@ -89,16 +81,16 @@ class EventLayout extends Component {
                     selected={index === 0} 
                     onClick={()=>{history.push(`/events/${eventuid}/overview`); this.setState({index : 0})}}
                     >
-                    <Typography component="p" style={{color:'inherit'}}>
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Overview
                     </Typography>
                   </ListItem>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
                     selected={index === 1} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams/view`); this.setState({index : 1})}}
+                    onClick={()=>{history.push(`/events/${eventuid}/teams`); this.setState({index : 1})}}
                   >
-                    <Typography component="p" style={{color:'inherit'}}>
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Teams
                     </Typography>
                   </ListItem>
@@ -107,15 +99,15 @@ class EventLayout extends Component {
                     selected={index === 2} 
                     onClick={()=>{history.push(`/events/${eventuid}/teams/create`); this.setState({index : 2})}}
                   >
-                    <Typography component="p" style={{color:'inherit'}}>
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Register
                     </Typography>
                   </ListItem>
                 </div>
               )
             }
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     );
   }
 }

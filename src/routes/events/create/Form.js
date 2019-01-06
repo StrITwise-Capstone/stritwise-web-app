@@ -138,6 +138,7 @@ const createEvent = ({
               name="description"
               label="Description"
               type="text"
+              multiline
               component={TextField}
             />
             <Field

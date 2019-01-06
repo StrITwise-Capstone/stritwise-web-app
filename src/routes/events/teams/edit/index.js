@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
+import { withRouter } from 'react-router';
 
 import Form from './Form';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
@@ -56,7 +57,9 @@ class editTeam extends Component {
     }).catch((error) => {
       console.log(error);
       });
-    
+    firestore.collection('events').doc(match.params.id).collection('teams').doc(match.params.teamid).get().then((doc)=>{
+      this.setState({team: doc.data()});
+    })
     const query = firestore.collection('events').doc(match.params.id).collection('students').where('team_id','==',`${match.params.teamid}`)
     query.get().then((querySnapshot)=>{
       const studentsList = [];
@@ -81,17 +84,16 @@ class editTeam extends Component {
   }
 
   render() {
-    const { currentevent, team, students } = this.props;
-    const { schools, studentsList } = this.state;
-    
+    const { currentevent } = this.props;
+    const { schools, studentsList, team } = this.state;
     return (
       <AdminLayout
         title="Edit Team"
       >
-      {currentevent == null && team == null && schools.length <0 && students == null && studentsList.length< 0 &&
+      {currentevent == null && team == null && schools.length <0 && studentsList.length< 0 &&
         <CircularProgress/>
       }
-      {team && schools.length >0 && students && studentsList.length> 0 &&
+      {team && schools.length > 0 && studentsList.length> 0 &&
       <Form 
         team={team} 
         schools={schools} 
@@ -105,43 +107,21 @@ class editTeam extends Component {
   }
 }
 
-
-const styles = () => ({
-  root: {
-    paddingTop:'10px',
-  },
-  title: {
-    textAlign: 'center',
-    padding: '10px',
-  },
-  form: {
-    margin: '10px',
-  },
-});
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state,ownProps) => {
   return {
-      currentevent: state.firestore.data.currentevent,
+      currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
       isAuthenticated: state.auth.isAuthenticated,
       user: state.firestore.data.user,
-      team: state.firestore.data.team,
-      students: state.firestore.data.students,
   }
 };
 
 export default compose(
   connect(mapStateToProps),
-  withStyles(styles),
   firestoreConnect((props) => [
     {
-      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
-    },
-    {
-      collection:'events',doc:`${props.match.params.id}`,subcollections: [{ collection: 'teams', doc:`${props.match.params.teamid}`}] ,storeAs:`team`
-    },
-    {
-      collection:'events',doc:`${props.match.params.id}`,subcollections: [{ collection: 'students', where:['team_id', '==', `${props.match.params.teamid}`]}] ,storeAs:`students`
+      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent${props.match.params.id}`
     },
   ]),
   withSnackbar,
+  withRouter,
 )(editTeam);
