@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { getFirebase } from 'react-redux-firebase';
+import { compose } from 'redux';
+import { withRouter } from 'react-router-dom';
 
 import * as util from '../../../helper/util';
 import * as reduxAction from '../../../store/actions';
@@ -18,7 +20,7 @@ const initialValues = {
 };
 
 const LoginForm = ({
-  logOut, logIn, enqueueSnackbar,
+  logOut, logIn, enqueueSnackbar, history
 }) => (
   <Formik
     initialValues={initialValues}
@@ -44,6 +46,7 @@ const LoginForm = ({
             enqueueSnackbar('Authenticated. Logging in...', {
               variant: 'success',
             });
+            history.push('/events');
           } else {
             logOut();
             enqueueSnackbar('Please verify your email and try again.', {
@@ -131,4 +134,4 @@ LoginForm.propTypes = {
   /* eslint-enable */
 };
 
-export default withSnackbar(connect(null, mapDispatchToProps)(LoginForm));
+export default compose(withSnackbar,connect(null, mapDispatchToProps),withRouter)(LoginForm);

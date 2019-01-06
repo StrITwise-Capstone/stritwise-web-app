@@ -18,9 +18,11 @@ import NotFound from '../../components/Error/404';
 import Dashboard from '../events';
 import CreateEvent from '../events/create';
 import EditEvent from '../events/edit';
-import RegisterEvent from '../events/register';
-import CreateStudents from '../events/register/create';
-import PointSystem from '../events/register/pointsystem';
+import ViewTeam from '../events/teams/view';
+import CreateTeam from '../events/teams/create';
+import EditTeam from '../events/teams/edit';
+import PointSystem from '../events/pointsystem';
+import Overview from '../events/overview';
 import Profile from '../profile';
 
 import AdminRoutes from './adminRoutes';
@@ -59,12 +61,14 @@ class routes extends Component {
     /* EVENTS */ 
     elements.push(<Route exact path="/events" key="/events" component={Dashboard}/>);
     elements.push(<Route exact path="/events/create" key="/events/create" component={CreateEvent} />);
+    elements.push(<Route exact path="/events/:id/overview" key="/events/edit" component={Overview} />);
     elements.push(<Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />);
   
-    elements.push(<Route exact path="/events/:id/teams/register" key="/events/register" component={RegisterEvent} />);
-    elements.push(<Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateStudents}/>)
-    elements.push(<Route exact path="/events/:id/crews" key="/events/crews" component={CreateStudents}/>)
+    elements.push(<Route exact path="/events/:id/teams/view" key="/events/teams/view" component={ViewTeam} />);
+    elements.push(<Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateTeam}/>)
+    elements.push(<Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>)
 
+    elements.push(<Route exact path="/events/:id/volunteers" key="/events/volunteers" component={ViewTeam}/>)
     elements.push(<Route exact path="/events/:id/pointsystem" key="/events/pointsystem" component={PointSystem}/>)
   
     /* ERRORS */

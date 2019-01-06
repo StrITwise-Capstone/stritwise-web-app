@@ -113,7 +113,7 @@ class cardList extends React.Component {
             teamsList, isNotLoading, page
         } = this.state;
         const {
-            teamsListCount, match, schools
+            teamsListCount, match
         } = this.props;
         return (
         <React.Fragment>
@@ -129,6 +129,7 @@ class cardList extends React.Component {
                 rowsPerPage={5}
                 onChangePage={this.handleChangePage}
                 ActionsComponent={TablePaginationActionsWrapped}
+                style={{'float':'left'}}
             />
             </tr></tbody></Table>
             <div style={{ margin: '0 auto' }}/>
@@ -142,7 +143,7 @@ class cardList extends React.Component {
             {teamsList && isNotLoading
                 && Object.keys(teamsList).map(teamuid => (
                     <Grid item xs={6} key={teamuid}>
-                        <TeamCard schools={schools} teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
+                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} 
                         update={()=>{this.getData()}}
                         />
                 </Grid>))

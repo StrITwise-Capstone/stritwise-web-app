@@ -21,17 +21,18 @@ import ErrorMessage from './ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
-const createStudent = ({
+const createTeam = ({
   firestore,
   enqueueSnackbar,
   match,
   minStudent,
   schools,
+  teacherId,
 }) => (
   <Formik
     initialValues={{
       team_name: '',
-      students: Array.apply(null, Array(minStudent)).map(function () {}),
+      students: Array.apply(null, Array(minStudent)).map(function () {return;}),
       schools: schools,
     }}
     validationSchema={yup.object({
@@ -59,85 +60,52 @@ const createStudent = ({
       .min(minStudent, `Minimum of ${minStudent} member`)
     })}
     onSubmit={(values, {resetForm, setSubmitting}) => {
-      
       const eventuid = match.params.id;
-      var teamRef = firestore.collection("events").doc(eventuid).collection("teams");
-      var query = teamRef.where("team_name","==", `${values.team_name}`);
       var students = values.students;
-      query.get().then(querySnapshot => {
-          if (querySnapshot.empty === false){
-            const teamuid = querySnapshot.docs[0].id;
-            for (var i = 0; i < students.length; i++) {
-              firestore.collection("events").doc(eventuid).collection("students").add({
-                team_id: teamuid,
-                first_name: students[i]['firstname'],
-                last_name: students[i]['lastname'],
-                mobile: students[i]['phonenumber'],
-                email: students[i]['email'],
-                badge_name: students[i]['badgename'],
-                dietary_restriction: students[i]['dietaryrestriction'],
-                remarks: students[i]['remarks'],
-                school_id: students[i]['school'].value,
-                created_At: new Date(Date.now()),
-                modified_At: new Date(Date.now()),
-              }).then(()=>{
-                enqueueSnackbar('Added 1 student...', {
-                  variant: 'info',
-                });
-                resetForm();
-                setSubmitting(false);
-                if (i === students.length){
-                  enqueueSnackbar('Students Added Successfully', {
-                    variant: 'success',
-                  });
-                }
-              })
-            }
-          }
-          else{
-            firestore.collection("events").doc(match.params.id).collection("teams").add({
-              team_name: values.team_name,
-              credit:0,
-              created_At: new Date(Date.now()),
-              modified_At: new Date(Date.now()),
-            }).then((docRef)=>{
-              enqueueSnackbar('Added Team...', {
-                variant: 'info',
+      firestore.collection("events").doc(match.params.id).collection("teams").add({
+        team_name: values.team_name,
+        school_id: values.school_id.value,
+        credit:0,
+        created_At: new Date(Date.now()),
+        modified_At: new Date(Date.now()),
+        teacher_id: teacherId,
+      }).then((docRef)=>{
+        enqueueSnackbar('Added Team...', {
+          variant: 'info',
+        });
+        students.map((student,index) => {
+          return firestore.collection("events").doc(eventuid).collection("students").add({
+            team_id: docRef.id,
+            first_name: students[index]['firstname'],
+            last_name: students[index]['lastname'],
+            mobile: students[index]['phonenumber'],
+            email: students[index]['email'],
+            badge_name: students[index]['badgename'],
+            dietary_restriction: students[index]['dietaryrestriction'],
+            remarks: students[index]['remarks'],
+            emergency_contacts: {
+              name:students[index]['emergency_contact_name'],
+              mobile:students[index]['emergency_contact_mobile'],
+              relation: students[index]['emergency_contact_relation'],
+            },
+            created_At: new Date(Date.now()),
+            modified_At: new Date(Date.now()),
+          }).then(()=>{
+            enqueueSnackbar('Added 1 student...', {
+              variant: 'info',
+            });
+            resetForm();
+            setSubmitting(false);
+            if (index === students.length){
+              enqueueSnackbar('Team Created Successfully', {
+                variant: 'success',
               });
-              for (var i = 0; i < students.length; i++) {
-                firestore.collection("events").doc(eventuid).collection("students").add({
-                  team_id: docRef.id,
-                  first_name: students[i]['firstname'],
-                  last_name: students[i]['lastname'],
-                  mobile: students[i]['phonenumber'],
-                  email: students[i]['email'],
-                  badge_name: students[i]['badgename'],
-                  dietary_restriction: students[i]['dietaryrestriction'],
-                  remarks: students[i]['remarks'],
-                  emergency_contacts: {
-                    name:students[i]['emergency_contact_name'],
-                    mobile:students[i]['emergency_contact_mobile'],
-                    relation: students[i]['emergency_contact_relation'],
-                  },
-                  created_At: new Date(Date.now()),
-                  modified_At: new Date(Date.now()),
-                }).then(()=>{
-                  enqueueSnackbar('Added 1 student...', {
-                    variant: 'info',
-                  });
-                  resetForm();
-                  setSubmitting(false);
-                  if (i === students.length){
-                    enqueueSnackbar('Team Created Successfully', {
-                      variant: 'success',
-                    });
-                  }
-                })
-              }
-            })    
-          }
-        }
-      )}}
+            }
+          })
+        })
+      })    
+    }
+  }
   >
     {({
       values,
@@ -152,11 +120,17 @@ const createStudent = ({
             <Field
               required
               name="team_name"
-              label="Name of the new team or existing team (Cap-Sensitive)"
+              label="Name of team"
               type="text"
               component={TextField}
               style={{width:'500px'}}
               index = {-1}
+            />
+            <Field
+              name={`school_id`}
+              label="School"
+              options={schools}
+              component={Select}
             />
             <FieldArray
               name="students"
@@ -168,14 +142,7 @@ const createStudent = ({
                       <Button style={{float:'right'}} type="button" size="small" color="primary" onClick={() => arrayHelpers.remove(index)}>
                         Delete
                       </Button></p>
-                      <div>
-                      <Field
-                        name={`students[${index}].school`}
-                        label="School"
-                        options={schools}
-                        component={Select}
-                      />
-                      </div>
+                      
                       <div>
                       <Field
                       name={`students[${index}].firstname`}
@@ -291,7 +258,8 @@ const createStudent = ({
   </Formik>
 );
 
-const mapStateToProps = state => {console.log(state); return({
+const mapStateToProps = state => {
+  return({
   authError: state.auth.authError,
   auth: state.firebase.auth,
   firestore: state.firestore,
@@ -299,7 +267,7 @@ const mapStateToProps = state => {console.log(state); return({
   schoolsList: state.firestore.schoolsList,
 })};
 
-createStudent.defaultProps = {
+createTeam.defaultProps = {
   authError: '',
 };
 
@@ -309,4 +277,4 @@ export default compose(
   firebaseConnect(),
   firestoreConnect(),
   withRouter,
-)(createStudent);
+)(createTeam);

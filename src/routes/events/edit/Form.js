@@ -19,7 +19,7 @@ import moment from 'moment';
 import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
-import Thumb from './ThumbNail';
+import Thumb from '../../../components/UI/Thumb/Thumbnail';
 import yup from '../../../instances/yup';
 
 function timeConverter(UNIX_timestamp){
@@ -27,7 +27,6 @@ function timeConverter(UNIX_timestamp){
 }
 
 const initialValues = (event) => {
-  
   if (event != null)
   {
   return {
@@ -59,7 +58,6 @@ const guid = () => {
 };
 
 const editEvent = ({
-  authError,
   auth,
   firestore,
   enqueueSnackbar,
@@ -130,14 +128,12 @@ const editEvent = ({
               image_path: `images/${imageuid}`,
               modified_At: new Date(Date.now()),
             }).then(() => {
-              // console.log('Event created');
               enqueueSnackbar('Event Updated', {
                 variant: 'success',
               });
               resetForm();
               setSubmitting(false);
             }).catch(() => {
-              // console.log(`Event not created: ${err}`);
               enqueueSnackbar('Event Not Updated', {
                 variant: 'error',
               });
@@ -153,7 +149,6 @@ const editEvent = ({
       handleSubmit,
       isSubmitting,
       setFieldValue,
-      initialValues,
       /* and other goodies */
     }) => {
       let content = <CircularProgress />;
@@ -223,13 +218,6 @@ const mapStateToProps = state => ({
   firestore: state.firestore,
   firebase: state.firebase,
 });
-
-editEvent.propTypes = {
-  authError: PropTypes.string,
-  auth: PropTypes.node.isRequired,
-  firestore: PropTypes.node.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
-};
 
 editEvent.defaultProps = {
   authError: '',

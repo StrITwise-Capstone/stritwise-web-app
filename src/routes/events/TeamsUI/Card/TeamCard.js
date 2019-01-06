@@ -69,16 +69,19 @@ class teamCard extends React.Component {
   }
   
   render() {
-    const { classes, currentevent, team, eventuid, teamuid , studentsList, schools} = this.props;
+    const { classes, currentevent, team, eventuid, teamuid , studentsList, schools, match, history} = this.props;
     return (
       <React.Fragment>
-        {team && studentsList && currentevent
+        {team && studentsList && currentevent && schools
           && (
           <Card style={{margin:'10px'}}>
               <CardContent onClick={this.handleClickOpen} style={{height:'450px'}}>
                 <CardContent>
                   <Typography variant="h5" component="h2" className={classes.textField}>
                     {team.team_name}
+                  </Typography>
+                  <Typography component="p" className={classes.textField}>
+                    {schools[team.school_id].name}
                   </Typography>
                 </CardContent>
                 <Divider/>
@@ -89,7 +92,7 @@ class teamCard extends React.Component {
                   && Object.keys(studentsList).map(student => 
                 (
                   <React.Fragment key={student}>
-                    <ExpansionPanel schools={schools} student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
+                    <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
                   </React.Fragment>
                 ))
                 }
@@ -98,7 +101,8 @@ class teamCard extends React.Component {
                 </CardContent>  
               </CardContent>
               <CardContent>
-                  <Button onClick={this.deleteTeam} color="primary">Delete Team</Button>
+                  <Button onClick={()=>{history.push(`/events/${match.params.id}/teams/${teamuid}/edit`)}} color="primary">Edit</Button>
+                  <Button onClick={this.deleteTeam} color="primary">Delete</Button>
               </CardContent>
             </Card>
             )}
@@ -112,6 +116,7 @@ const mapStateToProps = (state,props) => {
       team: state.firestore.data[`team${props.teamuid}`],
       studentsList: state.firestore.data[`studentsList${props.teamuid}`],
       currentevent: state.firestore.data.currentevent,
+      schools: state.firestore.data.schools,
   }
 };
 
@@ -122,6 +127,9 @@ export default compose(withRouter,firestoreConnect((props) => {
   },
   {
     collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'students', where: ['team_id','==',`${props.teamuid}`]}], storeAs: `studentsList${props.teamuid}`
+  },
+  {
+    collection:'schools',
   },
 ]}),connect(mapStateToProps),withStyles(styles),withSnackbar)(teamCard);
 

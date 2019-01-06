@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Paper,
-  Typography,
-  Divider,
   withStyles,
+  CircularProgress,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -37,19 +35,24 @@ class createTeam extends Component {
   }
 
   render() {
-    const { classes, currentevent } = this.props;
+    const { currentevent, auth, user } = this.props;
     const { schools } = this.state;
+    var teacherId = '';
+    if (user && user.type === "teacher"){
+      teacherId = auth.uid;
+    }
     return (
-      <AdminLayout>
-      <div className={classes.root}>
-        <Paper>
-          <Typography variant="h4" className={classes.title}>Add Team and Students</Typography>
-          <Divider />
-          <div className={classes.form}>
-           {currentevent && <Form schools={schools ? schools : null} minStudent={currentevent['min_student'] ? currentevent['min_student'] : 1} />
-           }</div>
-        </Paper>
-      </div>
+      <AdminLayout
+        title="Register Team"
+      >
+      {currentevent == null && <CircularProgress></CircularProgress>}
+      {currentevent && 
+        <Form 
+          schools={schools ? schools : null} 
+          minStudent={currentevent['min_student'] ? currentevent['min_student'] : 1}
+          teacherId={teacherId} 
+        />
+      }
       </AdminLayout>
     );
   }
@@ -74,6 +77,7 @@ const mapStateToProps = (state) => {
       currentevent: state.firestore.data.currentevent,
       isAuthenticated: state.auth.isAuthenticated,
       user: state.firestore.data.user,
+      auth : state.firebase.auth,
   }
 };
 

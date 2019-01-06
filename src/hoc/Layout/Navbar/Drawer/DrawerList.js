@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
+import { List } from '@material-ui/core';
 import { Home, Label } from '@material-ui/icons';
 
 import RouteList from './RoutesList/RouteList';
@@ -41,6 +41,5 @@ class DrawerList extends Component {
   );
   }
 };
-
 
 export default withStyles(styles)(DrawerList);

@@ -63,7 +63,6 @@ class PointSystem extends Component {
     
     return (
       <div style={{'background-color':'black'}}>
-          {/* <Typography variant="h1">Title</Typography> */}
           <Grid 
             container  
             direction="row"

@@ -4,9 +4,7 @@ import {
   Button, 
   withStyles,
   Paper,
-  Divider, 
   CircularProgress,
-  Grid,
   Typography,
 } from '@material-ui/core';
 import { compose } from 'redux';
@@ -19,8 +17,6 @@ import moment from 'moment';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 
-import CardList from '../TeamsUI/CardList/CardList';
-import ImportButton from './ImportButton/ImportButton';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 const styles = () => ({
@@ -35,15 +31,17 @@ const styles = () => ({
   gridItem:{
     paddingTop:'20px'
   },
-  paper:{
-    marginLeft:'20px',
-    paddingLeft:'15px',
-    paddingRight:'15px',
-
+  image:{
+    width:'50%',
+    height:'40%',
+    display:'block',
+    margin:'auto',
+    padding:'1em',
+    borderRadius:'25px'
   },
 });
 
-class Dashboard extends Component {
+class Overview extends Component {
   state = {
     open: false,
     event: null,
@@ -51,20 +49,6 @@ class Dashboard extends Component {
     schools : null,
     imageFile: null,
   };
-
-  action = () => {
-    const { match } = this.props;      
-    return(<React.Fragment>
-      <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        component={Link}
-        to={`/events/${match.params.id}/pointsystem`}
-      >Point System</Button>
-    </React.Fragment>)
-    
-  }
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -109,57 +93,81 @@ class Dashboard extends Component {
       console.log(error);
       });
   }
+  action = () => {
+    const { isAuthenticated,user,match } = this.props;
+    if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member'))
+    {
+      
+    return(<React.Fragment>
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        component={Link}
+        to={`/events/${match.params.id}/edit`}
+      >Edit
+      </Button>
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        onClick={()=>{this.deleteEvent()}}
+      >Delete</Button>
+    </React.Fragment>)
+    }
+  }
+
+  deleteEvent = () => {
+    const { match, firestore, history } = this.props;
+    const db = firestore;
+    this.setState({isNotLoading:false});
+    db.collection('events').doc(match.params.id).delete().then(() => {
+      this.props.enqueueSnackbar('Deleted Event', {
+        variant: 'success',
+      });
+      history.push('/events')
+    }).catch((error) => {
+      console.error('Error moving document', error);
+      this.props.enqueueSnackbar('Deleted Event Error', {
+        variant: 'error',
+      });
+    });
+  }
 
   render() {
-    const { classes, currentevent, user } = this.props;
-    const { imageFile, isNotLoading, schools } = this.state;
+    const { classes, currentevent,} = this.props;
+    const { imageFile, isNotLoading,} = this.state;
     return (
-      <React.Fragment>
+    <React.Fragment>
       {isNotLoading === false && 
         <CircularProgress></CircularProgress>
       }
-      {isNotLoading === true
-        && 
-        (<React.Fragment>
+     {currentevent && isNotLoading &&
+      (<React.Fragment>
           <AdminLayout
             title={currentevent.name}
             action={this.action()}
           >
-            <Paper className={classes.paper}>
-              <Grid container >
-                <Grid item xs={6} className={classes.gridItem}>
-                  <div>
-                    <Typography className={classes.p} component="p">Start Date: {moment(currentevent.start_date.toDate()).calendar()}</Typography>
-                    <Typography className={classes.p} component="p">End Date: {moment(currentevent.end_date.toDate()).calendar()}</Typography>
-                    <Typography className={classes.p} component="p">Description: </Typography>
-                    <Typography className={classes.p} component="p">{currentevent.desc}</Typography>
-                  </div>
-                </Grid>
-                <Grid item xs={6} className={classes.gridItem}><img src={imageFile} style={{maxWidth:'100%', 'maxHeight':'100%'}} /> </Grid>
-              </Grid>
-              <Divider/>
-              {schools && <ImportButton schools={schools} eventuid={this.props.match.params.id} teacherid={this.props.auth.id} updatingStatus={bool => this.setState({isNotLoading:bool})} />}
-            </Paper>
-            <div style={{height:'20px'}}></div>
-            <Paper className={classes.paper} style={{background:'#E6E6FA'}}>
-            <Typography variant="h5" component="h1">Teams  
-              <Button size="small" onClick={() => {this.createTeam()}} className={classes.button}>
-                Create Teams
-              </Button>
-            </Typography>
-            {schools && <CardList schools={schools} eventuid={this.props.match.params.id} schooluid={user.school_id}/>}
+          <Paper>
+            <div className={classes.imageDiv}>
+            <img className={classes.image} src={imageFile} alt="Event"/>
+            </div>
+              <div style={{'padding':'1em'}}>
+                <Typography className={classes.p} component="p">{currentevent.desc}</Typography>
+                <Typography className={classes.p} component="p">Start Date: {moment(currentevent.start_date.toDate()).calendar()}</Typography>
+                <Typography className={classes.p} component="p">End Date: {moment(currentevent.end_date.toDate()).calendar()}</Typography>
+              </div>
             </Paper>
           </AdminLayout>
-      </React.Fragment>)
-    }
-    </React.Fragment>
-    );
+      </React.Fragment>)}
+      </React.Fragment>
+    )
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state,ownProps) => {
     return {
-      currentevent: state.firestore.data.currentevent,
+      currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
       auth: state.firebase.auth,
       isAuthenticated: state.auth.isAuthenticated,
       user: state.firestore.data.user,
@@ -171,7 +179,7 @@ export default compose(
   withStyles(styles),
   firestoreConnect((props) => [
     {
-      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
+      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent${props.match.params.id}`
     },
     {
       collection: 'users',
@@ -182,4 +190,4 @@ export default compose(
   firebaseConnect(),
   withSnackbar,
   withRouter,
-)(Dashboard);
+)(Overview);
