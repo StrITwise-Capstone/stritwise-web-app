@@ -22,6 +22,10 @@ class Unknown extends React.Component {
     }, 3000);
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timeoutHandle);
+  }
+
   render() {
     const { classes } = this.props;
     return (
