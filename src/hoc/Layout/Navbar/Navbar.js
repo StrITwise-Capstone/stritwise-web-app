@@ -49,6 +49,7 @@ const styles = theme => ({
 class Navbar extends Component{
   state = {
     auth: true,
+    anchorEl: false,
   };
 
   handleMenu = event =>{
@@ -113,7 +114,7 @@ class Navbar extends Component{
                 onClose={this.handleClose}
               >
                 <MenuItem onClick={()=>{history.push('/profile')}}>Profile</MenuItem>
-                <MenuItem onClick={this.props.logOut}>Log Out</MenuItem>
+                <MenuItem onClick={()=>{this.props.logOut(); history.push('/');}}>Log Out</MenuItem>
               </Menu>
             </div>
           )}

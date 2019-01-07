@@ -4,7 +4,6 @@ export const logIn = () => ({ type: actionTypes.AUTH_LOGIN });
 
 export const logOut = () => ((dispatch, getstate, { getFirebase }) => {
   const firebase = getFirebase();
-
   firebase.auth().signOut().then(() => {
     dispatch({ type: actionTypes.AUTH_LOGOUT });
   });
