@@ -60,11 +60,11 @@ const TableView = ({
   isLoading,
 }) => {
 
-  let content = <CircularProgress />;
+  let content = null;
   // convert the data into TableRows (dataContent)
   let dataContent = null;
   let dataHeader = null;
-  if (data) {
+  if (data && data.length !== 0) {
     dataHeader = Object.keys(data[0]).slice(1).map(header => (
       <CustomTableCell key={header}>{header}</CustomTableCell>
     ));

@@ -30,6 +30,7 @@ class Volunteers extends Component {
   }
 
   handleDocsList = (docsList) => {
+    console.log(docsList);
     let data = [];
     data = docsList.map(volunteer => (
       {

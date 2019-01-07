@@ -12,22 +12,20 @@ import TableView from './TableView';
 class CustomTable extends Component {
   state = {
     docsList: [],
-    filterRef: this.props.colRef,
+    filterRef: null, //this.props.colRef,
     filterSize: 0,
 
     page: 0,
     rowsPerPage: 5,
     lastVisible: null,
     firstVisible: null,
-    isLoading: false,
+    isLoading: true,
   }
 
   componentWillMount = () => {
-    const { filterRef } = this.state;
-    filterRef.get().then((snap) => {
-      this.setState({ filterSize: snap.size }, () => {
-        this.getData();
-      });
+    const { colRef } = this.props;
+    this.setState({ filterRef: colRef}, () => {
+      this.getData()
     });
   }
 
@@ -62,7 +60,7 @@ class CustomTable extends Component {
         startAt = documentSnapshot.docs[0];
       }
       this.setState({ filterSize: documentSnapshot.size }, () => {
-        if (startAt === null) {
+        if (startAt == null) {
           newRef = newRef.limit(rowsPerPage).startAfter(startAfter);
         } else {
           newRef = newRef.limit(rowsPerPage).startAt(startAt);
@@ -137,10 +135,8 @@ class CustomTable extends Component {
 
     const { page, rowsPerPage, filterSize, docsList, isLoading } = this.state;
     let content = <CircularProgress />;
-    let data = [];
-
     if (docsList.length !== 0) {
-      data = handleDocsList(docsList);
+      const data = handleDocsList(docsList);
       content = (
         <TableView
           // for Pagination
@@ -157,10 +153,14 @@ class CustomTable extends Component {
           handleEdit={handleEdit}
           enableDelete={enableDelete}
           handleDelete={this.handleDelete}
-          isLoading={isLoading} //Not used as of now
+          isLoading={isLoading} // Not used as of now
         >
           {children}
         </TableView>
+      );
+    } else if (!isLoading) {
+      content = (
+        <p>There is no data at the moment.</p>
       );
     }
     return content;
