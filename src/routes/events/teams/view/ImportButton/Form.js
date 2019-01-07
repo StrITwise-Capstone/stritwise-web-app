@@ -48,18 +48,17 @@ class AddUserForm extends React.Component {
       var dataByTeamName = d3.nest()
       .key(function(d) { return d['Team Name']; })
       .entries(result);
-      var validation = false;
+      var isValid = true;
       Object.keys(dataByTeamName).map(TeamIndex=>{
         var team = dataByTeamName[TeamIndex];
         if(!validation(team)){
           enqueueSnackbar('Error Adding Team...',{
             variant:'error',
           })
+          isValid = false;
         }
-        else
-          validation = true;
       });
-      if (validation){
+      if (isValid){
       //Query for school where school name matches
         Object.keys(dataByTeamName).map(TeamIndex => {
           var team = dataByTeamName[TeamIndex];

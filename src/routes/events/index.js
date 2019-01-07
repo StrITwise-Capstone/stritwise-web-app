@@ -94,7 +94,7 @@ export default compose(
   connect(mapStateToProps),
   firestoreConnect(props => [
     {
-      collection: 'events',
+      collection: 'events', orderBy: ['start_date','desc'],
     }
   ]),
   withSnackbar,

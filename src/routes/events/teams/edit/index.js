@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  withStyles,
   CircularProgress
 } from '@material-ui/core';
 import { connect } from 'react-redux';

@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import {firestoreConnect} from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
+import { withRouter } from 'react-router';
 
 import Form from './Form';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
@@ -72,9 +73,9 @@ const styles = () => ({
   },
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state,ownProps) => {
   return {
-      currentevent: state.firestore.data.currentevent,
+      currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
       isAuthenticated: state.auth.isAuthenticated,
       user: state.firestore.data.user,
       auth : state.firebase.auth,
@@ -86,8 +87,9 @@ export default compose(
   withStyles(styles),
   firestoreConnect((props) => [
     {
-      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent`
+      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent${props.match.params.id}`
     },
   ]),
   withSnackbar,
+  withRouter,
 )(createTeam);

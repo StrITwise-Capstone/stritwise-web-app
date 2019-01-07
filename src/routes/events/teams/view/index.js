@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { 
   withStyles,
   CircularProgress,
+  Button,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
@@ -11,6 +12,7 @@ import {
   firebaseConnect 
 } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 import CardList from '../../TeamsUI/CardList/CardList';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
@@ -78,7 +80,7 @@ class ViewTeams extends Component {
   }
 
   render() {
-    const { user,auth, currentevent } = this.props;
+    const { user,auth, currentevent, match } = this.props;
     const { isNotLoading, schools } = this.state;
     var teacherId = '';
     if (user && user.type === 'teacher')
@@ -90,12 +92,22 @@ class ViewTeams extends Component {
         <AdminLayout
           title="Teams"
           action={
-          <Dialog 
+          (<div style={{display:'flex',}}>
+            <Button
+            type="button"
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to={`/events/${match.params.id}/teams/create`}
+            >Create</Button>
+            <Dialog 
             refreshState={()=>{this.refreshState()}}
             schools={schools}
             eventuid={this.props.match.params.id}
             teacherId={teacherId}
-          />}
+            />
+          </div>
+          )}
         >
         
         {isNotLoading === false && 

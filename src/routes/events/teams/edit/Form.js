@@ -194,12 +194,9 @@ const editTeam = ({
             
                       <div style={{display:'flex',justifyContent:'space-between'}}>
                       <p>Student #{index+1}</p>
-                      <Button type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.deleteArray.push(students[index].key);}}>
+                      <Button style={{float:'right'}} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.deleteArray.push(students[index].key);}}>
                         Delete
                       </Button>
-                      <div>
-                    </div>
-                    
                       </div>
                       <div>
                       <Field

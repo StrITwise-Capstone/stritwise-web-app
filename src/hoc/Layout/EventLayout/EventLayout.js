@@ -28,6 +28,8 @@ class EventLayout extends Component {
     const { index } = this.state;
     const userType = userRole;
     const eventuid = location.pathname.replace('/events/','').substring(0,20);
+    const path = location.pathname.split('/')[location.pathname.split('/').length -1];
+   
     return (
       <Grid container>
         <Grid item xs={10}>
@@ -42,7 +44,7 @@ class EventLayout extends Component {
                   </Typography>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
-                    selected={index === 0} 
+                    selected={path === "overview"} 
                     onClick={()=>{history.push(`/events/${eventuid}/overview`); this.setState({index : 0})}}
                     >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
@@ -51,7 +53,7 @@ class EventLayout extends Component {
                   </ListItem>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
-                    selected={index === 1} 
+                    selected={path === "teams"} 
                     onClick={()=>{history.push(`/events/${eventuid}/teams`); this.setState({index : 1})}}
                   >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
@@ -60,7 +62,7 @@ class EventLayout extends Component {
                   </ListItem>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
-                    selected={index === 3} 
+                    selected={path === "volunteers"} 
                     onClick={()=>{history.push(`/events/${eventuid}/volunteers`); this.setState({index : 3})}}
                   >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
@@ -78,7 +80,7 @@ class EventLayout extends Component {
                   </Typography>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
-                    selected={index === 0} 
+                    selected={path === "overview"} 
                     onClick={()=>{history.push(`/events/${eventuid}/overview`); this.setState({index : 0})}}
                     >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
@@ -87,7 +89,7 @@ class EventLayout extends Component {
                   </ListItem>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
-                    selected={index === 1} 
+                    selected={path === "teams"} 
                     onClick={()=>{history.push(`/events/${eventuid}/teams`); this.setState({index : 1})}}
                   >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
@@ -96,7 +98,7 @@ class EventLayout extends Component {
                   </ListItem>
                   <ListItem 
                     classes={{ selected: classes.selected }} 
-                    selected={index === 2} 
+                    selected={path === "create"} 
                     onClick={()=>{history.push(`/events/${eventuid}/teams/create`); this.setState({index : 2})}}
                   >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>

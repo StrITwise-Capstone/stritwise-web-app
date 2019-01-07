@@ -38,8 +38,11 @@ class FormDialog extends React.Component {
           aria-labelledby="form-dialog-title"
           schools={schools}
         >
-          <DialogTitle id="form-dialog-title">Upload CSV</DialogTitle>
+          <DialogTitle id="form-dialog-title">
+            <p>Upload CSV</p>
+          </DialogTitle>
           <DialogContent>
+          <a href="https://drive.google.com/open?id=1_IbU1ZmkPpVbYje6NHIfvnWG2_P-tWk8">Download Template</a>
             <Form 
             refreshState={refreshState}
             schools={schools}

@@ -73,8 +73,8 @@ class teamCard extends React.Component {
       <React.Fragment>
         {team && studentsList && currentevent && schools
           && (
-          <Card style={{margin:'10px'}}>
-              <CardContent onClick={this.handleClickOpen} style={{height:'450px'}}>
+          <Card>
+              <CardContent onClick={this.handleClickOpen} >
                 <CardContent>
                   <Typography variant="h5" component="h2" className={classes.textField}>
                     {team.team_name}
@@ -84,9 +84,9 @@ class teamCard extends React.Component {
                   </Typography>
                 </CardContent>
                 <Divider/>
-                <CardContent style={{height:'300px'}}>
+                <CardContent>
                   <List>
-                <div style={{"overflowY":"auto", "maxHeight":"350px",}}>
+                <div style={{"overflowY":"auto",'max-height':'450px'}}>
                 {studentsList
                   && Object.keys(studentsList).map(student => 
                 (

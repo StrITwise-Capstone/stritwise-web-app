@@ -138,11 +138,12 @@ const createTeam = ({
                 <div>
                   {values.students.map((student,index) => (
                     <div key={index} style={{background:'#E6E6FA', marginBottom:'10px',padding: '10px',paddingLeft:'15px'}}>
-                      <p>Student #{index+1}
+                      <div style={{display:'flex',justifyContent:'space-between'}}>
+                      <p>Student #{index+1}</p>
                       <Button style={{float:'right'}} type="button" size="small" color="primary" onClick={() => arrayHelpers.remove(index)}>
                         Delete
-                      </Button></p>
-                      
+                      </Button>
+                      </div>
                       <div>
                       <Field
                       name={`students[${index}].firstname`}
