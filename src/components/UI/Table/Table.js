@@ -62,7 +62,7 @@ class CustomTable extends Component {
         startAt = documentSnapshot.docs[0];
       }
       this.setState({ filterSize: documentSnapshot.size }, () => {
-        if (startAt === null) {
+        if (startAt == null) {
           newRef = newRef.limit(rowsPerPage).startAfter(startAfter);
         } else {
           newRef = newRef.limit(rowsPerPage).startAt(startAt);
