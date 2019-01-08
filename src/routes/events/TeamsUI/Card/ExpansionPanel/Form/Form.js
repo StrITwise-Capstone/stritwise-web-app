@@ -30,20 +30,20 @@ const editStudent = ({
   <Formik
     enableReinitialize={true}
     initialValues={{
-        firstname: student.first_name,
-        lastname: student.last_name,
-        badgename: student.badge_name,
-        dietary_restriction: student.dietary_restriction,
-        remarks: student.remarks,
-        email: student.email,
-        mobile : student.mobile,
-        studentuid: studentuid,
-        eventuid: eventuid,
-        teamuid: teamuid,
-        deletevalue: deletevalue,
-        emergency_contact_name: student.emergency_contacts ? student.emergency_contacts['name']: null,
-        emergency_contact_mobile: student.emergency_contacts ? student.emergency_contacts['mobile'] : null,
-        emergency_contact_relation: student.emergency_contacts ? student.emergency_contacts['relation'] : null,
+      firstname: student.first_name,
+      lastname: student.last_name,
+      badgename: student.badge_name,
+      dietary_restriction: student.dietary_restriction,
+      remarks: student.remarks,
+      email: student.email,
+      mobile: student.mobile,
+      studentuid,
+      eventuid,
+      teamuid,
+      deletevalue,
+      emergency_contact_name: student.emergency_contacts ? student.emergency_contacts.name : null,
+      emergency_contact_mobile: student.emergency_contacts ? student.emergency_contacts.mobile : null,
+      emergency_contact_relation: student.emergency_contacts ? student.emergency_contacts.relation : null,
     }}
     validationSchema={yup.object({
       firstname: yup.string()
@@ -51,31 +51,31 @@ const editStudent = ({
       lastname: yup.string()
         .required('Required'),
       badge_name: yup.string(),
-      email: yup.string().email("Email is not valid"),
+      email: yup.string().email('Email is not valid'),
     })}
     onSubmit={(values, { setSubmitting }) => {
       firestore.collection('events').doc(eventuid).collection('students').doc(studentuid).update({
-          first_name: values.firstname,
-          last_name: values.lastname,
-          badge_name: values.badgename,
-          mobile: values.mobile,
-          dietary_restriction: values.dietary_restriction,
-          remarks: values.remarks,
-          email: values.email,
-          modified_At: new Date(Date.now()),
+        first_name: values.firstname,
+        last_name: values.lastname,
+        badge_name: values.badgename,
+        mobile: values.mobile,
+        dietary_restriction: values.dietary_restriction,
+        remarks: values.remarks,
+        email: values.email,
+        modified_At: new Date(Date.now()),
       }).then(() => {
-          enqueueSnackbar('Student Updated',{
-              variant: 'success',
-          })
-          setSubmitting(false);
+        enqueueSnackbar('Student Updated',{
+          variant: 'success',
+        })
+        setSubmitting(false);
       }).catch((err) => {
-          enqueueSnackbar('Student Not Updated', {
-              variant: 'error',
-          });
-          console.log(err);
-          setSubmitting(false);
+        enqueueSnackbar('Student Not Updated', {
+          variant: 'error',
+        });
+        console.log(err);
+        setSubmitting(false);
       });
-     }
+    }
     }
   >
     {({
@@ -158,10 +158,10 @@ const editStudent = ({
               component={TextField}
             />
             <div className="align-right">
-                {<Button type="submit" color="primary">Update</Button>}
+              {<Button type="submit" color="primary">Update</Button>}
             </div>
             <div className="align-right">
-                {initialValues.deletevalue && <DeleteButton teamuid={initialValues.teamuid} studentuid={initialValues.studentuid} eventuid={initialValues.eventuid}/>}
+              {initialValues.deletevalue && <DeleteButton teamuid={initialValues.teamuid} studentuid={initialValues.studentuid} eventuid={initialValues.eventuid} />}
             </div>
           </Form>
         );
@@ -171,10 +171,14 @@ const editStudent = ({
   </Formik>
 );
 
-const mapStateToProps = (state, ownProps) => {return({
-  school: state.firestore.data[`school${ownProps.student.school_id}`],
-})};
+const mapStateToProps = (state, ownProps) => {
+  return ({
+    school: state.firestore.data[`school${ownProps.student.school_id}`],
+  });
+};
 
-export default compose(withSnackbar,connect(mapStateToProps),
-  firestoreConnect()
+export default compose(
+  withSnackbar,
+  connect(mapStateToProps),
+  firestoreConnect(),
 )(editStudent);

@@ -17,28 +17,33 @@ const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
-    color: "white",
-    paddingLeft:'10px',
+    color: 'white',
+    paddingLeft: '10px',
   },
 });
 
 class SimpleExpansionPanel extends Component {
-    render(){
+    render() {
     const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
     return (
       <div className={classes.root}>
-        {student && <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ "backgroundColor":"purple", padding:"5px"}}>
-            <Typography className={classes.heading}>{student.first_name} {student.last_name}</Typography>
+        {student && (
+        <ExpansionPanel>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'purple', padding: '5px' }}>
+            <Typography className={classes.heading}>
+              {student.first_name} 
+              {student.last_name}
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue}/>
+            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue} />
           </ExpansionPanelDetails>
-        </ExpansionPanel>
+        </ExpansionPanel>)
         }
-        <div style={{ padding:"10px"}}/>
+        <div style={{ padding: '10px'}} />
       </div>
     );
+  }
 }
-}
+
 export default withStyles(styles)(SimpleExpansionPanel);

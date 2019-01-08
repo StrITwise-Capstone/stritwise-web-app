@@ -15,74 +15,87 @@ import * as util from '../../../../../helper/util';
 import Select from '../../../../../components/UI/Select/Select';
 
 function validateEmail(email) {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
+  var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  const bool =  re.test(String(email).toLowerCase());
+  return bool;
 }
 
 function validation(team) {
   var bool = true;
-  for (var i = 0; i < team.values.length; i++ ) {
-    if (team.values[i]['Team Name'] === '' && team.values[i]['Team Name'].length < 1)
+  console.log(team);
+  for (var i = 0; i < team.values.length; i++) {
+    if (team.values[i]['Team Name'] === '' && team.values[i]['Team Name'].length < 1) {
       bool = false;
-    if (team.values[i]['First Name'].length < 1 && team.values[i]['Last Name'].length < 1)
+    }
+    if (team.values[i]['First Name'].length < 1 && team.values[i]['Last Name'].length < 1) {
       bool = false;
-    if (team.values[i]['Phone Number'] && team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8)
+    }
+    if (team.values[i]['Phone Number'] && team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8) {
       bool = false;
-    if (validateEmail(team.values[i].email) === false)
+    }
+    if (validateEmail(team.values[i].Email) === false) {
       bool = false;
-    if (team.values[i]['Emergency Contact Name'] === undefined && team.values[i]['Emergency Contact Mobile'] === undefined && team.values[i]['Relation to Participant'] === undefined)
-     bool = false;
-    if (team.values[i]['Emergency Contact Mobile'] && team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
-     bool = false;
+    }
+    if (team.values[i]['Emergency Contact Name'] === undefined && team.values[i]['Emergency Contact Mobile'] === undefined && team.values[i]['Relation to Participant'] === undefined) {
+      bool = false;
+    }
+    if (team.values[i]['Emergency Contact Mobile'] && team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8) {
+      bool = false;
+    }
   }
   return bool;
 }
+
 class AddUserForm extends React.Component {
   handleSubmit = (values) => {
     const setData = (result) => {
       const { enqueueSnackbar, firestore, eventuid, handleClose, refreshState, teacherId } = this.props;
       const school_id = values.school.value;
-      var dataByTeamName = d3.nest()
+      const dataByTeamName = d3.nest()
         .key(function(d) { return d['Team Name']; })
         .entries(result);
-      var isValid = true;
-      Object.keys(dataByTeamName).map(TeamIndex=>{
-        var team = dataByTeamName[TeamIndex];
-        if(!validation(team)){
-          enqueueSnackbar('Error Adding Team...',{
-            variant:'error',
+      let isValid = true;
+      Object.keys(dataByTeamName).map((TeamIndex) => {
+        const team = dataByTeamName[TeamIndex];
+        if (!validation(team)) {
+          enqueueSnackbar('Error Adding Team...', {
+            variant: 'error',
           });
           isValid = false;
+          return null;
         }
+        return null;
       });
-      if (isValid){
-      //Query for school where school name matches
-        Object.keys(dataByTeamName).map(TeamIndex => {
-          var team = dataByTeamName[TeamIndex];
-          //Do verification
-          if (validation(team)){
-            return firestore.collection("events").doc(eventuid).collection("teams").add({
+
+
+      if (isValid) {
+        // Query for school where school name matches
+        Object.keys(dataByTeamName).map((TeamIndex) => { 
+          const team = dataByTeamName[TeamIndex];
+          // Do verification
+          if (validation(team)) {
+            return firestore.collection('events').doc(eventuid).collection('teams').add({
               team_name: team.key,
-              credit:0,
+              credit: 0,
               teacher_id: teacherId,
               created_At: new Date(Date.now()),
               modified_At: new Date(Date.now()),
-              school_id: school_id,
-            }).then((docRef)=>{
+              school_id,
+            }).then((docRef) => {
               enqueueSnackbar('Added 1 Team...', {
                 variant: 'info',
               });
               for (var i = 0; i < team.values.length; i++) {
-                firestore.collection("events").doc(eventuid).collection("students").add({
+                firestore.collection('events').doc(eventuid).collection('students').add({
                   team_id: docRef.id,
-                  school_id: school_id,
+                  school_id,
                   first_name: team.values[i]['First Name'],
                   last_name: team.values[i]['Last Name'],
                   mobile: team.values[i]['Phone Number'],
-                  email: team.values[i]['Email'],
+                  email: team.values[i].Email,
                   badge_name: team.values[i]['Badge Name'],
                   dietary_restriction: team.values[i]['Dietary Restrictions'],
-                  remarks: team.values[i]['Remarks'],  
+                  remarks: team.values[i].Remarks,
                   emergency_contacts: {
                     name: team.values[i]['Emergency Contact Name'],
                     mobile: team.values[i]['Emergency Contact Mobile'],
@@ -90,94 +103,92 @@ class AddUserForm extends React.Component {
                   },
                   created_At: new Date(Date.now()),
                   modified_At: new Date(Date.now()),
-                }).finally(()=>{
-                  if (i === team.values.length){
-                  enqueueSnackbar(`Added ${i} student...`, {
-                    variant: 'info',
-                  });
+                }).finally(() => {
+                  if (i === team.values.length) {
+                    enqueueSnackbar(`Added ${i} student...`, {
+                      variant: 'info',
+                    });
                   refreshState();
                   }
                 })
               }
               handleClose();
-            })
+            });
           }
-        })
+        });
       }
-    }
-   const input = values.file;
-   if (!input)
-     return;
-   var reader = new FileReader()
-   reader.onload = function(event){
-     var contents = event.target.result;
-     let array = []
-     var result = Papa.parse(contents,{
-       delimiter: "",	// auto-detect
-       newline: "",	// auto-detect
-       quoteChar: '"',
-       escapeChar: '"',
-       header: true,
-       preview: 0,
-       encoding: "",
-       worker: false,
-       comments: false,
-       complete: function(results) {
-         return array;
-       },
-       skipEmptyLines: true,
-     })
-     setData(result.data);
-   }
-   reader.readAsText(input);
- }
+    };
 
-  
+    const input = values.file;
+    if (!input) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function readFile(event) {
+      const contents = event.target.result;
+      let array = [];
+      const result = Papa.parse(contents, {
+        delimiter: "", // auto-detect
+        newline: "", // auto-detect
+        quoteChar: '"',
+        escapeChar: '"',
+        header: true,
+        preview: 0,
+        encoding: '',
+        worker: false,
+        comments: false,
+        skipEmptyLines: 'greedy',
+        complete: function getResults(results) {
+          return array;
+        },
+      });
+      setData(result.data);
+    };
+    reader.readAsText(input);
+  }
+
   render() {
-   return(
-     <Formik
-       initialValues={{
-       }}
-       onSubmit={this.handleSubmit}
-       render={props => {
-          return(
-             <Form>
-               <Field
-                name="school"
-                label="School"
-                options={this.props.schools}
-                component={Select}
-              />
-              <Field
-                required
-                name="file"
-                label="Choose file to upload"
-                type="file"
-                component={Input}
-                onChange={(event) => {
-                  props.setFieldValue("file", event.currentTarget.files[0]);
-                }}
-              />
-              <div className="align-right">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={util.isFormValid(props.errors, props.touched)}
-                >
-                  Upload
-                </Button>
-              </div>
-             </Form>
-          );
-      }}
-     />);
+    return (
+      <Formik
+        initialValues={{
+        }}
+        onSubmit={this.handleSubmit}
+        render={props => (
+          <Form>
+            <Field
+              name="school"
+              label="School"
+              options={this.props.schools}
+              component={Select}
+            />
+            <Field
+              required
+              name="file"
+              label="Choose file to upload"
+              type="file"
+              component={Input}
+              onChange={(event) => {
+                props.setFieldValue('file', event.currentTarget.files[0]);
+              }}
+            />
+            <div className="align-right">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={util.isFormValid(props.errors, props.touched)}
+              >
+                Upload
+              </Button>
+            </div>
+          </Form>
+        )}
+      />);
   }
 }
+
 AddUserForm.propTypes = {
-  // auth: PropTypes.objectOf(PropTypes.string).isRequired,
-  logOut: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
 };
 
-export default compose(withSnackbar,firestoreConnect())(AddUserForm);
+export default compose(withSnackbar, firestoreConnect())(AddUserForm);

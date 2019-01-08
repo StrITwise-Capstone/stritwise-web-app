@@ -42,13 +42,13 @@ class FormDialog extends React.Component {
             <p>Upload CSV</p>
           </DialogTitle>
           <DialogContent>
-          <a href="https://drive.google.com/open?id=1_IbU1ZmkPpVbYje6NHIfvnWG2_P-tWk8">Download Template</a>
-            <Form 
-            refreshState={refreshState}
-            schools={schools}
-            eventuid={eventuid} 
-            handleClose={this.handleClose}
-            teacherId={teacherId}
+            <a href="https://drive.google.com/open?id=1_IbU1ZmkPpVbYje6NHIfvnWG2_P-tWk8">Download Template</a>
+            <Form
+              refreshState={refreshState}
+              schools={schools}
+              eventuid={eventuid}
+              handleClose={this.handleClose}
+              teacherId={teacherId}
             />
           </DialogContent>
         </Dialog>
