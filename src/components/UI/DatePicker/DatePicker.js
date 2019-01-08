@@ -64,6 +64,9 @@ datePicker.propTypes = {
   rowsMax: PropTypes.number,
   fullWidth: PropTypes.bool,
   required: PropTypes.bool,
+  id: PropTypes.string,
+  defaultValue: PropTypes.string,
+
 };
 
 datePicker.defaultProps = {
@@ -75,8 +78,8 @@ datePicker.defaultProps = {
   rowsMax: 5,
   fullWidth: true,
   required: false,
-  id:"datetime-local",
-  defaultValue:"2017-05-24T10:30",
+  id: 'datetime-local',
+  defaultValue: '2017-05-24T10:30',
 };
 
 export default (datePicker);

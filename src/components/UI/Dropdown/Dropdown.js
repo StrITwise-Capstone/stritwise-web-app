@@ -20,7 +20,7 @@ const dropdown = ({
     required,
     children,
   } = props;
-  const hasError =  !!(touched[field.name] && errors[field.name]);
+  const hasError = !!(touched[field.name] && errors[field.name]);
   return (
     <div>
       <FormControl

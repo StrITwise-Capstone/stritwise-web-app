@@ -5,7 +5,7 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import {firestoreConnect} from 'react-redux-firebase';
+import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
 
@@ -15,16 +15,14 @@ import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 class createTeam extends Component {
   state = {
     schools: [],
-    user: {},
   }
 
   componentDidMount() {
     const { firestore } = this.props;
-    
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
-      schools.push({
+        schools.push({
           label: doc.data().name,
           value: doc.id,
         });
@@ -32,28 +30,32 @@ class createTeam extends Component {
       this.setState({ schools });
     }).catch((error) => {
       console.log(error);
-      });
+    });
   }
 
   render() {
     const { currentevent, auth, user } = this.props;
     const { schools } = this.state;
     var teacherId = '';
-    if (user && user.type === "teacher"){
+    if (user && user.type === 'teacher') {
       teacherId = auth.uid;
     }
     return (
       <AdminLayout
         title="Register Team"
       >
-      {currentevent == null && <CircularProgress></CircularProgress>}
-      {currentevent && 
-        <Form 
-          schools={schools ? schools : null} 
-          minStudent={currentevent['min_student'] ? currentevent['min_student'] : 1}
-          teacherId={teacherId} 
-        />
-      }
+        {currentevent == null
+          && (
+          <CircularProgress/>
+          )}
+        {currentevent
+          && (
+          <Form 
+            schools={schools ? schools : null}
+            minStudent={currentevent.min_student ? currentevent.min_student : 1}
+            teacherId={teacherId}
+          />)
+        }
       </AdminLayout>
     );
   }
@@ -73,21 +75,23 @@ const styles = () => ({
   },
 });
 
-const mapStateToProps = (state,ownProps) => {
+const mapStateToProps = (state, ownProps) => {
   return {
-      currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
-      isAuthenticated: state.auth.isAuthenticated,
-      user: state.firestore.data.user,
-      auth : state.firebase.auth,
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.firestore.data.user,
+    auth: state.firebase.auth,
   }
 };
 
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
-  firestoreConnect((props) => [
+  firestoreConnect(props => [
     {
-      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent${props.match.params.id}`
+      collection: 'events',
+      doc: `${props.match.params.id}`,
+      storeAs: `currentevent${props.match.params.id}`,
     },
   ]),
   withSnackbar,

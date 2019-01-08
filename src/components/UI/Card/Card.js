@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -16,8 +16,8 @@ import { withRouter } from 'react-router-dom';
 
 const styles = {
   card: {
-    width:'100%',
-    height:'100%',
+    width: '100%',
+    height: '100%',
   },
   media: {
     height: '150px',
@@ -27,10 +27,14 @@ const styles = {
 
 class EventCard extends Component {
   state={
-    imageFile:null,
+    imageFile: null,
   }
+
   componentWillMount() {
-    const { firebase,imageSource } = this.props;
+    const {
+      firebase,
+      imageSource,
+    } = this.props;
     firebase.storage().ref(`${imageSource}`).getDownloadURL().then((img) => {
       const imageFile = img;
       this.setState({
@@ -41,51 +45,62 @@ class EventCard extends Component {
     });
   }
 
-  render(){
-  const { classes, eventuid,history, title, imageTitle, end_date } = this.props;
-  const { imageFile } = this.state;
-  const image = imageFile;
-  return (
-    <Card className={classes.card}>
-      <CardActionArea style={{height:'100%'}}onClick={()=>{history.push(`/events/${eventuid}/overview`)}}>
-        { imageFile === null
-          && (
-            <div>
-              <CircularProgress className={classes.progress} />
-            </div>)
-        }
-        { imageFile !== null && 
-        <CardMedia
-          className={classes.media}
-          image={image}
-          title={imageTitle}
-        />
-        }
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {title}
-          </Typography>
-          <Typography component="p">
-            <strong>Start Date : </strong>
-            {
-              moment(end_date.toDate()).calendar()
-            }
-          </Typography>
-          <Typography component="p">
-          <strong>End Date : </strong>
-            {
-              moment(end_date.toDate()).calendar()
-            }
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
+  render() {
+    const {
+      classes,
+      eventuid,
+      history,
+      title,
+      imageTitle,
+      end_date,
+    } = this.props;
+    const { imageFile } = this.state;
+    const image = imageFile;
+    return (
+      <Card className={classes.card}>
+        <CardActionArea
+          style={{ height: '100%' }}
+          onClick={() => { history.push(`/events/${eventuid}/overview`); }}
+        >
+          { imageFile === null
+            && (
+              <div>
+                <CircularProgress className={classes.progress} />
+              </div>)
+          }
+          { imageFile !== null
+            && (
+            <CardMedia
+              className={classes.media}
+              image={image}
+              title={imageTitle}
+            />)
+          }
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {title}
+            </Typography>
+            <Typography component="p">
+              <strong>Start Date : </strong>
+              {
+                moment(end_date.toDate()).calendar()
+              }
+            </Typography>
+            <Typography component="p">
+              <strong>End Date : </strong>
+              {
+                moment(end_date.toDate()).calendar()
+              }
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    );
   }
 }
 
 EventCard.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.shape.isRequired,
 };
 
-export default compose(withRouter,firebaseConnect(),withStyles(styles))(EventCard);
+export default compose(withRouter, firebaseConnect(), withStyles(styles))(EventCard);

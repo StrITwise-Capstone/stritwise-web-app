@@ -4,11 +4,10 @@ import Form from './Form';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 class createEvent extends Component {
-  
   render() {
     return (
       <AdminLayout
-        title="Create Event" 
+        title="Create Event"
       >
         <Form />
       </AdminLayout>

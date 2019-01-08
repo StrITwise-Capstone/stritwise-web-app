@@ -3,12 +3,11 @@ import { Formik, Form, Field } from 'formik';
 import { Button, CircularProgress } from '@material-ui/core';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { getFirebase } from 'react-redux-firebase';
 import { compose } from 'redux';
-import { withRouter } from 'react-router-dom';
 
 import * as util from '../../../helper/util';
 import * as reduxAction from '../../../store/actions';
@@ -134,4 +133,4 @@ LoginForm.propTypes = {
   /* eslint-enable */
 };
 
-export default compose(withSnackbar,connect(null, mapDispatchToProps),withRouter)(LoginForm);
+export default compose(withSnackbar, connect(null, mapDispatchToProps), withRouter)(LoginForm);

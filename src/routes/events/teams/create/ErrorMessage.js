@@ -7,7 +7,7 @@ const ErrorMessage = ({ name }) => (
     render={({ form }) => {
       const error = getIn(form.errors, name);
       const touch = getIn(form.touched, name);
-      return touch && error ? <p style={{color:'red'}}>{error}</p> : null;
+      return touch && error ? <p style={{ color: 'red' }}>{error}</p> : null;
     }}
   />
 );

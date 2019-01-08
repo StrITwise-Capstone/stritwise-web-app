@@ -18,7 +18,7 @@ const initialValues = {
 };
 
 const ForgotForm = ({
-  logOut, logIn, enqueueSnackbar,
+  logOut, enqueueSnackbar,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -95,7 +95,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 ForgotForm.propTypes = {
-  logIn: PropTypes.func.isRequired,
   logOut: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
 };

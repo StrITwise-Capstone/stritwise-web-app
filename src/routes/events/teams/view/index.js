@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { 
+import {
   withStyles,
   CircularProgress,
   Button,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
-import { 
+import {
   firestoreConnect,
-  firebaseConnect 
+  firebaseConnect,
 } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
@@ -20,71 +20,65 @@ import Dialog from './ImportButton/Dialog';
 
 const styles = () => ({
   button: {
-    backgroundColor:"#7b1fa2",
-    color:"white",
-    float:'right',
+    backgroundColor: '#7b1fa2',
+    color: 'white',
+    float: 'right',
   },
-  p:{
-    paddingTop:'10px',
+  p: {
+    paddingTop: '10px',
   },
-  gridItem:{
-    paddingTop:'20px'
+  gridItem: {
+    paddingTop: '20px',
   },
-  paper:{
-    marginLeft:'20px',
-    paddingLeft:'15px',
-    paddingRight:'15px',
-
+  paper: {
+    marginLeft: '20px',
+    paddingLeft: '15px',
+    paddingRight: '15px',
   },
 });
 
 class ViewTeams extends Component {
   state = {
-    open: false,
-    event: null,
     isNotLoading: true,
-    schools : null,
-    imageFile: null,
+    schools: null,
   };
 
-  handleOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  createTeam = () => {
-    const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/teams/create`)
-  }
-  refreshState = () =>{
-    this.forceUpdate();
-  }
   componentDidMount() {
     const { firestore } = this.props;
-    this.setState({isNotLoading: false})
+    this.setState({isNotLoading: false });
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
-      schools.push({
+        schools.push({
           label: doc.data().name,
           value: doc.id,
         });
       });
-      this.setState({ schools, isNotLoading: true});
+      this.setState({ schools, isNotLoading: true });
     }).catch((error) => {
       console.log(error);
-      });
+    });
+  }
+
+  createTeam = () => {
+    const { history, match } = this.props;
+    history.push(`/events/${match.params.id}/teams/create`);
+  }
+
+  refreshState = () => {
+    this.forceUpdate();
   }
 
   render() {
-    const { user,auth, currentevent, match } = this.props;
+    const {
+      user,
+      auth,
+      currentevent,
+      match,
+    } = this.props;
     const { isNotLoading, schools } = this.state;
     var teacherId = '';
-    if (user && user.type === 'teacher')
-    {
+    if (user && user.type === 'teacher') {
       teacherId = auth.uid;
     }
     return (
@@ -92,41 +86,43 @@ class ViewTeams extends Component {
         <AdminLayout
           title="Teams"
           action={
-          (<div style={{display:'flex',}}>
-            <Button
-            type="button"
-            variant="contained"
-            color="secondary"
-            component={Link}
-            to={`/events/${match.params.id}/teams/create`}
-            >Create</Button>
-            <Dialog 
-            refreshState={()=>{this.refreshState()}}
-            schools={schools}
-            eventuid={this.props.match.params.id}
-            teacherId={teacherId}
-            />
-          </div>
-          )}
+          (
+            <div style={{ display: 'flex' }}>
+              <Button
+                type="button"
+                variant="contained"
+                color="secondary"
+                component={Link}
+                to={`/events/${match.params.id}/teams/create`}
+              >
+              Create
+              </Button>
+              <Dialog
+                refreshState={() => { this.refreshState(); }}
+                schools={schools}
+                eventuid={match.params.id}
+                teacherId={teacherId}
+              />
+            </div>)}
         >
-        
-        {isNotLoading === false && 
-          <CircularProgress/>
-        }
-        {isNotLoading && schools && currentevent &&
-        <CardList 
-          schools={schools} 
-          eventuid={this.props.match.params.id} 
-          schooluid={user.school_id}
-          currentevent={currentevent}
-        />}
-      </AdminLayout>
+          {isNotLoading === false
+            && <CircularProgress />
+          }
+          {isNotLoading && schools && currentevent
+            && (
+            <CardList
+              schools={schools}
+              eventuid={match.params.id}
+              schooluid={user.school_id}
+              currentevent={currentevent}
+            />)}
+        </AdminLayout>
       </React.Fragment>
-      );
+    );
   }
 }
 
-const mapStateToProps = (state,ownProps) => {
+const mapStateToProps = (state, ownProps) => {
     return {
       currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
       auth: state.firebase.auth,
@@ -138,16 +134,18 @@ const mapStateToProps = (state,ownProps) => {
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
-  firestoreConnect((props) => [
+  firestoreConnect(props => [
     {
-      collection:'events',doc:`${props.match.params.id}`,storeAs:`currentevent${props.match.params.id}`
+      collection: 'events',
+      doc: `${props.match.params.id}`,
+      storeAs: `currentevent${props.match.params.id}`,
     },
     {
       collection: 'users',
       storeAs: 'user',
       doc: `${props.auth.uid}`,
     },
-    ]),
+  ]),
   firebaseConnect(),
   withSnackbar,
   withRouter,

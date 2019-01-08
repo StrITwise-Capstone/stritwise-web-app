@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import {
   IconButton,
@@ -41,106 +41,119 @@ const styles = theme => ({
     padding: theme.spacing.unit * 3,
   },
   icons: {
-    'marginRight': '0px', 'marginLeft': 'auto'
+    marginRight: '0px',
+    marginLeft: 'auto',
   },
   toolbar: theme.mixins.toolbar,
 });
 
-class Navbar extends Component{
+class Navbar extends Component {
   state = {
-    auth: true,
     anchorEl: false,
   };
 
-  handleMenu = event =>{
-    this.setState({anchorEl: event.currentTarget})
-  }
-  handleClose = () =>{
-    this.setState({anchorEl:null})
-  }
-  componentDidMount(){
-    this.props.retrieveUser(this.props.auth.uid);
+  componentDidMount() {
+    const { retrieveUser, auth } = this.props;
+    retrieveUser(auth.uid);
   }
 
-  componentDidUpdate(){
-    this.props.retrieveUser(this.props.auth.uid);
+  componentDidUpdate() {
+    const { retrieveUser, auth } = this.props;
+    retrieveUser(auth.uid);
   }
 
-  render(){
-  const { 
-    classes, 
-    isAuthenticated,
-    user, 
-    history,
-  } = this.props;
-  const { anchorEl } = this.state;
-  const open = Boolean(this.state.anchorEl);
+  handleMenu = (event) => {
+    this.setState({ anchorEl: event.currentTarget });
+  }
 
-  return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-        <Typography 
-          variant="h6"
-          color="inherit"
-          className={classes.grow}
-        >
-          <img onClick={() => { history.push(`/`); }} src="/assets/logo.gif" alt="StrITwise Web Application" style={{ height: '50px',}} />
-          </Typography>
-          {isAuthenticated && 
-          (
-            <div className={classes.icons}>
-              <IconButton
-                aria-owns={open ? 'menu-appbar' : null}
-                aria-haspopup="true"
-                onClick={this.handleMenu}
-                color="inherit"
-              >
-              <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={this.handleClose}
-              >
-                <MenuItem onClick={()=>{history.push('/profile')}}>Profile</MenuItem>
-                <MenuItem onClick={()=>{this.props.logOut(); history.push('/');}}>Log Out</MenuItem>
-              </Menu>
-            </div>
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  }
+
+  render() {
+    const {
+      classes,
+      isAuthenticated,
+      user,
+      history,
+      logOut,
+    } = this.props;
+    const { anchorEl } = this.state;
+    const open = Boolean(anchorEl);
+
+    return (
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar position="fixed" className={classes.appBar}>
+          <Toolbar>
+            <Typography
+              variant="h6"
+              color="inherit"
+              className={classes.grow}
+            >
+              <img
+                onClick={() => { history.push('/'); }}
+                src="/assets/logo.gif"
+                alt="StrITwise Web Application"
+                style={{ height: '50px' }}
+              />
+            </Typography>
+            {isAuthenticated
+              && (
+                <div className={classes.icons}>
+                  <IconButton
+                    aria-owns={open ? 'menu-appbar' : null}
+                    aria-haspopup="true"
+                    onClick={this.handleMenu}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={open}
+                    onClose={this.handleClose}
+                  >
+                    <MenuItem onClick={() => { history.push('/profile'); }}>Profile</MenuItem>
+                    <MenuItem onClick={() => { logOut(); history.push('/'); }}>Log Out</MenuItem>
+                  </Menu>
+                </div>
+              )
+            }
+            {isAuthenticated === false
+            && (
+              <div className={classes.icons}>
+                <RouteButton route="Sign Up" routelink="auth/signup" />
+                <RouteButton route="Log In" routelink="auth/login" />
+              </div>
+            )}
+          </Toolbar>
+        </AppBar>
+        {isAuthenticated
+          && (
+          <Drawer
+            className={classes.drawer}
+            variant="permanent"
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+          >
+            <div className={classes.toolbar} />
+            {user && <DrawerList auth={user.type} />}
+          </Drawer>
           )}
-          {isAuthenticated === false && 
-          (
-            <div className={classes.icons}>
-              <RouteButton route="Sign Up" routelink="auth/signup" />
-              <RouteButton route="Log In" routelink="auth/login" />
-            </div>
-          )}
-        </Toolbar>
-      </AppBar>
-      {isAuthenticated &&<Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.toolbar} />
-        {user && <DrawerList auth={user.type}/>}
-      </Drawer>
-      }
-    </div>
-  );
-}
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = (state) => {
@@ -155,15 +168,15 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    logIn: (creds,history) => dispatch(logIn(creds,history)),
+    logIn: creds => dispatch(logIn(creds)),
     logOut: () => dispatch(logOut()),
-    retrieveUser: (user) => dispatch(retrieveUser(user)),
+    retrieveUser: user => dispatch(retrieveUser(user)),
   };
 };
 
 export default compose(
   withRouter,
-  connect(mapStateToProps,mapDispatchToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   withStyles(styles),
   firestoreConnect(props => [
     {
@@ -173,4 +186,3 @@ export default compose(
     },
   ]),
 )(Navbar);
-

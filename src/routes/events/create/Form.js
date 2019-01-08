@@ -10,11 +10,10 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
+import { firestoreConnect, firebaseConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 
-import { firebaseConnect } from 'react-redux-firebase';
 import TextField from '../../../components/UI/TextField/TextField';
 import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from '../../../components/UI/Thumb/Thumbnail';
@@ -26,8 +25,8 @@ const initialValues = {
   enddate: '',
   description: '',
   image: '',
-  max_student:'',
-  min_student:'',
+  max_student: '',
+  min_student: '',
 };
 
 const guid = () => {
@@ -192,4 +191,9 @@ createEvent.defaultProps = {
   authError: '',
 };
 
-export default compose(connect(mapStateToProps),withSnackbar, firebaseConnect(),firestoreConnect())(createEvent);
+export default compose(
+  connect(mapStateToProps),
+  withSnackbar,
+  firebaseConnect(),
+  firestoreConnect(),
+)(createEvent);

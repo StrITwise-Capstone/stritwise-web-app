@@ -21,27 +21,28 @@ const styles = theme => ({
 
 class App extends Component {
   render() {
-    const { 
-      children, 
+    const {
+      children,
       classes,
       location,
-      match
+      match,
     } = this.props;
     return (
       <div className={classes.root}>
-        <Navbar/>
+        <Navbar />
         <main className={classes.content}>
-        <div className={classes.toolbar} />
-        { location.pathname.includes('events/') &&
-          <EventLayout
-            eventuid={match && match.params.id}
-          >
-            {children}
-          </EventLayout>
-        }
-        { location.pathname.includes('events/') === false &&
-          children
-        }
+          <div className={classes.toolbar} />
+          { location.pathname.includes('events/')
+            && (
+            <EventLayout
+              eventuid={match && match.params.id}
+            >
+              {children}
+            </EventLayout>)
+          }
+          { location.pathname.includes('events/') === false
+            && children
+          }
         </main>
       </div>
     );
@@ -52,4 +53,4 @@ App.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default compose(withStyles(styles),withRouter)(App);;
+export default compose(withStyles(styles), withRouter)(App);

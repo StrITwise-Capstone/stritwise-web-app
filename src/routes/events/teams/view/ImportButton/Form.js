@@ -15,46 +15,43 @@ import * as util from '../../../../../helper/util';
 import Select from '../../../../../components/UI/Select/Select';
 
 function validateEmail(email) {
-  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 }
-function validation(team){
+
+function validation(team) {
   var bool = true;
-  for (var i = 0; i < team.values.length; i++) {
+  for (var i = 0; i < team.values.length; i++ ) {
     if (team.values[i]['Team Name'] === '' && team.values[i]['Team Name'].length < 1)
       bool = false;
     if (team.values[i]['First Name'].length < 1 && team.values[i]['Last Name'].length < 1)
       bool = false;
-    if (team.values[i]['Phone Number']&& team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8)
+    if (team.values[i]['Phone Number'] && team.values[i]['Phone Number'].match(/[a-z]/i) && team.values[i]['Phone Number'].length !== 8)
       bool = false;
-    if (team.values[i]['Email'] === '' && validateEmail(team.values[i]['Email']) === false)
+    if (validateEmail(team.values[i].email) === false)
       bool = false;
     if (team.values[i]['Emergency Contact Name'] === undefined && team.values[i]['Emergency Contact Mobile'] === undefined && team.values[i]['Relation to Participant'] === undefined)
      bool = false;
-    if (team.values[i]['Emergency Contact Mobile'] &&team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
+    if (team.values[i]['Emergency Contact Mobile'] && team.values[i]['Emergency Contact Mobile'].match(/[a-z]/i) && team.values[i]['Emergency Contact Mobile'].length !== 8)
      bool = false;
   }
   return bool;
 }
 class AddUserForm extends React.Component {
-  handleSubmit = (values, { 
-     props = this.props, 
-     setSubmitting
-   }) => {
-  
+  handleSubmit = (values) => {
     const setData = (result) => {
       const { enqueueSnackbar, firestore, eventuid, handleClose, refreshState, teacherId } = this.props;
       const school_id = values.school.value;
       var dataByTeamName = d3.nest()
-      .key(function(d) { return d['Team Name']; })
-      .entries(result);
+        .key(function(d) { return d['Team Name']; })
+        .entries(result);
       var isValid = true;
       Object.keys(dataByTeamName).map(TeamIndex=>{
         var team = dataByTeamName[TeamIndex];
         if(!validation(team)){
           enqueueSnackbar('Error Adding Team...',{
             variant:'error',
-          })
+          });
           isValid = false;
         }
       });
