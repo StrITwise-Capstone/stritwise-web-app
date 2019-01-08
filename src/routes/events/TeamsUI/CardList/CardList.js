@@ -11,7 +11,7 @@ import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import TablePagination from '@material-ui/core/TablePagination';
 
-import TablePaginationActions from './TablePaginationActions'
+import TablePaginationActions from './TablePaginationActions';
 import TeamCard from '../Card/TeamCard';
 
 const actionsStyles = theme => ({

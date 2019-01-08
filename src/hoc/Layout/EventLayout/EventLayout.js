@@ -45,7 +45,7 @@ class EventLayout extends Component {
                   <ListItem 
                     classes={{ selected: classes.selected }} 
                     selected={path === "overview"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/overview`); this.setState({index : 0})}}
+                    onClick={()=>{history.push(`/events/${eventuid}/overview`); }}
                     >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Overview
@@ -54,7 +54,7 @@ class EventLayout extends Component {
                   <ListItem 
                     classes={{ selected: classes.selected }} 
                     selected={path === "teams"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams`); this.setState({index : 1})}}
+                    onClick={()=>{history.push(`/events/${eventuid}/teams`); }}
                   >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Teams
@@ -63,10 +63,19 @@ class EventLayout extends Component {
                   <ListItem 
                     classes={{ selected: classes.selected }} 
                     selected={path === "volunteers"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/volunteers`); this.setState({index : 3})}}
+                    onClick={()=>{history.push(`/events/${eventuid}/volunteers`); }}
                   >
                     <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
                       Volunteers
+                    </Typography>
+                  </ListItem>
+                  <ListItem 
+                    classes={{ selected: classes.selected }} 
+                    selected={path === "points"} 
+                    onClick={()=>{history.push(`/events/${eventuid}/points`); }}
+                  >
+                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
+                      Points
                     </Typography>
                   </ListItem>
                 </div>

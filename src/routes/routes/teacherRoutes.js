@@ -20,6 +20,4 @@ export default [
   <Route exact path="/events/:id/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
   <Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>,
   <Route exact path="/events/:id/overview" key="/events/overview" component={Overview} />,
-
-
 ]
