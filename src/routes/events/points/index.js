@@ -80,7 +80,7 @@ class Points extends Component {
     const action = null;
     return (
       <AdminLayout
-        title="Volunteers"
+        title="Points"
         //subtitle="Some longer subtitle here"
         action={action}
       >

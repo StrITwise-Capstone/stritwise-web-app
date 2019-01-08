@@ -35,22 +35,21 @@ const EditTeamPtsForm = ({
     enableReinitialize={true}
     initialValues={{
       action: '',
-      points: 0,
+      points: '',
     }}
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
       // console.log(values);
       const now = new Date();
       const timestamp = now.getTime();
-      
-      teamRef.get().then((doc) => {
-        const currentPoints = doc.data().credit;
 
-        let newPoints = 0;
+      teamRef.get().then((doc) => {
+        let newPoints = (doc.data().credit * 1);
+
         if (values.action === 'add') {
-          newPoints = currentPoints + values.points;
+          newPoints += (values.points * 1);
         } else if (values.action === 'subtract') {
-          newPoints = currentPoints - values.points;
+          newPoints -= values.points;
         }
         // update team points
         const updateValues = {
@@ -61,8 +60,8 @@ const EditTeamPtsForm = ({
           enqueueSnackbar('Points successfully updated.', {
             variant: 'success',
           });
-          history.push(`/events/${match.params.id}/Points`);
-          console.log("Document successfully updated!");
+          history.push(`/events/${match.params.id}/points`);
+          console.log('Document successfully updated!');
         }).catch((error) => {
           // The document probably doesn't exist.
           enqueueSnackbar('Something went wrong. Points was not updated.', {
@@ -110,7 +109,7 @@ const EditTeamPtsForm = ({
                 variant="outlined"
                 color="secondary"
                 component={Link}
-                to={`/events/${match.params.id}/volunteers`}
+                to={`/events/${match.params.id}/points`}
               >
                 <ArrowBack />
                 BACK TO POINTS

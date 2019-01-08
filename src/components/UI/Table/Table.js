@@ -65,7 +65,6 @@ class CustomTable extends Component {
         } else {
           newRef = newRef.limit(rowsPerPage).startAt(startAt);
         }
-
         const docsList = [];
         this.setState({ isLoading: true });
         newRef.get().then((snapWithLimit) => {
@@ -79,14 +78,12 @@ class CustomTable extends Component {
             newLastVisible = snapWithLimit.docs[snapWithLimit.docs.length - 1];
             newFirstVisible = snapWithLimit.docs[0];
           }
-
           snapWithLimit.forEach((doc) => {
             docsList.push({
               uid: doc.id,
               data: doc.data(),
             });
           });
-          
           if (chosenPage === null) {
             this.setState({ docsList, lastVisible: newLastVisible, firstVisible: newFirstVisible });
           } else {
@@ -135,6 +132,7 @@ class CustomTable extends Component {
 
     const { page, rowsPerPage, filterSize, docsList, isLoading } = this.state;
     let content = <CircularProgress />;
+
     if (docsList.length !== 0) {
       const data = handleDocsList(docsList);
       content = (
