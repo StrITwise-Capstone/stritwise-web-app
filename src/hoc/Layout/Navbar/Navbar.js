@@ -49,7 +49,7 @@ const styles = theme => ({
 
 class Navbar extends Component {
   state = {
-    anchorEl: false,
+    anchorEl: null,
   };
 
   componentDidMount() {
@@ -124,7 +124,7 @@ class Navbar extends Component {
                     onClose={this.handleClose}
                   >
                     <MenuItem onClick={() => { history.push('/profile'); }}>Profile</MenuItem>
-                    <MenuItem onClick={() => { logOut(); history.push('/'); }}>Log Out</MenuItem>
+                    <MenuItem onClick={() => { logOut(); history.push('/'); this.setState({ anchorEl: null }); }}>Log Out</MenuItem>
                   </Menu>
                 </div>
               )

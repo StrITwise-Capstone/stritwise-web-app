@@ -69,6 +69,10 @@ class ViewTeams extends Component {
     this.forceUpdate();
   }
 
+  getData = () => {
+    
+  }
+
   render() {
     const {
       user,

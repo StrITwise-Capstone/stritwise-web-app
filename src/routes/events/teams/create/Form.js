@@ -36,6 +36,7 @@ const createTeam = ({
       team_name: '',
       students: Array.apply(null, Array(minStudent)).map(function () {return;}),
       schools,
+      teacherId: teacherId ? teacherId : 'null',
     }}
     validationSchema={yup.object({
       team_name: yup.string()
@@ -68,8 +69,8 @@ const createTeam = ({
         team_name: values.team_name,
         school_id: values.school_id.value,
         credit: 0,
-        created_At: new Date(Date.now()),
-        modified_At: new Date(Date.now()),
+        created_at: new Date(Date.now()),
+        modified_at: new Date(Date.now()),
         teacher_id: teacherId,
       }).then((docRef) => {
         enqueueSnackbar('Added Team...', {
@@ -90,8 +91,8 @@ const createTeam = ({
               mobile: students[index].emergency_contact_mobile,
               relation: students[index].emergency_contact_relation,
             },
-            created_At: new Date(Date.now()),
-            modified_At: new Date(Date.now()),
+            created_at: new Date(Date.now()),
+            modified_at: new Date(Date.now()),
           }).then(() => {
             enqueueSnackbar('Added 1 student...', {
               variant: 'info',
@@ -119,9 +120,7 @@ const createTeam = ({
         content = (
           <Form onSubmit={handleSubmit}>
             <p>
-              Minimum of 
-              {minStudent}
-              students
+              {`Minimum of ${minStudent} students`}
             </p>
             <Field
               required

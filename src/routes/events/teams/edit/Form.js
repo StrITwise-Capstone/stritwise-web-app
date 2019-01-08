@@ -77,7 +77,7 @@ const editTeam = ({
         team_name: values.team_name,
         school_id: values.school_id.value,
         credit: 0,
-        modified_At: new Date(Date.now()),
+        modified_at: new Date(Date.now()),
       }).then((docRef)=> {
         enqueueSnackbar('Updated Team...', {
           variant: 'info',
@@ -99,7 +99,7 @@ const editTeam = ({
                     mobile: students[index].emergency_contact_mobile,
                     relation: students[index].emergency_contact_relation,
                   },
-                  modified_At: new Date(Date.now()),
+                  modified_at: new Date(Date.now()),
                 }).then(() => {
                   enqueueSnackbar('Updated 1 student...', {
                     variant: 'info',
@@ -131,7 +131,7 @@ const editTeam = ({
                   mobile: students[index].emergency_contact_mobile,
                   relation: students[index].emergency_contact_relation,
                 },
-                modified_At: new Date(Date.now()),
+                modified_at: new Date(Date.now()),
               }).then(() => {
                 enqueueSnackbar('Added 1 student...', {
                   variant: 'info',
@@ -163,9 +163,7 @@ const editTeam = ({
         content = (
           <Form onSubmit={handleSubmit}>
             <p>
-              Minimum of 
-              {minStudent}
-              students
+              {`Minimum of ${minStudent} students`}
             </p>
             <Field
               required
