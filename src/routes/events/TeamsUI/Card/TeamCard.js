@@ -32,41 +32,32 @@ const styles = {
 };
 
 class teamCard extends React.Component {
-  state = {
-    open: false,
-  };
 
-  handleClickOpen = () => {
-    this.setState({
-      open: true,
-    });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  deleteTeam = () =>{
-    const { firestore , teamuid ,eventuid, enqueueSnackbar, update } = this.props;
-    var ref = firestore.collection('events').doc(eventuid).collection('students').where('team_id','==',`${teamuid}`)
-    ref.get().then((querySnapshot)=>
-      querySnapshot.forEach(function(doc){
-          doc.ref.delete().then(() => {
-          }).catch(() => {
-              enqueueSnackbar('Student Not Deleted', {
-                  variant: 'error',
-              });
-          });     
-    }))
-    firestore.collection("events").doc(eventuid).collection("teams").doc(teamuid).delete().then(()=>{
-      enqueueSnackbar('Team Deleted',{
+  deleteTeam = () => {
+    const { 
+      firestore,
+      teamuid,
+      eventuid,
+      enqueueSnackbar,
+      update,
+    } = this.props;
+    const ref = firestore.collection('events').doc(eventuid).collection('students').where('team_id','==',`${teamuid}`);
+    ref.get().then(querySnapshot => querySnapshot.forEach((doc) => {
+      doc.ref.delete().then(() => {
+      }).catch(() => {
+        enqueueSnackbar('Student Not Deleted', {
+          variant: 'error',
+        });
+      });
+    }));
+    firestore.collection('events').doc(eventuid).collection('teams').doc(teamuid).delete().then(()=>{
+      enqueueSnackbar('Team Deleted', {
         variant: 'success',
-      })
+      });
       update();
-    }
-    )
+    });
   }
-  
+
   render() {
     const { classes, currentevent, team, eventuid, teamuid , studentsList, schools, match, history} = this.props;
     return (
@@ -74,60 +65,65 @@ class teamCard extends React.Component {
         {team && studentsList && currentevent && schools
           && (
           <Card>
-              <CardContent onClick={this.handleClickOpen} >
-                <CardContent>
-                  <Typography variant="h5" component="h2" className={classes.textField}>
-                    {team.team_name}
-                  </Typography>
-                  <Typography component="p" className={classes.textField}>
-                    {schools[team.school_id].name}
-                  </Typography>
-                </CardContent>
-                <Divider/>
-                <CardContent>
-                  <List>
-                <div style={{"overflowY":"auto",'max-height':'450px'}}>
-                {studentsList
-                  && Object.keys(studentsList).map(student => 
-                (
-                  <React.Fragment key={student}>
-                    <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
-                  </React.Fragment>
-                ))
-                }
-                </div>
-                  </List>
-                </CardContent>  
-              </CardContent>
+            <CardContent onClick={this.handleClickOpen}>
               <CardContent>
-                  <Button onClick={()=>{history.push(`/events/${match.params.id}/teams/${teamuid}/edit`)}} color="primary">Edit</Button>
-                  <Button onClick={this.deleteTeam} color="primary">Delete</Button>
+                <Typography variant="h5" component="h2" className={classes.textField}>
+                  {team.team_name}
+                </Typography>
+                <Typography component="p" className={classes.textField}>
+                  {schools[team.school_id].name}
+                </Typography>
               </CardContent>
-            </Card>
-            )}
+              <Divider />
+              <CardContent>
+                <List>
+                  <div style={{overflowY: 'auto', maxHeight: '450px' }}>
+                    {studentsList
+                      && Object.keys(studentsList).map(student => (
+                        <React.Fragment key={student}>
+                          <ExpansionPanel student={studentsList[student]} teamuid={teamuid} studentuid={student} eventuid={eventuid} deletevalue={currentevent.min_student ? Object.keys(studentsList).length > currentevent.min_student : true }/>
+                        </React.Fragment>
+                      ))
+                    }
+                  </div>
+                </List>
+              </CardContent>
+            </CardContent>
+            <CardContent>
+              <Button onClick={()=>{history.push(`/events/${match.params.id}/teams/${teamuid}/edit`)}} color="primary">Edit</Button>
+              <Button onClick={this.deleteTeam} color="primary">Delete</Button>
+            </CardContent>
+          </Card>
+          )}
       </React.Fragment>
     );
   }
 }
 
-const mapStateToProps = (state,props) => {
+const mapStateToProps = (state, props) => {
   return {
-      team: state.firestore.data[`team${props.teamuid}`],
-      studentsList: state.firestore.data[`studentsList${props.teamuid}`],
-      schools: state.firestore.data.schools,
-  }
+    team: state.firestore.data[`team${props.teamuid}`],
+    studentsList: state.firestore.data[`studentsList${props.teamuid}`],
+    schools: state.firestore.data.schools,
+  };
 };
 
-export default compose(withRouter,firestoreConnect((props) => {
-  return [
-  {
-      collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'teams', doc:`${props.teamuid}`}], storeAs: `team${props.teamuid}`
-  },
-  {
-    collection:'events', doc:`${props.eventuid}`, subcollections: [{collection:'students', where: ['team_id','==',`${props.teamuid}`]}], storeAs: `studentsList${props.teamuid}`
-  },
-  {
-    collection:'schools',
-  },
-]}),connect(mapStateToProps),withStyles(styles),withSnackbar)(teamCard);
-
+export default compose(
+  withRouter,
+  firestoreConnect((props) => {
+    return [
+      {
+        collection: 'events', doc: `${props.eventuid}`, subcollections: [{ collection: 'teams', doc: `${props.teamuid}` }], storeAs: `team${props.teamuid}`,
+      },
+      {
+        collection: 'events', doc: `${props.eventuid}`, subcollections: [{ collection: 'students', where: ['team_id', '==', `${props.teamuid}`]}], storeAs: `studentsList${props.teamuid}`,
+      },
+      {
+        collection: 'schools',
+      },
+    ] }
+  ),
+  connect(mapStateToProps),
+  withStyles(styles),
+  withSnackbar,
+)(teamCard);
