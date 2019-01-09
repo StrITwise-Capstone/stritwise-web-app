@@ -53,6 +53,22 @@ class Points extends Component {
     return data;
   }
 
+  action = () => {
+    const { match } = this.props;
+    return (
+      <React.Fragment>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to={`/events/${match.params.id}/pointsystem`}
+        >
+          Point System
+        </Button>
+      </React.Fragment>);
+  }
+
 
   // Non-custom filter implmentation
   handleCustomFilter = (collection, filter, search) => {
@@ -82,7 +98,7 @@ class Points extends Component {
       <AdminLayout
         title="Points"
         //subtitle="Some longer subtitle here"
-        action={action}
+        action={this.action()}
       >
         <CustomTable
           // For Table
