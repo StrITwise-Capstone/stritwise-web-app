@@ -70,7 +70,7 @@ class EditUser extends Component {
       content = (
         <AdminLayout
         >
-          <Typography variant="h4" id="title">Edit a User!</Typography>
+          <Typography variant="h4" id="title">Edit User</Typography>
           <EditUserForm schools={schools} user={user} />
         </AdminLayout>
       );

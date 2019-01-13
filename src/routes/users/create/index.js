@@ -36,7 +36,7 @@ class AddUser extends Component {
     return (
       <AdminLayout
       >
-        <Typography variant="h4" id="title">Add a New User!</Typography>
+        <Typography variant="h4" id="title">Add User</Typography>
         <AddUserForm schools={schools}/>
       </AdminLayout>
     );

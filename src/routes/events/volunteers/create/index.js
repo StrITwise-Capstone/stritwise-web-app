@@ -12,7 +12,7 @@ class AddVolunteer extends Component {
     return (
       <AdminLayout
       >
-        <Typography variant="h4" id="title">Add Volunteer!</Typography>
+        <Typography variant="h4" id="title">Add Volunteer</Typography>
         <AddCrewForm />
       </AdminLayout>
     );
