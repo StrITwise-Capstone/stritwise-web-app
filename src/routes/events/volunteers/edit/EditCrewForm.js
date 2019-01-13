@@ -57,14 +57,13 @@ const EditCrewForm = ({
     onSubmit={(values, { setSubmitting }) => {
       // console.log(values);
       const now = new Date();
-      const timestamp = now.getTime();
       // update user values
       const updateValues = {
         first_name: values.firstName,
         last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
-        modified_at: timestamp,
+        modified_at: now,
         type: values.type,
         school: values.school,
         email: values.email,

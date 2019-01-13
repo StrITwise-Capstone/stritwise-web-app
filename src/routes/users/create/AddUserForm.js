@@ -52,21 +52,40 @@ const AddUserForm = ({
       const firebase = getFirebase();
       const firestore = getFirestore();
       const now = new Date();
-      const timestamp = now.getTime();
-
       // update user values
       const addValues = {
+        email: values.email,
+        password: values.password,
         firstName: values.firstName,
         lastName: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
-        created_at: timestamp,
+        created_at: now,
         type: values.type,
       };
-      console.log(values.school.value);
       if (typeof (values.school.value) !== 'undefined') {
         addValues.school_id = values.school.value;
       }
+
+      {/* const transaction = {
+        user_id: auth.uid,
+        transaction_type: 'ADD_USER',
+        data: addValues,
+      }
+            
+      firestore.collection('transactions').add(transaction).then(() => {
+        resetForm();
+        enqueueSnackbar('New User Added. Hooray!', {
+          variant: 'success',
+        });
+      }).catch((err) => {
+        console.log(err);
+        enqueueSnackbar('Invalid Credentials for New User. Please try again.', {
+          variant: 'error',
+        });
+      }).finally(() => {
+        setSubmitting(false);
+      }); */}
 
       firebase.auth().createUserWithEmailAndPassword(
         values.email,
