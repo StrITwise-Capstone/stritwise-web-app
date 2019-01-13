@@ -30,7 +30,6 @@ class Volunteers extends Component {
   }
 
   handleDocsList = (docsList) => {
-    console.log(docsList);
     let data = [];
     data = docsList.map(volunteer => (
       {
@@ -50,8 +49,7 @@ class Volunteers extends Component {
   // Non-custom filter implmentation
   handleCustomFilter = (collection, filter, search) => {
     // check if Filter has been changed
-    if (filter === 'type') {
-      console.log('hi');
+    if (filter === 'type' || filter === 'school') {
       collection = collection.where(filter, '==', search);
     } else if (filter === 'name') {
       const name = search.split(' ');

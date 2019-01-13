@@ -73,16 +73,13 @@ class Points extends Component {
   // Non-custom filter implmentation
   handleCustomFilter = (collection, filter, search) => {
     // check if Filter has been changed
-    if (filter === 'type') {
-      console.log('hi');
-      collection = collection.where(filter, '==', search);
-    } else if (filter === 'name') {
-      const name = search.split(' ');
-      if (name.length === 2) {
-        collection = collection.where('firstName', '==', name[0])
-          .where('lastName', '==', name[1]);
-      } else {
-        collection = collection.where('firstName', '==', name[0]);
+    if (filter === 'name') {
+      collection = collection.where('team_name', '==', search);
+    } else if (filter === 'school') {
+      const { schools }= this.props;
+      const school = schools.find(schElement => (schElement.name === search));
+      if (school !== undefined) {
+        collection = collection.where(filter, '==', school.id);
       }
     }
     return collection;
@@ -145,7 +142,7 @@ class Points extends Component {
                         <em>All</em>
                       </MenuItem>
                       <MenuItem value="school">School</MenuItem>
-                      <MenuItem value="name">Name</MenuItem>
+                      <MenuItem value="name">Team Name</MenuItem>
                     </Field>
                   </div>
                   {values.filter !== 'all' ? (
