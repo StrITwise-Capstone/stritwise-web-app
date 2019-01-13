@@ -45,7 +45,7 @@ class ViewTeams extends Component {
 
   componentDidMount() {
     const { firestore } = this.props;
-    this.setState({isNotLoading: false });
+    this.setState({ isNotLoading: false });
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
@@ -69,6 +69,10 @@ class ViewTeams extends Component {
     this.forceUpdate();
   }
 
+  getData = () => {
+    
+  }
+
   render() {
     const {
       user,
@@ -77,9 +81,11 @@ class ViewTeams extends Component {
       match,
     } = this.props;
     const { isNotLoading, schools } = this.state;
-    var teacherId = '';
+    let teacherId = '';
+    let schoolId = '';
     if (user && user.type === 'teacher') {
       teacherId = auth.uid;
+      schoolId = user.school_id;
     }
     return (
       <React.Fragment>
@@ -102,6 +108,7 @@ class ViewTeams extends Component {
                 schools={schools}
                 eventuid={match.params.id}
                 teacherId={teacherId}
+                schoolId={schoolId}
               />
             </div>)}
         >
@@ -113,8 +120,8 @@ class ViewTeams extends Component {
             <CardList
               schools={schools}
               eventuid={match.params.id}
-              schooluid={user.school_id}
               currentevent={currentevent}
+              teacherId={teacherId}
             />)}
         </AdminLayout>
       </React.Fragment>

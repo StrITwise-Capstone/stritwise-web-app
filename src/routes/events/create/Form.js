@@ -52,8 +52,8 @@ const createEvent = ({
       description: yup.string()
         .required('Required'),
       image: yup.mixed().required(),
-      startdate: yup.date().required('Required'),
-      enddate: yup.date().required('Required'),
+      startdate: yup.date().required('Required').default(()=> (new Date())),
+      enddate: yup.date().required('Required').default(()=> (new Date())),
       min_student: yup.number().integer().required('Required'),
       max_student: yup.number().integer().required('Required'),
     })}
@@ -83,8 +83,8 @@ const createEvent = ({
             image_path: `images/${imageuid}`,
             min_student: parseInt(values.min_student),
             max_student: parseInt(values.max_student),
-            created_At: new Date(Date.now()),
-            modified_At: new Date(Date.now()),
+            created_at: new Date(Date.now()),
+            modified_at: new Date(Date.now()),
           }).then(() => {
             enqueueSnackbar('Event Created', {
               variant: 'success',

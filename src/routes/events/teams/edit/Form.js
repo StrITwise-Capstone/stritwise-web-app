@@ -56,13 +56,17 @@ const editTeam = ({
             last_name: yup.string()
               .required('Last Name Required'),
             mobile: yup.number()
-              .required('Phone Number Required'),
+              .required('Phone Number Required')
+              .positive('Phone number is invalid.'),
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
             badge_name: yup.string(),
             dietary_restriction: yup.string(),
             remarks: yup.string(),
+            emergency_contact_mobile: yup.number(),
+            emergency_contact_name: yup.string('Invalid format for Emergency Contact Name'),
+            emergency_contact_relation: yup.string('Invalid format for Emergency Contact Relation'),
           }),
         )
         .required('Must have members')
@@ -77,8 +81,8 @@ const editTeam = ({
         team_name: values.team_name,
         school_id: values.school_id.value,
         credit: 0,
-        modified_At: new Date(Date.now()),
-      }).then((docRef)=> {
+        modified_at: new Date(Date.now()),
+      }).then((docRef) => {
         enqueueSnackbar('Updated Team...', {
           variant: 'info',
         });
@@ -99,7 +103,7 @@ const editTeam = ({
                     mobile: students[index].emergency_contact_mobile,
                     relation: students[index].emergency_contact_relation,
                   },
-                  modified_At: new Date(Date.now()),
+                  modified_at: new Date(Date.now()),
                 }).then(() => {
                   enqueueSnackbar('Updated 1 student...', {
                     variant: 'info',
@@ -131,7 +135,7 @@ const editTeam = ({
                   mobile: students[index].emergency_contact_mobile,
                   relation: students[index].emergency_contact_relation,
                 },
-                modified_At: new Date(Date.now()),
+                modified_at: new Date(Date.now()),
               }).then(() => {
                 enqueueSnackbar('Added 1 student...', {
                   variant: 'info',
@@ -163,9 +167,7 @@ const editTeam = ({
         content = (
           <Form onSubmit={handleSubmit}>
             <p>
-              Minimum of 
-              {minStudent}
-              students
+              {`Minimum of ${minStudent} students`}
             </p>
             <Field
               required
@@ -291,11 +293,14 @@ const editTeam = ({
                       <div>
                         <ErrorMessage name={`students[${index}].first_name`} />
                         <ErrorMessage name={`students[${index}].last_name`} />
-                        <ErrorMessage name={`students[${index}].phone_number`} />
+                        <ErrorMessage name={`students[${index}].mobile`} />
                         <ErrorMessage name={`students[${index}].email`} />
                         <ErrorMessage name={`students[${index}].badge_name`} />
                         <ErrorMessage name={`students[${index}].dietary_restriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_name`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_relation`} />
                       </div>
                     </div>
                   ))}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Typography,
   Paper,
+  Chip,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -51,9 +52,8 @@ class Profile extends Component {
       <AdminLayout
         title="Profile"
       >
-        <Paper style={{ minHeight: '1000px' , textAlign:'center'}}>
-        <div style={{'position':'center'}}>
-          <img src='/assets/profile.png' alt='Profile' style={{display: 'block', 'marginLeft':'auto', 'marginRight':'auto','position':'center','paddingTop':'50px'}}></img>
+        <Paper style={{ maxWidth: '50%', marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
+        <div style={{padding:'2em'}}>
         { isAuthenticated !== true &&  
         (
           <Typography variant="h5" component="h3" style={{'position':'relative'}}>
@@ -62,41 +62,46 @@ class Profile extends Component {
         )}
         { isAuthenticated && user && (user.type === 'admin' || user.type === 'orion member') && 
         (<div>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Name : {user.firstName+ ' '+ user.lastName} 
+          <Typography variant="h3" component="h3" style={{'paddingTop':'20px'}}>
+            {user.firstName+ ' '+ user.lastName} 
           </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Email : {auth.email} 
+          <Chip
+            label={`${capitalizeFirstLetter(user.type)}`}
+            color='primary'
+            style={{marginTop:'10px'}}
+          >
+          </Chip>
+          <Typography variant="h5" component="h5" style={{'paddingTop':'20px'}}>
+            {auth.email} 
           </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Mobile : {user.mobile} 
-          </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Role : {capitalizeFirstLetter(user.type)} 
+          <Typography variant="h5" component="h5" style={{'paddingTop':'20px'}}>
+            {user.mobile} 
           </Typography>
           </div>
         )}
         { isAuthenticated && user && user.type === 'teacher' && userSchool &&
         (
           <div>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Name : {user.firstName+ ' '+ user.lastName} 
+          <Typography variant="h3" component="h3" style={{'paddingTop':'20px'}}>
+            {user.firstName+ ' '+ user.lastName} 
           </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Email : {auth.email} 
+          <Chip
+            label={`${capitalizeFirstLetter(user.type)}`}
+            color='primary'
+            style={{marginTop:'10px'}}
+          >
+          </Chip>
+          <Typography variant="h5" component="h5" style={{'paddingTop':'20px'}}>
+            {userSchool} 
           </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Mobile : {user.mobile} 
+          <Typography variant="h5" component="h5" style={{'paddingTop':'20px'}}>
+            {auth.email} 
           </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            School : {userSchool} 
-          </Typography>
-          <Typography variant="h5" component="h3" style={{'paddingTop':'20px'}}>
-            Role : {capitalizeFirstLetter(user.type)} 
+          <Typography variant="h5" component="h5" style={{'paddingTop':'20px'}}>
+            {user.mobile} 
           </Typography>
           </div>
-        )}
-        </div>
+        )}</div>
         </Paper>
       </AdminLayout>
     );

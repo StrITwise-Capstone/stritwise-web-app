@@ -8,11 +8,15 @@ import {
   CardMedia,
   CircularProgress,
   Typography,
+  Chip,
+  Avatar
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
+import DoneIcon from '@material-ui/icons/Done';
+
 
 const styles = {
   card: {
@@ -56,6 +60,7 @@ class EventCard extends Component {
     } = this.props;
     const { imageFile } = this.state;
     const image = imageFile;
+    const eventEnded = end_date.toDate() < new Date();
     return (
       <Card className={classes.card}>
         <CardActionArea
@@ -75,6 +80,19 @@ class EventCard extends Component {
               image={image}
               title={imageTitle}
             />)
+          }
+          { eventEnded && 
+            (
+              <Chip
+                avatar={
+                  <Avatar>
+                    <DoneIcon />
+                  </Avatar>
+                }
+                label="Event Ended"
+                color="primary"
+                style={{ float: 'right', margin:'1em'}}
+              />)
           }
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">

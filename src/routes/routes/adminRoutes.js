@@ -38,7 +38,9 @@ export default [
 
   // teams
   <Route exact path="/events/:id/teams" key="/events/teams" component={ViewTeam} />,
-
+  <Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateTeam}/>,
+  <Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>,
+  
   // Volunteers
   <Route exact path="/events/:id/volunteers" key="/events/volunteers" component={Volunteers} />,
   <Route exact path="/events/:id/volunteers/create" key="/events/volunteers/create" component={CreateVolunteer} />,

@@ -31,8 +31,7 @@ class SimpleExpansionPanel extends Component {
         <ExpansionPanel>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'purple', padding: '5px' }}>
             <Typography className={classes.heading}>
-              {student.first_name} 
-              {student.last_name}
+              {`${student.first_name} ${student.last_name}`}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -40,7 +39,7 @@ class SimpleExpansionPanel extends Component {
           </ExpansionPanelDetails>
         </ExpansionPanel>)
         }
-        <div style={{ padding: '10px'}} />
+        <div style={{ padding: '10px' }} />
       </div>
     );
   }

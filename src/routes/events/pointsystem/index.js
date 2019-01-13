@@ -4,9 +4,14 @@ import {
   withStyles,
   Grid,
   Typography,
-  List,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Paper,
+  CircularProgress,
 } from '@material-ui/core';
 import { compose } from 'redux';
+import { Star } from '@material-ui/icons/';
 import { withRouter } from 'react-router';
 import {
   firestoreConnect,
@@ -14,159 +19,242 @@ import {
 } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 
-
 const styles = theme => ({
-  button: {
-    backgroundColor: '#7b1fa2',
-    color: 'white',
-    float: 'right',
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    backgroundColor: '#FFD700',
   },
-  p: {
-    paddingTop: '10px',
-  },
-  gridItem: {
-    height: '80%',
+  content: {
+    flexGrow: 1,
     width: '100%',
-    position: 'relative',
-    margin: '1em',
+    height: '100%',
+  },
+  icons: {
+    marginRight: '0px',
+    marginLeft: 'auto',
+  },
+  toolbar: theme.mixins.toolbar,
+  divContent: {
+    width: '100%',
+    height: '100%',
+    flexGrow: 1,
+    backgroundColor: '#EFDECE',
+  },
+  divBlock: {
+    backgroundColor: 'white',
+    width: '80%',
+    display: 'flex',
+    margin:'1em',
   },
   paper: {
-    marginLeft: '20px',
-    paddingLeft: '15px',
-    paddingRight: '15px',
-
+    backgroundColor: 'white',
+    display: 'flex',
+    width: '100%',
   },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
-    color: 'white',
+  rankingBlock: {
+    width: '25%',
+    padding: '1em',
   },
-  rankingHeadings: {
-    textAlign: 'center',
-    color: 'white',
+  rankingContent: {
+    color: 'black',
+    width: '75%',
+    padding: '2em',
   },
 });
 
-class PointSystem extends Component {
 
+class PointSystem extends Component {
+  state= {
+    isNotLoading: false,
+  }
+
+  getData = () => {
+    const { rankings } = this.props;
+    const { isNotLoading } = this.state;
+    var array = [];
+    if (rankings) {
+      if ( isNotLoading === false ) {
+        this.setState({ isNotLoading: true });
+      }
+      Object.keys(rankings).map((teamIndex) => {
+        array.push([rankings[teamIndex].team_name, rankings[teamIndex].credit]);
+        return null;
+      });
+      array.sort((a, b) => {
+        return b[1] - a[1];
+      });
+    }
+    return array;
+  }
 
   render() {
-    const { rankings, classes } = this.props;
-    var array=[];
-    for (var team in rankings) {
-      array.push([rankings[team].team_name, rankings[team].credit]);
-    }
-    array.sort(function(a, b) {
-      return b[1] - a[1];
-    });
-
+    const { classes } = this.props;
+    const { isNotLoading } = this.state;
+    const rankingsList = this.getData();
     return (
-      <div style={{ backgroundColor: 'black' }}>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          style={{ height: '500px', alignItems: 'center' }}
-        >
-          <Grid item xs={3} className={classes.gridItem}>
-            <Typography variant="h4" className={classes.rankingHeadings}>{rankings && array[1][0]}</Typography>
-            <Typography variant="h5" className={classes.rankingHeadings}>
-              {rankings && array[1][1]}
-                pts
-            </Typography>
-            <div style={{
-              backgroundColor: 'purple',
-              width: '100%',
-              height: '50%',
-              display: 'inline-block',
-              position: 'absolute',
-              bottom: '0',
-            }}
-            >
-              <Typography variant="h3" style={{ textAlign: 'center', color: 'white' }}>2</Typography>
-            </div>
-          </Grid>
-          <Grid item xs={3} className={classes.gridItem}>
-            <Typography variant="h4" className={classes.rankingHeadings}>{rankings && array[0][0]}</Typography>
-            <Typography variant="h5" className={classes.rankingHeadings}>
-              {rankings && array[0][1]}
-              pts
-            </Typography>
-            <div style={{
-              backgroundColor: 'purple',
-              width: '100%',
-              height: '80%',
-              display: 'inline-block',
-              position: 'absolute',
-              bottom: '0',
-            }}
-            >
-              <Typography variant="h3" style={{ textAlign: 'center', color: 'white' }}>1</Typography>
-            </div>
-          </Grid>
-          <Grid item xs={3} className={classes.gridItem}>
-            <Typography variant="h4" className={classes.rankingHeadings}>{rankings && array[2][0]}</Typography>
-            <Typography variant="h5" className={classes.rankingHeadings}>
-              {rankings && array[2][1]}
-              pts
-            </Typography>
-            <div style={{ backgroundColor: 'purple', width: '100%', height: '30%', display: 'inline-block', position:'absolute', bottom: '0'
-            }}
-            >
+      <div>
+        <AppBar position="fixed" className={classes.appBar}>
+          <Toolbar>
+            <IconButton color="inherit">
+              <Star />
+            </IconButton>
+            <div className={classes.icons}>
               <Typography
-                variant="h3"
-                className={classes.rankingHeadings}
-                style={{ color: 'white' }}
+                style={{ fontWeight: '500' }}
+                variant="h5"
+                color="inherit"
+                className={classes.grow}
               >
-              3
+                LEADERBOARD
               </Typography>
             </div>
-          </Grid>
-        </Grid>
-        <List style={{ textAlign: 'center' }}>
-          <Typography
-            variant="h5"
-          >
-          Remaining Teams
-          </Typography>
-          {rankings
-            && (
-              <div style={{
-                width: '80%',
-                height: '30%',
-                backgroundColor: 'purple',
-                display: 'inline-block',
-                margin: '1em',
-              }}
-              >
-                <div style={{ padding: '1em' }}>
-                  <Typography
-                    variant="h5"
-                    className={classes.heading}
-                    style={{
-                      color: 'white',
-                      paddingLeft: '10px',
-                      textAlign: 'left',
-                    }}
-                  >
-                    4. 
-                    {array[3][0]}
-                  </Typography>
-                  <Typography
-                    component="p"
-                    className={classes.heading}
-                    style={{ color: 'white', paddingLeft: '10px', textAlign: 'right' }}
-                  >
-                  Credits:
-                    {array[3][1]}
-                  pts
-                  </Typography>
-                </div>
-              </div>
+          </Toolbar>
+        </AppBar>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          {isNotLoading === false && (
+            <CircularProgress />)
+          }
+          {
+            rankingsList.length < 5 && (
+              <Typography component="p">There's less than 4 teams.</Typography>
             )
           }
-        </List>
+          {isNotLoading && rankingsList.length > 4 && (
+          <Grid
+            container
+            spacing={12}
+            direction="column"
+            justify="center"
+            alignItems="center"
+            className={classes.divContent}
+          >
+            <Grid item xs={12} className={classes.divBlock}>
+              <Paper className={classes.paper}>
+                <div className={classes.rankingBlock} style={{ backgroundColor: '#FFD700' }}>
+                  <Typography
+                    component="h1"
+                    variant="h1"
+                    style={{
+                      textAlign: 'center',
+                      lineHeight: 'normal',
+                      color: 'white',
+                      fontWeight: '450',
+                      textShadow: '1px 1px grey',
+                    }}
+                  >
+                    1st
+                  </Typography>
+                </div>
+                <div className={classes.rankingContent}>
+                  <div style={{ display: 'inline-block', float: 'left' }}>
+                    <Typography component="h4" variant="h4" style={{lineHeight: 'normal', color:'#9B9CA6'}}>
+                      {rankingsList != null && rankingsList[0][0]}
+                    </Typography>
+                  </div>
+                  <div style={{ display: 'inline-block', float: 'right' }}>
+                    <Typography component="h4" variant="h4" style={{ lineHeight: 'normal'}}>
+                      {rankingsList != null && rankingsList[0][1]} pts
+                    </Typography>
+                  </div>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} className={classes.divBlock}>
+              <Paper className={classes.paper}>
+                <div className={classes.rankingBlock} style={{ backgroundColor: '#EFEFEF' }}>
+                  <Typography
+                    component="h1"
+                    variant="h1"
+                    style={{
+                      textAlign: 'center',
+                      lineHeight: 'normal',
+                      color: 'white',
+                      fontWeight: '450',
+                      textShadow: '1px 1px grey',
+                    }}
+                  >
+                  2nd
+                  </Typography>
+                </div>
+                <div className={classes.rankingContent}>
+                  <div style={{ display: 'inline-block', float: 'left' }}>
+                    <Typography component="h4" variant="h4" style={{lineHeight: 'normal', color:'#9B9CA6'}}>
+                      {rankingsList != null && rankingsList[1][0]}
+                    </Typography>
+                  </div>
+                  <div style={{ display: 'inline-block', float: 'right' }}>
+                    <Typography component="h4" variant="h4" style={{ lineHeight: 'normal'}}>
+                      {rankingsList != null && rankingsList[1][1]} pts
+                    </Typography>
+                  </div>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} className={classes.divBlock}>
+              <Paper className={classes.paper}>
+                <div className={classes.rankingBlock} style={{ backgroundColor: '#C57252' }}>
+                  <Typography
+                    component="h1"
+                    variant="h1"
+                    style={{
+                      textAlign: 'center',
+                      lineHeight: 'normal',
+                      color: 'white',
+                      fontWeight: '450',
+                      textShadow: '1px 1px grey',
+                    }}
+                  >
+                   3rd
+                  </Typography>
+                </div>
+                <div className={classes.rankingContent}>
+                  <div style={{ display: 'inline-block', float: 'left' }}>
+                    <Typography component="h4" variant="h4" style={{lineHeight: 'normal', color:'#9B9CA6'}}>
+                      {rankingsList != null && rankingsList[2][0]}
+                    </Typography>
+                  </div>
+                  <div style={{ display: 'inline-block', float: 'right' }}>
+                    <Typography component="h4" variant="h4" style={{ lineHeight: 'normal'}}>
+                      {rankingsList != null && rankingsList[2][1]} pts
+                    </Typography>
+                  </div>
+                </div>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} className={classes.divBlock}>
+              <Paper className={classes.paper}>
+                <div className={classes.rankingBlock} style={{ backgroundColor: '#8B4513' }}>
+                  <Typography
+                    component="h1"
+                    variant="h1"
+                    style={{
+                      textAlign: 'center',
+                      lineHeight: 'normal',
+                      color: 'white',
+                      fontWeight: '450',
+                      textShadow: '1px 1px grey',
+                    }}
+                  >
+                    4th
+                  </Typography>
+                </div>
+                <div className={classes.rankingContent}>
+                  <div style={{ display: 'inline-block', float: 'left' }}>
+                    <Typography component="h4" variant="h4" style={{ lineHeight: 'normal', color: '#9B9CA6'}}>
+                      {rankingsList != null && rankingsList[3][0]}
+                    </Typography>
+                  </div>
+                  <div style={{ display: 'inline-block', float: 'right' }}>
+                    <Typography component="h4" variant="h4" style={{ lineHeight: 'normal'}}>
+                      {rankingsList != null && rankingsList[3][1]} pts
+                    </Typography>
+                  </div>
+                </div>
+              </Paper>
+            </Grid>
+          </Grid>)}
+        </main>
       </div>
     );
   }

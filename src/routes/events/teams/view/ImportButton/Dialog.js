@@ -22,7 +22,13 @@ class FormDialog extends React.Component {
   };
 
   render() {
-    const { schools, eventuid, refreshState,teacherId } = this.props;
+    const {
+      schools,
+      eventuid,
+      refreshState,
+      teacherId,
+    } = this.props;
+
     return (
       <div>
         <Button

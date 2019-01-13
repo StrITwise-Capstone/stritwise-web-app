@@ -62,7 +62,7 @@ const editStudent = ({
         dietary_restriction: values.dietary_restriction,
         remarks: values.remarks,
         email: values.email,
-        modified_At: new Date(Date.now()),
+        modified_at: new Date(Date.now()),
       }).then(() => {
         enqueueSnackbar('Student Updated',{
           variant: 'success',
