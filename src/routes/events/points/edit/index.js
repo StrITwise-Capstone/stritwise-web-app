@@ -30,7 +30,7 @@ class EditPoints extends Component {
 
   render() {
     let content = <CircularProgress />;
-    const { teamRef, currentPoints } = this.state;
+    const { teamRef, currentPoints, teamName } = this.state;
     if (teamRef !== null) {
       content = (
         <AdminLayout
@@ -39,7 +39,7 @@ class EditPoints extends Component {
           <Card>
             <CardContent style={{display: "flex", flexDirection: "column"}}>
               <Typography component="h5" variant="h5">
-                Team: Amber
+                Team: {teamName}
               </Typography>
 
               <span style={{ display: 'flex', flexDirection: 'row', paddingTop: 10 }}>

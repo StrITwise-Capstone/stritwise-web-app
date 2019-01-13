@@ -64,7 +64,7 @@ class Points extends Component {
           component={Link}
           to={`/events/${match.params.id}/pointsystem`}
         >
-          Point System
+          Presentation View
         </Button>
       </React.Fragment>);
   }

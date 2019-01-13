@@ -50,7 +50,6 @@ const EditUser = ({
     onSubmit={(values, { setSubmitting }) => {
       // console.log(values);
       const now = new Date();
-      const timestamp = now.getTime();
 
       const userRef = firestore.collection('users').doc(user.id);
       // update user values
@@ -59,7 +58,7 @@ const EditUser = ({
         lastName: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
-        modified_at: timestamp,
+        modified_at: now,
       };
       if (typeof (user.school.value) !== 'undefined') {
         updateValues.school_id = values.school.value;
