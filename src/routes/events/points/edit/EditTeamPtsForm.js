@@ -41,7 +41,6 @@ const EditTeamPtsForm = ({
     onSubmit={(values, { setSubmitting }) => {
       // console.log(values);
       const now = new Date();
-      const timestamp = now.getTime();
 
       teamRef.get().then((doc) => {
         let newPoints = (doc.data().credit * 1);
@@ -54,7 +53,7 @@ const EditTeamPtsForm = ({
         // update team points
         const updateValues = {
           credit: newPoints,
-          modified_at: timestamp,
+          modified_at: now,
         };
         teamRef.update({ ...updateValues }).then(() => {
           enqueueSnackbar('Points successfully updated.', {

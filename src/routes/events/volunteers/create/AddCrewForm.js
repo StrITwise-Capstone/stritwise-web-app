@@ -54,7 +54,6 @@ const AddCrewForm = ({
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const firestore = getFirestore();
       const now = new Date();
-      const timestamp = now.getTime();
 
       // update user values
       const addValues = {
@@ -62,7 +61,7 @@ const AddCrewForm = ({
         last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
-        created_at: timestamp,
+        created_at: now,
         type: values.type,
         school: values.school,
         email: values.email,
