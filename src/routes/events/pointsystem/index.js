@@ -73,7 +73,6 @@ class PointSystem extends Component {
     const { isNotLoading } = this.state;
     var array = [];
     if (rankings) {
-      console.log(rankings);
       if ( isNotLoading === false ) {
         this.setState({ isNotLoading: true });
       }
@@ -116,7 +115,12 @@ class PointSystem extends Component {
           {isNotLoading === false && (
             <CircularProgress />)
           }
-          {isNotLoading && (
+          {
+            rankingsList.length < 5 && (
+              <Typography component="p">There's less than 4 teams.</Typography>
+            )
+          }
+          {isNotLoading && rankingsList.length > 4 && (
           <Grid
             container
             spacing={12}
@@ -135,7 +139,9 @@ class PointSystem extends Component {
                       textAlign: 'center',
                       lineHeight: 'normal',
                       color: 'white',
-                      fontWeight: '450'}}
+                      fontWeight: '450',
+                      textShadow: '1px 1px grey',
+                    }}
                   >
                     1st
                   </Typography>
@@ -165,6 +171,7 @@ class PointSystem extends Component {
                       lineHeight: 'normal',
                       color: 'white',
                       fontWeight: '450',
+                      textShadow: '1px 1px grey',
                     }}
                   >
                   2nd
@@ -195,6 +202,7 @@ class PointSystem extends Component {
                       lineHeight: 'normal',
                       color: 'white',
                       fontWeight: '450',
+                      textShadow: '1px 1px grey',
                     }}
                   >
                    3rd
@@ -225,6 +233,7 @@ class PointSystem extends Component {
                       lineHeight: 'normal',
                       color: 'white',
                       fontWeight: '450',
+                      textShadow: '1px 1px grey',
                     }}
                   >
                     4th

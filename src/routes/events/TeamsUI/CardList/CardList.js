@@ -4,6 +4,7 @@ import {
   CircularProgress,
   Table,
   Button,
+  Typography,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
@@ -173,89 +174,89 @@ class cardList extends React.Component {
       const {
         match, currentevent, teacherId,
       } = this.props;
-      console.log(this.state);
-      console.log(this.props);
       return (
         <React.Fragment>
           <Table>
-              <tbody>
-                  <tr>
-                    <TablePagination
-                      colSpan={3}
-                      rowsPerPageOptions={[5]}
-                      count={teamsListCount}
-                      page={page}
-                      SelectProps={{
-                        native: true,
-                      }}
-                      rowsPerPage={5}
-                      onChangePage={this.handleChangePage}
-                      ActionsComponent={TablePaginationActionsWrapped}
-                      style={{ float: 'left' }}
-                    />
-                  </tr>
-              </tbody>
+            <tbody>
+              <tr>
+                { teacherId === '' && 
+                (
+                <th style={{ float: 'left' }}>
+                  <Formik
+                    enableReinitialize
+                    initialValues={{ search: '', filter: 'all' }}
+                    validationSchema={Yup.object({
+                      search: Yup.string()
+                        .required('Required'),
+                    })}
+                    onSubmit={(values, { setSubmitting }) => {
+                      this.setState({ search: values.search.value });
+                      this.getData();
+                      setSubmitting(false);
+                    }}
+                  >
+                    {({
+                      errors,
+                      touched,
+                      handleSubmit,
+                      values,
+                    }) => (
+                      <Form onSubmit={handleSubmit}>
+                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                          <Field
+                            name="search"
+                            label="School"
+                            options={schools}
+                            component={Select}
+                          />
+                        </div>
+                        {values.filter !== 'all' ? (
+                          <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                            <Field
+                              required
+                              name="search"
+                              label="Search"
+                              type="text"
+                              component={TextField}
+                            />
+                          </div>
+                        ) : (
+                          null
+                        )}
+
+                        <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                          <Button
+                            type="submit"
+                            variant="outlined"
+                            color="primary"
+                            disabled={util.isFormValid(errors, touched)}
+                          >
+                            Filter
+                          </Button>
+                        </div>
+                      </Form>
+                    )}
+                  </Formik>
+                </th>
+                )}
+                <TablePagination
+                  colSpan={3}
+                  rowsPerPageOptions={[5]}
+                  count={teamsListCount}
+                  page={page}
+                  SelectProps={{
+                    native: true,
+                  }}
+                  rowsPerPage={5}
+                  onChangePage={this.handleChangePage}
+                  ActionsComponent={TablePaginationActionsWrapped}
+                  style={{ float: 'right' }}
+                />
+              </tr>
+            </tbody>
           </Table>
           <div style={{ margin: '0 auto' }} />
-          { teacherId === '' && (
-          <div>
-              <Formik
-                enableReinitialize
-                initialValues={{ search: '', filter: 'all' }}
-                validationSchema={Yup.object({
-                  search: Yup.string()
-                    .required('Required'),
-                })}
-                onSubmit={(values, { setSubmitting }) => {
-                  this.setState({ search: values.search.value,});
-                  this.getData();
-                  setSubmitting(false);
-                }}
-              >
-                {({
-                  errors,
-                  touched,
-                  handleSubmit,
-                  values,
-                }) => (
-                  <Form onSubmit={handleSubmit}>
-                    <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                    <Field
-                      name="search"
-                      label="School"
-                      options={schools}
-                      component={Select}
-                    />
-                    </div>
-                    {values.filter !== 'all' ? (
-                      <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                        <Field
-                          required
-                          name="search"
-                          label="Search"
-                          type="text"
-                          component={TextField}
-                        />
-                      </div>
-                    ) : (
-                      null
-                    )}
-
-                    <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
-                      <Button
-                        type="submit"
-                        variant="outlined"
-                        color="primary"
-                        disabled={util.isFormValid(errors, touched)}
-                      >
-                        Filter
-                      </Button>
-                    </div>
-                  </Form>
-                )}
-            </Formik>
-          </div>
-            )}
+          
           <Grid
             container
             direction="row"
@@ -267,12 +268,14 @@ class cardList extends React.Component {
               <CircularProgress />)
             }
             { isNotLoading && isEmpty(teamsList) && (
-              <p>There's nothing here</p>
+              <Grid item>
+                <Typography component="p">There's no teams</Typography>
+              </Grid>
             )
             }
             {teamsList && isNotLoading
                   && Object.keys(teamsList).map((teamuid) => {
-                      return <Grid item xs={6} key={teamuid} style={{height:'100%'}}>
+                      return <Grid item xs={6} key={teamuid} style={{ height: '100%'}}>
                           <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} currentevent={currentevent}
                           update={()=>{this.getData()}} 
                           />

@@ -52,8 +52,8 @@ const createEvent = ({
       description: yup.string()
         .required('Required'),
       image: yup.mixed().required(),
-      startdate: yup.date().required('Required'),
-      enddate: yup.date().required('Required'),
+      startdate: yup.date().required('Required').default(()=> (new Date())),
+      enddate: yup.date().required('Required').default(()=> (new Date())),
       min_student: yup.number().integer().required('Required'),
       max_student: yup.number().integer().required('Required'),
     })}
