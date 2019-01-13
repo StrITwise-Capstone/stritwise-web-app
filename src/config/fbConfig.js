@@ -2,15 +2,18 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/storage';
+import prodConfig from './prodConfig';
+import devConfig from './devConfig';
 
-const config = {
-  apiKey: 'AIzaSyCeIo6NUgg7wgNoHB01a7ZaV-OH3M5umv8',
-  authDomain: 'stritwise-app.firebaseapp.com',
-  databaseURL: 'https://stritwise-app.firebaseio.com',
-  projectId: 'stritwise-app',
-  storageBucket: 'stritwise-app.appspot.com',
-  messagingSenderId: '163282995304',
-};
+const prodMode = false;
+
+let config = null;
+
+if (prodMode) {
+  config = prodConfig;
+} else {
+  config = devConfig;
+}
 
 firebase.initializeApp(config);
 firebase.firestore().settings({ timestampsInSnapshots: true });
