@@ -35,16 +35,16 @@ const styles = theme => ({
   },
   toolbar: theme.mixins.toolbar,
   divContent: {
-    width: '100vw',
+    width: '100%',
+    height: '100%',
     flexGrow: 1,
     backgroundColor: '#EFDECE',
   },
   divBlock: {
     backgroundColor: 'white',
-    margin: '2em',
-    maxWidth: '80vw',
-    width: '80vw',
+    width: '80%',
     display: 'flex',
+    margin:'1em',
   },
   paper: {
     backgroundColor: 'white',
@@ -53,12 +53,12 @@ const styles = theme => ({
   },
   rankingBlock: {
     width: '25%',
-    padding: '2em',
+    padding: '1em',
   },
   rankingContent: {
     color: 'black',
     width: '75%',
-    padding: '4em',
+    padding: '2em',
   },
 });
 
@@ -129,7 +129,7 @@ class PointSystem extends Component {
             alignItems="center"
             className={classes.divContent}
           >
-            <Grid item xs={4} className={classes.divBlock}>
+            <Grid item xs={12} className={classes.divBlock}>
               <Paper className={classes.paper}>
                 <div className={classes.rankingBlock} style={{ backgroundColor: '#FFD700' }}>
                   <Typography
@@ -160,7 +160,7 @@ class PointSystem extends Component {
                 </div>
               </Paper>
             </Grid>
-            <Grid item xs={4} className={classes.divBlock}>
+            <Grid item xs={12} className={classes.divBlock}>
               <Paper className={classes.paper}>
                 <div className={classes.rankingBlock} style={{ backgroundColor: '#EFEFEF' }}>
                   <Typography
@@ -191,7 +191,7 @@ class PointSystem extends Component {
                 </div>
               </Paper>
             </Grid>
-            <Grid item xs={4} className={classes.divBlock}>
+            <Grid item xs={12} className={classes.divBlock}>
               <Paper className={classes.paper}>
                 <div className={classes.rankingBlock} style={{ backgroundColor: '#C57252' }}>
                   <Typography
@@ -222,7 +222,7 @@ class PointSystem extends Component {
                 </div>
               </Paper>
             </Grid>
-            <Grid item xs={4} className={classes.divBlock}>
+            <Grid item xs={12} className={classes.divBlock}>
               <Paper className={classes.paper}>
                 <div className={classes.rankingBlock} style={{ backgroundColor: '#8B4513' }}>
                   <Typography

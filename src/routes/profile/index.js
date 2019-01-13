@@ -53,9 +53,7 @@ class Profile extends Component {
         title="Profile"
       >
         <Paper style={{ maxWidth: '50%', marginLeft:'auto', marginRight:'auto', textAlign:'center'}}>
-        <div style={{backgroundImage:'linear-gradient(to bottom, purple, white)', padding:'2em'}}>
-          <img src='/assets/profile.png' alt='Profile' style={{width:'50%','marginLeft':'auto', 'marginRight':'auto','position':'center','paddingTop':'50px'}}></img>
-        
+        <div style={{padding:'2em'}}>
         { isAuthenticated !== true &&  
         (
           <Typography variant="h5" component="h3" style={{'position':'relative'}}>
