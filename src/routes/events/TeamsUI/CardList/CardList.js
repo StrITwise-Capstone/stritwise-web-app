@@ -5,6 +5,9 @@ import {
   Table,
   Button,
   Typography,
+  TableRow,
+  TableHead,
+  TableCell,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
@@ -178,11 +181,10 @@ class cardList extends React.Component {
       return (
         <React.Fragment>
           <Table>
-            <tbody>
-              <tr>
+              <TableRow>
                 { teacherId === '' &&
                 (
-                <th style={{ float: 'left', fontWeight: 'normal !important'}}>
+                <TableCell style={{ float: 'left', fontWeight: 'normal !important'}}>
                   <Formik
                     enableReinitialize
                     initialValues={{ search: '', filter: 'all' }}
@@ -238,7 +240,7 @@ class cardList extends React.Component {
                       </Form>
                     )}
                   </Formik>
-                </th>
+                </TableCell>
                 )}
                 <TablePagination
                   colSpan={3}
@@ -253,8 +255,7 @@ class cardList extends React.Component {
                   ActionsComponent={TablePaginationActionsWrapped}
                   style={{ float: 'right' }}
                 />
-              </tr>
-            </tbody>
+              </TableRow>
           </Table>
           <div style={{ margin: '0 auto' }} />
           
