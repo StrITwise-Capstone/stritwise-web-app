@@ -23,6 +23,9 @@ const styles = {
 
 
 class Dashboard extends Component {
+  state = {
+    eventsList : null,
+  }
 
   createEvent = () => {
     const { history } = this.props;
@@ -31,8 +34,7 @@ class Dashboard extends Component {
   
   action = () => {
     const { isAuthenticated,user } = this.props;
-    if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member'))
-    {
+    if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member')) {
     return(<React.Fragment>
       <Button
         type="button"
@@ -45,9 +47,24 @@ class Dashboard extends Component {
     }
   }
 
+  filterDisplayEvent = (eventsList) => {
+    const { isAuthenticated , user } = this.props;
+    let result = {}, key;
+    if (isAuthenticated && (user.type === 'teacher') && eventsList) {
+      const date = new Date();
+      for (key in eventsList) {
+        if (eventsList[key].end_date.toDate() > date) {
+          result[key] = eventsList[key];
+        }
+      }
+      return result;
+    }
+    return eventsList;
+  }
+
   render() {
     const { eventsList ,classes } = this.props;
-
+    const filteredEventsList = this.filterDisplayEvent(eventsList);
     return (
       <AdminLayout
         title='Events'
@@ -61,20 +78,20 @@ class Dashboard extends Component {
         className={classes.root}
         spacing={8}
         >
-        {eventsList
-          && Object.keys(eventsList).map(eventuid => (
-            <Grid item xs={6} key={eventuid}>
-              <Card 
-              eventuid={eventuid}
-              imageSource={eventsList[eventuid].image_path}
-              title={eventsList[eventuid].name}
-              description={eventsList[eventuid].description}
-              start_date={eventsList[eventuid].start_date}
-              end_date={eventsList[eventuid].end_date}
-              ></Card>
-            </Grid>))
-        }
-      </Grid>
+          {filteredEventsList
+            && Object.keys(filteredEventsList).map(eventuid => (
+              <Grid item xs={6} key={eventuid}>
+                <Card
+                  eventuid={eventuid}
+                  imageSource={filteredEventsList[eventuid].image_path}
+                  title={filteredEventsList[eventuid].name}
+                  description={filteredEventsList[eventuid].description}
+                  start_date={filteredEventsList[eventuid].start_date}
+                  end_date={filteredEventsList[eventuid].end_date}
+                />
+              </Grid>))
+          }
+        </Grid>
       </AdminLayout>
     );
   }

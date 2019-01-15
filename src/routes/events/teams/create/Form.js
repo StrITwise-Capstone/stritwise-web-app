@@ -28,8 +28,10 @@ const createTeam = ({
   enqueueSnackbar,
   match,
   minStudent,
+  maxStudent,
   schools,
   teacherId,
+  schoolId,
 }) => (
   <Formik
     initialValues={{
@@ -37,6 +39,8 @@ const createTeam = ({
       students: Array.apply(null, Array(minStudent)).map(function () {return;}),
       schools,
       teacherId: teacherId ? teacherId : 'null',
+      lengthStudents: minStudent,
+      schoolId: schoolId ? schoolId : '',
     }}
     validationSchema={yup.object({
       team_name: yup.string()
@@ -63,11 +67,17 @@ const createTeam = ({
         .min(minStudent, `Minimum of ${minStudent} member`),
     })}
     onSubmit={(values, { resetForm, setSubmitting }) => {
+      let schoolValue = '';
+      if (schoolId !== '') {
+        schoolValue = schoolId; 
+      } else {
+        schoolValue = values.school_id.value;
+      }
       const eventuid = match.params.id;
       var students = values.students;
       firestore.collection('events').doc(match.params.id).collection('teams').add({
         team_name: values.team_name,
-        school_id: values.school_id.value,
+        school_id: schoolValue,
         credit: 0,
         created_at: new Date(Date.now()),
         modified_at: new Date(Date.now()),
@@ -131,12 +141,13 @@ const createTeam = ({
               style={{ width: '500px' }}
               index={-1}
             />
-            <Field
+            {schoolId === '' && (<Field
               name="school_id"
               label="School"
               options={schools}
               component={Select}
-            />
+            />)
+            }
             <FieldArray
               name="students"
               render={arrayHelpers => (
@@ -160,9 +171,11 @@ const createTeam = ({
                           Student #
                           {index + 1}
                         </p>
-                        <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => arrayHelpers.remove(index)}>
+                        { values.lengthStudents > minStudent &&
+                        (<Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.lengthStudents = values.lengthStudents -1; }}>
                           Delete
-                        </Button>
+                        </Button>)
+                        }
                       </div>
                       <div>
                         <Field
@@ -255,14 +268,15 @@ const createTeam = ({
                       </div>
                     </div>
                   ))}
-                  <Button
+                  { values.lengthStudents < maxStudent && (<Button
                     type="button"
-                    onClick={() => { arrayHelpers.push({ firstname: '' }); }}
+                    onClick={() => { arrayHelpers.push({ firstname: '' }); values.lengthStudents = values.lengthStudents + 1;}}
                     size="small"
                     color="primary"
                   >
                     Add Student
-                  </Button>
+                  </Button>)
+                  }
                 </div>
               )}
             />

@@ -111,6 +111,7 @@ class editTeam extends Component {
             team={team}
             schools={schools}
             minStudent={currentevent.min_student ? currentevent.min_student : 1}
+            maxStudent={currentevent.max_student ? currentevent.max_student : 10}
             students={studentsList}
             refreshState={() => { this.refreshState(); }}
           />)

@@ -6,12 +6,14 @@ import LoginForm from './LoginForm';
 import Container from '../Container';
 
 class Login extends Component {
-  render() {
+  componentDidMount() {
     const { enqueueSnackbar } = this.props;
     enqueueSnackbar('StrITwise® Web Console v0.1.0', {
       variant: 'info',
     });
+  }
 
+  render() {
     return (
       <Container label="Sign In">
         <LoginForm />

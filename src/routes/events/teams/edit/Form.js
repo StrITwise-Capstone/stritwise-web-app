@@ -32,6 +32,7 @@ const editTeam = ({
   team,
   students,
   refreshState,
+  maxStudent,
 }) => (
   <Formik
     enableReinitialize={true}
@@ -43,6 +44,7 @@ const editTeam = ({
         value: team.school_id,
       },
       deleteArray: [],
+      lengthStudents: minStudent,
     }}
     validationSchema={yup.object({
       team_name: yup.string()
@@ -206,9 +208,13 @@ const editTeam = ({
                           Student #
                           {index + 1}
                         </p>
-                        <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); values.deleteArray.push(students[index].key); }}>
-                          Delete
-                        </Button>
+                        { values.lengthStudents > minStudent &&
+                          (
+                          <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.lengthStudents = values.lengthStudents -1; }}>
+                            Delete
+                          </Button>
+                          )
+                        }
                       </div>
                       <div>
                         <Field
@@ -304,14 +310,15 @@ const editTeam = ({
                       </div>
                     </div>
                   ))}
-                  <Button
+                  { values.lengthStudents < maxStudent && (<Button
                     type="button"
-                    onClick={() => { arrayHelpers.push({ key: '' }); }}
+                    onClick={() => { arrayHelpers.push({ firstname: '' }); values.lengthStudents = values.lengthStudents + 1;}}
                     size="small"
                     color="primary"
                   >
-                   Add
-                  </Button>
+                    Add Student
+                  </Button>)
+                  }
                 </div>
               )}
             />

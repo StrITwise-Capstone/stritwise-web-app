@@ -59,10 +59,10 @@ const createEvent = ({
       description: yup.string()
         .required('Required'),
       image: yup.mixed().required('Required').test('fileFormat', 'Unsupported Format', value => value && SUPPORTED_FORMATS.includes(value.type)),
-      startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
-      enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
-      min_student: yup.number('Invalid number format').integer().required('Required'),
-      max_student: yup.number('Invalid number format').integer().required('Required'),
+      startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
+      enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
+      min_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
+      max_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       // login user
@@ -133,7 +133,7 @@ const createEvent = ({
               label="Start Date"
               type="date"
               component={DatePicker}
-              placeholder="(e.g. 11/02/2019)"
+              placeholder="(e.g. 11/02/2019 03:00 PM)"
             />
             <Field
               required
@@ -141,7 +141,7 @@ const createEvent = ({
               label="End Date"
               type="date"
               component={DatePicker}
-              placeholder="(e.g. 11/02/2019)"
+              placeholder="(e.g. 11/02/2019 03:59 PM)"
             />
             <Field
               required
@@ -154,14 +154,14 @@ const createEvent = ({
             <Field
               required
               name="min_student"
-              label="Minimum Student Per Team (Numbers only)"
+              label="Minimum Student Per Team"
               type="text"
               component={TextField}
             />
             <Field
               required
               name="max_student"
-              label="Maximum Student Per Team (Numbers only)"
+              label="Maximum Student Per Team"
               type="text"
               component={TextField}
             />

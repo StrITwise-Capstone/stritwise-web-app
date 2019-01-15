@@ -33,7 +33,7 @@ class App extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           { location.pathname.includes('events/') && !(location.pathname.includes('events/create'))
-            && !(location.pathname.includes('events/:id/edit'))
+            && !(location.pathname.match('events/:id/edit'))
             && (
             <EventLayout
               eventuid={match && match.params.id}
@@ -41,7 +41,7 @@ class App extends Component {
               {children}
             </EventLayout>)
           }
-          { location.pathname.includes('events/create') || location.pathname.includes('events/:id/edit') && children
+          { (location.pathname.includes('events/create') || location.pathname.includes('events/:id/edit')) && children
           }
           { location.pathname.includes('events/') === false
             && children

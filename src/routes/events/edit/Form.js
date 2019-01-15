@@ -83,11 +83,11 @@ const editEvent = ({
           .required('Required'),
         description: yup.string()
           .required('Required'),
-        image: yup.mixed().test('fileFormat', 'Unsupported Format', value => value && SUPPORTED_FORMATS.includes(value.type)),
-        startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
-        enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
-        min_student: yup.number('Invalid number format').integer().required('Required'),
-        max_student: yup.number('Invalid number format').integer().required('Required'),
+        image: yup.mixed().test('fileFormat', 'Unsupported Format', value => value ? SUPPORTED_FORMATS.includes(value.type) : true),
+        startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
+        enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
+        min_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
+        max_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
       })}
       onSubmit={(values, { setSubmitting, resetForm }) => {
         // login user
@@ -181,15 +181,17 @@ const editEvent = ({
                 required
                 name="startdate"
                 label="Start Date"
-                type="text"
+                type="date"
                 component={DatePicker}
+                placeholder="(e.g. 11/02/2019 03:00 PM)"
               />
               <Field
                 required
                 name="enddate"
                 label="End Date"
-                type="text"
+                type="date"
                 component={DatePicker}
+                placeholder="(e.g. 11/02/2019 03:59 PM)"
               />
               <Field
                 required

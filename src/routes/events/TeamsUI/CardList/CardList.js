@@ -174,6 +174,7 @@ class cardList extends React.Component {
       const {
         match, currentevent, teacherId,
       } = this.props;
+      const defaultOptions =  [{ label : '' , value : ''}];
       return (
         <React.Fragment>
           <Table>
@@ -202,16 +203,16 @@ class cardList extends React.Component {
                       values,
                     }) => (
                       <Form onSubmit={handleSubmit}>
-                        <div style={{ display: 'inline-block', minWidth: '200px', 'font-weight':'400 !important', fontWeight: '400 !important', paddingRight: '6px'}}>
+                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '6px'}}>
                           <Field
                             name="search"
                             label="School"
-                            options={schools}
+                            options={schools ? schools : defaultOptions}
                             component={Select}
                           />
                         </div>
                         {values.filter !== 'all' ? (
-                          <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px', fontWeight: 'normal !important'}}>
+                          <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
                             <Field
                               required
                               name="search"
@@ -242,7 +243,7 @@ class cardList extends React.Component {
                 <TablePagination
                   colSpan={3}
                   rowsPerPageOptions={[5]}
-                  count={teamsListCount}
+                  count={teamsListCount ? teamsListCount : 0}
                   page={page}
                   SelectProps={{
                     native: true,

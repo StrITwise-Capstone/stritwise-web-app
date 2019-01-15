@@ -36,9 +36,11 @@ class createTeam extends Component {
   render() {
     const { currentevent, auth, user } = this.props;
     const { schools } = this.state;
-    var teacherId = '';
+    let teacherId = '';
+    let schoolId = '';
     if (user && user.type === 'teacher') {
       teacherId = auth.uid;
+      schoolId = user.school_id;
     }
     return (
       <AdminLayout
@@ -53,7 +55,9 @@ class createTeam extends Component {
           <Form 
             schools={schools ? schools : null}
             minStudent={currentevent.min_student ? currentevent.min_student : 1}
+            maxStudent={currentevent.max_student ? currentevent.max_student : 10}
             teacherId={teacherId}
+            schoolId={schoolId}
           />)
         }
       </AdminLayout>
