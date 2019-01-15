@@ -47,6 +47,13 @@ class Overview extends Component {
     imageFile: null,
   };
 
+  componentDidMount() {
+    this.setState({
+      imageFile: null,
+      isNotLoading: false,
+    })
+  }
+
   componentDidUpdate() {
     const { firebase, currentevent } = this.props;
     const { imageFile } = this.state;
