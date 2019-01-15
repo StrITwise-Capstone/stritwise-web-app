@@ -24,6 +24,13 @@ function timeConverter(UNIX_timestamp) {
   return moment(new Date(UNIX_timestamp.seconds * 1000)).format('YYYY-MM-DDTHH:mm');
 }
 
+const SUPPORTED_FORMATS = [
+  'image/jpg',
+  'image/jpeg',
+  'image/gif',
+  'image/png',
+];
+
 const initialValues = (event) => {
   if (event != null) {
     return {
@@ -31,6 +38,8 @@ const initialValues = (event) => {
       startdate: timeConverter(event.start_date),
       enddate: timeConverter(event.end_date),
       description: event.desc,
+      min_student: `${event.min_student}`,
+      max_student: `${event.max_student}`,
       image: '',
     };
   }
@@ -41,6 +50,8 @@ const initialValues = (event) => {
       enddate: '',
       description: '',
       image: '',
+      min_student: '',
+      max_student: '',
     };
   }
   return null;
@@ -72,11 +83,12 @@ const editEvent = ({
           .required('Required'),
         description: yup.string()
           .required('Required'),
-        image: yup.mixed(),
-        startdate: yup.date().required('Required'),
-        enddate: yup.date().required('Required'),
+        image: yup.mixed().test('fileFormat', 'Unsupported Format', value => value && SUPPORTED_FORMATS.includes(value.type)),
+        startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
+        enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
+        min_student: yup.number('Invalid number format').integer().required('Required'),
+        max_student: yup.number('Invalid number format').integer().required('Required'),
       })}
-
       onSubmit={(values, { setSubmitting, resetForm }) => {
         // login user
         const { image } = values;
@@ -88,6 +100,8 @@ const editEvent = ({
             start_date: new Date(values.startdate),
             end_date: new Date(values.enddate),
             modified_at: new Date(Date.now()),
+            min_student: parseInt(values.min_student),
+            max_student: parseInt(values.max_student),
           }).then(() => {
             // console.log('Event created');
             enqueueSnackbar('Event Updated', {
@@ -126,6 +140,8 @@ const editEvent = ({
                 end_date: new Date(values.enddate),
                 image_path: `images/${imageuid}`,
                 modified_at: new Date(Date.now()),
+                min_student: parseInt(values.min_student),
+                max_student: parseInt(values.max_student),
               }).then(() => {
                 enqueueSnackbar('Event Updated', {
                   variant: 'success',
@@ -177,6 +193,20 @@ const editEvent = ({
               />
               <Field
                 required
+                name="min_student"
+                label="Minimum Student Per Team"
+                type="text"
+                component={TextField}
+              />
+              <Field
+                required
+                name="max_student"
+                label="Maximum Student Per Team"
+                type="text"
+                component={TextField}
+              />
+              <Field
+                required
                 name="description"
                 label="Description"
                 type="text"
@@ -185,20 +215,24 @@ const editEvent = ({
               />
               <p>Upload Event Image</p>
               <Field
-                required
+                name="image"
                 render={() => (
                   <Input
-                    id="image"
-                    name="file"
                     type="file"
-                    onChange={ (event) => { setFieldValue('image', event.currentTarget.files[0]); }}
+                    id="file"
+                    name="image"
+                    onChange={(event) => { setFieldValue('image', event.currentTarget.files[0]); }}
                   />
                 )}
               />
-              <div>
-                <Thumb file={values.image} />
-              </div>
-
+              { values.image && !(SUPPORTED_FORMATS.includes(values.image.type)) && (
+                <div style={{ color: 'red' }}>Invalid file format</div>
+              )}
+              { values.image && SUPPORTED_FORMATS.includes(values.image.type) && (
+                <div>
+                  <Thumb file={values.image} />
+                </div>
+              )}
               <div className="align-right">
                 <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                   UPDATE EVENT

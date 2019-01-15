@@ -53,7 +53,7 @@ class cardList extends React.Component {
           page,
           firstVisible,
           isNotLoading: true,
-        })
+        });
       };
       var array = [];
       var first = null;
@@ -110,7 +110,7 @@ class cardList extends React.Component {
       var ref = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search);
       ref.get().then((documentSnapshots) => {
         this.setState({ teamsListCount: documentSnapshots.docs.length });
-      })
+      });
       var array = [];
       var first = ref.orderBy('team_name').limit(5);
       this.setState({ isNotLoading: false, teamsList: null });
@@ -123,7 +123,7 @@ class cardList extends React.Component {
           });
         });
         callback(array, lastVisible);
-      }).catch((error)=>{
+      }).catch((error) => {
         this.setState({ isNotLoading: true });
         console.log(error);
       })
@@ -152,8 +152,8 @@ class cardList extends React.Component {
       firestore.collection('schools').get().then((querySnapshot) => {
         const schools = [];
         schools.push({
-          label:'',
-          value:'',
+          label: '',
+          value: '',
         });
         querySnapshot.forEach((doc) => {
           schools.push({
@@ -179,9 +179,9 @@ class cardList extends React.Component {
           <Table>
             <tbody>
               <tr>
-                { teacherId === '' && 
+                { teacherId === '' &&
                 (
-                <th style={{ float: 'left' }}>
+                <th style={{ float: 'left', fontWeight: 'normal !important'}}>
                   <Formik
                     enableReinitialize
                     initialValues={{ search: '', filter: 'all' }}
@@ -202,7 +202,7 @@ class cardList extends React.Component {
                       values,
                     }) => (
                       <Form onSubmit={handleSubmit}>
-                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                        <div style={{ display: 'inline-block', minWidth: '200px', 'font-weight':'400 !important', fontWeight: '400 !important', paddingRight: '6px'}}>
                           <Field
                             name="search"
                             label="School"
@@ -211,7 +211,7 @@ class cardList extends React.Component {
                           />
                         </div>
                         {values.filter !== 'all' ? (
-                          <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                          <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px', fontWeight: 'normal !important'}}>
                             <Field
                               required
                               name="search"
@@ -269,16 +269,16 @@ class cardList extends React.Component {
             }
             { isNotLoading && isEmpty(teamsList) && (
               <Grid item>
-                <Typography component="p">There's no teams</Typography>
+                <Typography component="p">There is no data at the moment.</Typography>
               </Grid>
             )
             }
             {teamsList && isNotLoading
                   && Object.keys(teamsList).map((teamuid) => {
-                      return <Grid item xs={6} key={teamuid} style={{ height: '100%'}}>
-                          <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} currentevent={currentevent}
-                          update={()=>{this.getData()}} 
-                          />
+                      return <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
+                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} currentevent={currentevent}
+                        update={() => { this.getData(); }} 
+                        />
                 </Grid>;})
             }
           </Grid>
@@ -289,13 +289,14 @@ class cardList extends React.Component {
 
 
 const mapStateToProps = (state) => {
-    return {
-      teamsListCount: state.firestore.data.teamsListCount,
-    }
+  return {
+    teamsListCount: state.firestore.data.teamsListCount,
+  }
 };
 
 
 export default compose(withRouter,
-    connect(mapStateToProps),
-    firestoreConnect(),
-)(cardList);
+  connect(mapStateToProps),
+  firestoreConnect(),
+)
+(cardList);

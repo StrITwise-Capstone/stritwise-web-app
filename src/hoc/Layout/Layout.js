@@ -32,13 +32,16 @@ class App extends Component {
         <Navbar />
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          { location.pathname.includes('events/')
+          { location.pathname.includes('events/') && !(location.pathname.includes('events/create'))
+            && !(location.pathname.includes('events/:id/edit'))
             && (
             <EventLayout
               eventuid={match && match.params.id}
             >
               {children}
             </EventLayout>)
+          }
+          { location.pathname.includes('events/create') || location.pathname.includes('events/:id/edit') && children
           }
           { location.pathname.includes('events/') === false
             && children

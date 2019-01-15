@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
+import { withRouter } from 'react-router';
 
 import Form from './Form';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
@@ -12,7 +13,7 @@ class editEvent extends Component {
     event: null,
   };
 
-  componentWillMount() {
+  componentDidUpdate() {
     const {
       events,
       match,
@@ -51,9 +52,10 @@ const mapStateToProps = state => ({
 
 export default compose(
   connect(mapStateToProps),
+  withRouter,
   firestoreConnect([
     {
-      collection: 'events',
+      collection: 'events', storeAs: 'events',
     },
   ]),
   withSnackbar,

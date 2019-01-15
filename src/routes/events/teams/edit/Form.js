@@ -39,7 +39,7 @@ const editTeam = ({
       team_name: team.team_name,
       students,
       school_id: {
-        label: '',
+        label: `${team.school_name}`,
         value: team.school_id,
       },
       deleteArray: [],

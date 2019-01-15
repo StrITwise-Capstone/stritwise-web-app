@@ -29,6 +29,13 @@ const initialValues = {
   min_student: '',
 };
 
+const SUPPORTED_FORMATS = [
+  'image/jpg',
+  'image/jpeg',
+  'image/gif',
+  'image/png',
+];
+
 const guid = () => {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -51,11 +58,11 @@ const createEvent = ({
         .required('Required'),
       description: yup.string()
         .required('Required'),
-      image: yup.mixed().required(),
-      startdate: yup.date().required('Required').default(()=> (new Date())),
-      enddate: yup.date().required('Required').default(()=> (new Date())),
-      min_student: yup.number().integer().required('Required'),
-      max_student: yup.number().integer().required('Required'),
+      image: yup.mixed().required('Required').test('fileFormat', 'Unsupported Format', value => value && SUPPORTED_FORMATS.includes(value.type)),
+      startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
+      enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())),
+      min_student: yup.number('Invalid number format').integer().required('Required'),
+      max_student: yup.number('Invalid number format').integer().required('Required'),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       // login user
@@ -106,6 +113,8 @@ const createEvent = ({
       handleSubmit,
       isSubmitting,
       setFieldValue,
+      errors,
+      touched,
     }) => {
       let content = <CircularProgress />;
       if (!isSubmitting) {
@@ -122,15 +131,17 @@ const createEvent = ({
               required
               name="startdate"
               label="Start Date"
-              type="text"
+              type="date"
               component={DatePicker}
+              placeholder="(e.g. 11/02/2019)"
             />
             <Field
               required
               name="enddate"
               label="End Date"
-              type="text"
+              type="date"
               component={DatePicker}
+              placeholder="(e.g. 11/02/2019)"
             />
             <Field
               required
@@ -157,19 +168,24 @@ const createEvent = ({
             <p>Upload Event Image</p>
             <Field
               required
+              name="image"
               render={() => (
                 <Input
-                  id="image"
-                  name="file"
                   type="file"
+                  id="file"
+                  name="image"
                   onChange={(event) => { setFieldValue('image', event.currentTarget.files[0]); }}
                 />
               )}
             />
-            <div>
-              <Thumb file={values.image} />
-            </div>
-
+            { values.image && !(SUPPORTED_FORMATS.includes(values.image.type)) && (
+              <div style={{ color: 'red' }}>Invalid file format</div>
+            )}
+            { values.image && SUPPORTED_FORMATS.includes(values.image.type) && (
+              <div>
+                <Thumb file={values.image} />
+              </div>
+            )}
             <div className="align-right">
               <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                 CREATE EVENT

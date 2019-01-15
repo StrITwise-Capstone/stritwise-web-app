@@ -82,9 +82,23 @@ class editTeam extends Component {
     });
   }
 
+  getSchoolName = (schools, userSchoolId) => {
+    if (schools !== null && userSchoolId !== null) {
+      const currentSchool = schools.find(schoolElement => (schoolElement.value === userSchoolId));
+      if (currentSchool) {
+        return currentSchool.label;
+      }
+      return 'N.A. ';
+    }
+    return 'ErrorLoading';
+  }
+
   render() {
     const { currentevent } = this.props;
     const { schools, studentsList, team } = this.state;
+    if (schools.length > 1 && team) {
+      team.school_name = this.getSchoolName(schools, team.school_id);
+    }
     return (
       <AdminLayout
         title="Edit Team"
