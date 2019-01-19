@@ -15,11 +15,6 @@ import * as util from '../../../../../helper/util';
 import Select from '../../../../../components/UI/Select/Select';
 import yup from '../../../../../instances/yup';
 
-function validateEmail(email) {
-  var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  const bool =  re.test(String(email).toLowerCase());
-  return bool;
-}
 
 var schema = yup.object().shape({
   'Team Name': yup.string().required(),
@@ -106,13 +101,14 @@ class AddUserForm extends Component {
       let isValid = true;
       const validation = Object.keys(dataByTeamName).map((TeamIndex) => {
         const team = dataByTeamName[TeamIndex];
-        for (var i = 0; i < team.values.length; i++) {
-        if (!schema.isValidSync(team.values[i])) {
-          isValid = false;
-          console.log(team);
+        let i = 0;
+        for (i = 0; i < team.values.length; i++) {
+          if (!schema.isValidSync(team.values[i])) {
+            isValid = false;
+            console.log(team);
+          }
+          return null;
         }
-        return null;
-      }
       });
       if (isValid) {
         this.uploadTeams(dataByTeamName, school_id);
@@ -123,32 +119,32 @@ class AddUserForm extends Component {
         });
       }
     };
-      const input = values.file;
-      if (!input) {
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function readFile(event) {
-        const contents = event.target.result;
-        let array = [];
-        const result = Papa.parse(contents, {
-          delimiter: "", // auto-detect
-          newline: "", // auto-detect
-          quoteChar: '"',
-          escapeChar: '"',
-          header: true,
-          preview: 0,
-          encoding: '',
-          worker: false,
-          comments: false,
-          skipEmptyLines: 'greedy',
-          complete: function getResults(results) {
-            return array;
-          },
-        });
-        setData(result.data);
-      };
-      reader.readAsText(input);
+    const input = values.file;
+    if (!input) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function readFile(event) {
+      const contents = event.target.result;
+      let array = [];
+      const result = Papa.parse(contents, {
+        delimiter: "", // auto-detect
+        newline: "", // auto-detect
+        quoteChar: '"',
+        escapeChar: '"',
+        header: true,
+        preview: 0,
+        encoding: '',
+        worker: false,
+        comments: false,
+        skipEmptyLines: 'greedy',
+        complete: function getResults(results) {
+          return array;
+        },
+      });
+      setData(result.data);
+    };
+    reader.readAsText(input);
   };
 
   render() {

@@ -103,6 +103,14 @@ class ViewTeams extends Component {
               >
               Create
               </Button>
+              <Button
+                type="button"
+                variant="contained"
+                color="secondary"
+                href="https://drive.google.com/open?id=1_IbU1ZmkPpVbYje6NHIfvnWG2_P-tWk8"
+              >
+              Download Template
+              </Button>
               <Dialog
                 refreshState={() => { this.refreshState(); }}
                 schools={schools}

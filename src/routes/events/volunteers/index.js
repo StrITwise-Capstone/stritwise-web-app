@@ -8,6 +8,7 @@ import {
   Button,
   MenuItem,
 } from '@material-ui/core';
+import { withSnackbar } from 'notistack';
 
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
@@ -16,6 +17,7 @@ import TextField from '../../../components/UI/TextField/TextField';
 import Dropdown from '../../../components/UI/Dropdown/Dropdown';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 import CustomTable from '../../../components/UI/Table/Table';
+import Dialog from './ImportButton/Dialog';
 
 class Volunteers extends Component {
   state = {
@@ -27,6 +29,9 @@ class Volunteers extends Component {
   handleEdit = (volunteerID) => {
     const { history, match} = this.props;
     history.push(`/events/${match.params.id}/volunteers/${volunteerID}/edit`);
+  }
+  refreshState = () => {
+    this.forceUpdate();
   }
 
   handleDocsList = (docsList) => {
@@ -69,19 +74,30 @@ class Volunteers extends Component {
     const { filter, search } = this.state;
     const colRef = firestore.collection('events').doc(match.params.id).collection('volunteers');
     const action = (
-      <React.Fragment>
+      <div style={{ display: 'flex' }}>
+        <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        component={Link}
+        to={`/events/${match.params.id}/volunteers/create`}
+      //style={{ display: 'inline-block' }}
+        >
+        Add Volunteer
+        </Button>
         <Button
           type="button"
           variant="contained"
           color="secondary"
-          component={Link}
-          to={`/events/${match.params.id}/volunteers/create`}
-          //style={{ display: 'inline-block' }}
+          href="https://drive.google.com/a/np.edu.sg/file/d/1je8FVM3U7R1YPABfPkPozw1M1SSFr0Tm/view?usp=sharing"
         >
-          Add Volunteer
+        Download Template
         </Button>
-      </React.Fragment>
-    );
+        <Dialog
+          refreshState={this.refreshState}
+          eventuid={match.params.id}
+        />
+      </div>);
     return (
       <AdminLayout
         title="Volunteers"
@@ -191,4 +207,5 @@ export default compose(
   connect(mapStateToProps),
   withFirestore,
   withRouter,
+  withSnackbar,
 )(Volunteers);
