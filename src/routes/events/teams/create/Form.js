@@ -53,14 +53,18 @@ const createTeam = ({
               .required('First Name Required'),
             lastname: yup.string()
               .required('Last Name Required'),
-            phonenumber: yup.number()
-              .required('Phone Number Required'),
+            mobilenumber: yup.number('Invalid Mobile Number')
+              .required('Mobile Number Required')
+              .typeError('Invalid Phone Number'),
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
             badgename: yup.string(),
             dietaryrestriction: yup.string(),
             remarks: yup.string(),
+            emergency_contact_name: yup.string(),
+            emergency_contact_mobile: yup.number('Invalid Mobile Number').typeError('Invalid Phone Number'),
+            emergency_contact_relation: yup.string(),
           }),
         )
         .required('Must have members')
@@ -91,7 +95,7 @@ const createTeam = ({
             team_id: docRef.id,
             first_name: students[index].firstname,
             last_name: students[index].lastname,
-            mobile: students[index].phonenumber,
+            mobile: students[index].mobilenumber,
             email: students[index].email,
             badge_name: students[index].badgename,
             dietary_restriction: students[index].dietaryrestriction,
@@ -183,6 +187,7 @@ const createTeam = ({
                           required
                           type="text"
                           label="First Name"
+                          placeholder="Guang Yao"
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                         />
@@ -190,6 +195,7 @@ const createTeam = ({
                           name={`students[${index}].lastname`}
                           required
                           type="text"
+                          placeholder="Zeng"
                           label="Last Name"
                           component={TextField}
                         />
@@ -199,14 +205,16 @@ const createTeam = ({
                           name={`students[${index}].email`}
                           type="text"
                           label="Email"
+                          placeholder="guangyao@gmail.com"
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                           required
                         />
                         <Field
-                          name={`students[${index}].phonenumber`}
+                          name={`students[${index}].mobilenumber`}
                           type="text"
-                          label="Phone Number"
+                          label="Mobile Number"
+                          placeholder="98745123"
                           component={TextField}
                           required
                         />
@@ -216,6 +224,7 @@ const createTeam = ({
                           name={`students[${index}].badgename`}
                           type="text"
                           label="Badge Name"
+                          placeholder="GuangYao"
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                         />
@@ -223,6 +232,7 @@ const createTeam = ({
                           name={`students[${index}].dietaryrestriction`}
                           type="text"
                           label="Dietary Restriction"
+                          placeholder="Nil / Halal / Vegetarian"
                           component={TextField}
                         />
                       </div>
@@ -231,6 +241,7 @@ const createTeam = ({
                           name={`students[${index}].emergency_contact_name`}
                           type="text"
                           label="Emergency Contact Name"
+                          placeholder="Zhang Melvin"
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                         />
@@ -238,12 +249,14 @@ const createTeam = ({
                           name={`students[${index}].emergency_contact_mobile`}
                           type="text"
                           label="Mobile"
+                          placeholder="98745123"
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_relation`}
                           type="text"
+                          placeholder="Father"
                           label="Relation"
                           component={TextField}
                         />
@@ -253,6 +266,7 @@ const createTeam = ({
                           name={`students[${index}].remarks`}
                           type="text"
                           label="Remarks"
+                          placeholder="Nil"
                           component={TextField}
                           index={index}
                         />
@@ -260,11 +274,14 @@ const createTeam = ({
                       <div>
                         <ErrorMessage name={`students[${index}].firstname`} />
                         <ErrorMessage name={`students[${index}].lastname`} />
-                        <ErrorMessage name={`students[${index}].phonenumber`} />
+                        <ErrorMessage name={`students[${index}].mobilenumber`} />
                         <ErrorMessage name={`students[${index}].email`} />
                         <ErrorMessage name={`students[${index}].badgename`} />
                         <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_name`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_relation`} />
                       </div>
                     </div>
                   ))}

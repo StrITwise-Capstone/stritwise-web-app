@@ -17,6 +17,7 @@ const textField = ({
     rowsMax,
     fullWidth,
     required,
+    placeholder,
   } = props;
   const hasError = !!(touched[field.name] && errors[field.name]);
   return (
@@ -37,6 +38,7 @@ const textField = ({
         rows={rows}
         rowsMax={rowsMax}
         fullWidth={fullWidth}
+        placeholder={placeholder ? placeholder : ''}
       />
     </div>
   );

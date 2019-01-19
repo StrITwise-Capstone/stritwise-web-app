@@ -18,6 +18,7 @@ const textField = ({
     fullWidth,
     required,
     style,
+    placeholder,
   } = props;
 
   const hasError = !!(touched[field.name] && errors[field.name]);
@@ -39,6 +40,7 @@ const textField = ({
       rowsMax={rowsMax}
       fullWidth={fullWidth}
       style={style}
+      placeholder={placeholder ? placeholder : ''}
     />
   );
 };
