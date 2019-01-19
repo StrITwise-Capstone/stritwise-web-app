@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 
 import Form from './Form';
+import urlForDownloads from '../../../../config/urlForDownloads';
 
 class FormDialog extends React.Component {
   state = {
@@ -47,7 +48,7 @@ class FormDialog extends React.Component {
             <p>Upload CSV</p>
           </DialogTitle>
           <DialogContent>
-            <a href="https://drive.google.com/a/np.edu.sg/file/d/1je8FVM3U7R1YPABfPkPozw1M1SSFr0Tm/view?usp=sharing">Download Template</a>
+            <a href={urlForDownloads.volunteersTemplate}>Download Template</a>
             <Form
               refreshState={refreshState}
               eventuid={eventuid}

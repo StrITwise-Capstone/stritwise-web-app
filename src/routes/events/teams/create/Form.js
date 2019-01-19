@@ -90,7 +90,7 @@ const createTeam = ({
         enqueueSnackbar('Added Team...', {
           variant: 'info',
         });
-        students.map((student,index) => {
+        students.map((student, index) => {
           return firestore.collection('events').doc(eventuid).collection('students').add({
             team_id: docRef.id,
             first_name: students[index].firstname,
@@ -145,7 +145,8 @@ const createTeam = ({
               style={{ width: '500px' }}
               index={-1}
             />
-            {schoolId === '' && (<Field
+            {schoolId === '' && (
+            <Field
               name="school_id"
               label="School"
               options={schools}

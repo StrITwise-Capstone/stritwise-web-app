@@ -18,6 +18,7 @@ import Dropdown from '../../../components/UI/Dropdown/Dropdown';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 import CustomTable from '../../../components/UI/Table/Table';
 import Dialog from './ImportButton/Dialog';
+import urlForDownloads from '../../../config/urlForDownloads';
 
 class Volunteers extends Component {
   state = {
@@ -89,7 +90,7 @@ class Volunteers extends Component {
           type="button"
           variant="contained"
           color="secondary"
-          href="https://drive.google.com/a/np.edu.sg/file/d/1je8FVM3U7R1YPABfPkPozw1M1SSFr0Tm/view?usp=sharing"
+          href={urlForDownloads.volunteersTemplate}
         >
         Download Template
         </Button>

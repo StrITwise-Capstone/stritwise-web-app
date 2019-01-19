@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import CardList from '../../TeamsUI/CardList/CardList';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 import Dialog from './ImportButton/Dialog';
+import urlForDownloads from '../../../../config/urlForDownloads';
 
 const styles = () => ({
   button: {
@@ -107,7 +108,7 @@ class ViewTeams extends Component {
                 type="button"
                 variant="contained"
                 color="secondary"
-                href="https://drive.google.com/open?id=1_IbU1ZmkPpVbYje6NHIfvnWG2_P-tWk8"
+                href={urlForDownloads.teamsTemplate}
               >
               Download Template
               </Button>

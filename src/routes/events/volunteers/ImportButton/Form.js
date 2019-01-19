@@ -12,6 +12,7 @@ import { compose } from 'redux';
 import * as d3 from 'd3';
 
 import yup from '../../../../instances/yup';
+import urlForDownloads from '../../../../config/urlForDownloads';
 
 var schema = yup.object().shape({
   'First Name': yup.string().required(),
