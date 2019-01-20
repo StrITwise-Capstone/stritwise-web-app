@@ -99,7 +99,7 @@ class AddUserForm extends Component {
         .key(function(d) { return d['Team Name']; })
         .entries(result);
       let isValid = true;
-      const validation = Object.keys(dataByTeamName).map((TeamIndex) => {
+      Object.keys(dataByTeamName).map((TeamIndex) => {
         const team = dataByTeamName[TeamIndex];
         let i = 0;
         for (i = 0; i < team.values.length; i++) {

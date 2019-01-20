@@ -12,7 +12,6 @@ import { compose } from 'redux';
 import * as d3 from 'd3';
 
 import yup from '../../../../instances/yup';
-import urlForDownloads from '../../../../config/urlForDownloads';
 
 var schema = yup.object().shape({
   'First Name': yup.string().required(),
@@ -77,7 +76,7 @@ class ImportButtonForm extends Component {
         .entries(result);
       let isValid = true;
       console.log(data);
-      const validation = Object.keys(data).map((VolunteerIndex) => {
+      Object.keys(data).map((VolunteerIndex) => {
         const volunteer = data[VolunteerIndex];
         if (!schema.isValidSync(volunteer.values[0])) {
           isValid = false;

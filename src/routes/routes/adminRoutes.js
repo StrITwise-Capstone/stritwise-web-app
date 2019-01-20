@@ -30,7 +30,7 @@ export default [
   /*PROFILE */
   <Route exact path="/profile" key="/profile" component={Profile} />,
 
-    /* EVENTS */ 
+  /* EVENTS */ 
   <Route exact path="/events" key="/events" component={Dashboard}/>,
   <Route exact path="/events/create" key="/events/create" component={CreateEvent} />,
   <Route exact path="/events/:id/edit" key="/events/edit" component={EditEvent} />,

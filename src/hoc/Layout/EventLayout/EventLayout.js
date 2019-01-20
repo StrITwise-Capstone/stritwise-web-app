@@ -25,7 +25,6 @@ class EventLayout extends Component {
       location,
       userRole,
     } = this.props;
-    const { index } = this.state;
     const userType = userRole;
     const eventuid = location.pathname.replace('/events/','').substring(0,20);
     const path = location.pathname.split('/')[location.pathname.split('/').length -1];
