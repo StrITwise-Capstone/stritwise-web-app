@@ -52,23 +52,28 @@ const editTeam = ({
       students: yup.array()
         .of(
           yup.object().shape({
-            first_name: yup.string()
+            firstname: yup.string()
               .min(1, 'too short')
               .required('First Name Required'),
-            last_name: yup.string()
+            lastname: yup.string()
               .required('Last Name Required'),
-            mobile: yup.number()
-              .required('Phone Number Required')
-              .positive('Phone number is invalid.'),
+            mobile: yup.number('Invalid Mobile Number')
+              .required('Mobile Number Required')
+              .max(99999999,'Phone number is too long')
+              .min(9999999, 'Phone number is too short')
+              .typeError('Invalid Phone Number'),
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
-            badge_name: yup.string(),
-            dietary_restriction: yup.string(),
+            badgename: yup.string(),
+            dietaryrestriction: yup.string(),
             remarks: yup.string(),
-            emergency_contact_mobile: yup.number(),
-            emergency_contact_name: yup.string('Invalid format for Emergency Contact Name'),
-            emergency_contact_relation: yup.string('Invalid format for Emergency Contact Relation'),
+            emergency_contact_name: yup.string(),
+            emergency_contact_mobile: yup.number('Invalid Mobile Number')
+              .typeError('Invalid Phone Number')
+              .max(99999999,'Phone number is too long')
+              .min(9999999, 'Phone number is too short'),
+            emergency_contact_relation: yup.string(),
           }),
         )
         .required('Must have members')
@@ -297,15 +302,15 @@ const editTeam = ({
                         />
                       </div>
                       <div>
-                        <ErrorMessage name={`students[${index}].first_name`} />
-                        <ErrorMessage name={`students[${index}].last_name`} />
+                        <ErrorMessage name={`students[${index}].firstname`} />
+                        <ErrorMessage name={`students[${index}].lastname`} />
                         <ErrorMessage name={`students[${index}].mobile`} />
                         <ErrorMessage name={`students[${index}].email`} />
-                        <ErrorMessage name={`students[${index}].badge_name`} />
-                        <ErrorMessage name={`students[${index}].dietary_restriction`} />
+                        <ErrorMessage name={`students[${index}].badgename`} />
+                        <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
-                        <ErrorMessage name={`students[${index}].emergency_contact_name`} />
                         <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
+                        <ErrorMessage name={`students[${index}].emergency_contact_name`} />
                         <ErrorMessage name={`students[${index}].emergency_contact_relation`} />
                       </div>
                     </div>

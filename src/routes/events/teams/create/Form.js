@@ -55,7 +55,9 @@ const createTeam = ({
               .required('Last Name Required'),
             mobilenumber: yup.number('Invalid Mobile Number')
               .required('Mobile Number Required')
-              .typeError('Invalid Phone Number'),
+              .typeError('Invalid Phone Number')
+              .max(99999999,'Phone number is too long')
+              .min(9999999, 'Phone number is too short'),
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
@@ -63,7 +65,10 @@ const createTeam = ({
             dietaryrestriction: yup.string(),
             remarks: yup.string(),
             emergency_contact_name: yup.string(),
-            emergency_contact_mobile: yup.number('Invalid Mobile Number').typeError('Invalid Phone Number'),
+            emergency_contact_mobile: yup.number('Invalid Mobile Number')
+              .typeError('Invalid Phone Number')
+              .max(99999999,'Phone number is too long')
+              .min(9999999, 'Phone number is too short'),
             emergency_contact_relation: yup.string(),
           }),
         )

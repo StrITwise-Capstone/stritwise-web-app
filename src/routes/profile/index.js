@@ -60,7 +60,7 @@ class Profile extends Component {
             User is not logged in. 
           </Typography>
         )}
-        { isAuthenticated && user && (user.type === 'admin' || user.type === 'orion member') && 
+        { isAuthenticated && user && (user.type === 'admin' || user.type === 'orion') && 
         (<div>
           <Typography variant="h3" component="h3" style={{'paddingTop':'20px'}}>
             {user.firstName+ ' '+ user.lastName} 

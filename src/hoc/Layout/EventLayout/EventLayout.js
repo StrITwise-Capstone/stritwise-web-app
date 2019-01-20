@@ -36,7 +36,7 @@ class EventLayout extends Component {
         {children}
         </Grid>
         <Grid item xs={2}>
-            { userType === 'admin' &&
+            { (userType === 'admin' || userType === 'orion') &&
               (
                 <div style={{'display':'inline-block','paddingTop':'35%'}}>
                   <Typography component="p">
@@ -148,4 +148,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default compose(withRouter,withStyles(styles),connect(mapStateToProps))(EventLayout);
+export default compose(withRouter, withStyles(styles), connect(mapStateToProps))(EventLayout);

@@ -2,8 +2,8 @@ export default [{
   name: 'admin',
   route: ['Events', 'Users'],
 }, {
-  name: 'orion member',
-  route: ['Events', 'TimeLine', 'Auction', 'Volunteers', 'Participants', 'Teams'],
+  name: 'orion',
+  route: ['Events'],
 }, {
   name: 'teacher',
   route: ['Events'],
