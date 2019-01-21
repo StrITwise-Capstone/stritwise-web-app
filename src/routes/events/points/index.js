@@ -25,7 +25,7 @@ class Points extends Component {
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (teamID) => {
-    const { history, match} = this.props;
+    const { history, match } = this.props;
     history.push(`/events/${match.params.id}/points/${teamID}/edit`);
   }
 

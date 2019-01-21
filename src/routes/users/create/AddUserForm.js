@@ -67,7 +67,7 @@ const AddUserForm = ({
         addValues.school_id = values.school.value;
       }
 
-      {/* const transaction = {
+      const transaction = {
         user_id: auth.uid,
         transaction_type: 'ADD_USER',
         data: addValues,
@@ -75,7 +75,7 @@ const AddUserForm = ({
             
       firestore.collection('transactions').add(transaction).then(() => {
         resetForm();
-        enqueueSnackbar('New User Added. Hooray!', {
+        enqueueSnackbar('Creating user... It may take a few minutes.', {
           variant: 'success',
         });
       }).catch((err) => {
@@ -85,9 +85,9 @@ const AddUserForm = ({
         });
       }).finally(() => {
         setSubmitting(false);
-      }); */}
+      });
 
-      firebase.auth().createUserWithEmailAndPassword(
+      {/* firebase.auth().createUserWithEmailAndPassword(
         values.email,
         values.password,
       ).then(resp => firestore.collection('users').doc(resp.user.uid).set({ 
@@ -119,7 +119,7 @@ const AddUserForm = ({
           });
         }).finally(() => {
           setSubmitting(false);
-        });
+        }); */}
     }}
   >
     {({
@@ -218,14 +218,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  logOut: () => dispatch(reduxAction.logOut()),
-});
-
 AddUserForm.propTypes = {
-  // auth: PropTypes.objectOf(PropTypes.string).isRequired,
-  logOut: PropTypes.func.isRequired,
+  auth: PropTypes.objectOf(PropTypes.string).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
 };
 
-export default withSnackbar(connect(mapStateToProps, mapDispatchToProps)(AddUserForm));
+export default withSnackbar(connect(mapStateToProps)(AddUserForm));

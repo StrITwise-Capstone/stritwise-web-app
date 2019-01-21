@@ -31,6 +31,14 @@ class Volunteers extends Component {
     const { history, match} = this.props;
     history.push(`/events/${match.params.id}/volunteers/${volunteerID}/edit`);
   }
+
+  handleDelete = (volunteerId) => {
+    const { firestore, match } = this.props;
+    return firestore.collection('events').doc(match.params.id).collection('volunteers').doc(volunteerId).delete()
+      .then(() => (console.log('Document is being deleted!')))
+      .catch(error => (console.error('Error removing document: ', error)));
+  }
+
   refreshState = () => {
     this.forceUpdate();
   }
@@ -113,6 +121,7 @@ class Volunteers extends Component {
           enableEdit={true}
           handleEdit={this.handleEdit}
           enableDelete={true}
+          handleDelete={this.handleDelete}
           handleCustomFilter={this.handleCustomFilter}
           filter={filter}
           search={search}

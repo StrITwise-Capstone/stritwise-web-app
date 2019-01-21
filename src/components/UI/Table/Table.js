@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
+import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 import {
   CircularProgress,
@@ -40,12 +41,17 @@ class CustomTable extends Component {
     }
   }
 
-  handleDelete = (volunteerID) => {
-    const { filterRef } = this.state;
-    filterRef.doc(volunteerID).delete().then(() => {
-      console.log('Document successfully deleted!');
+  handleDelete = (itemId) => {
+    const { handleDelete, enqueueSnackbar } = this.props;
+    handleDelete(itemId).then(() => {
+      enqueueSnackbar('Deleting... It may take a few minutes.', {
+        variant: 'success',
+      });
       this.getData();
     }).catch((error) => {
+      enqueueSnackbar('Error removing document:', {
+        variant: 'error',
+      });
       console.error('Error removing document: ', error);
     });
   }
@@ -165,4 +171,4 @@ class CustomTable extends Component {
   }
 }
 
-export default CustomTable;
+export default withSnackbar(CustomTable);

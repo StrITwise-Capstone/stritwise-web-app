@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { withFirestore } from 'react-redux-firebase';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
 import {
   Typography,
@@ -7,44 +10,56 @@ import {
   Card,
   CardContent,
 } from '@material-ui/core';
-import EditTeamPtsForm from './EditTeamPtsForm';
-import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 import StarIcon from '@material-ui/icons/Stars';
 
+import EditTeamPtsForm from './EditTeamPtsForm';
+import AdminLayout from '../../../../hoc/Layout/AdminLayout';
+
+const styles = {
+  title: {
+    paddingBottom: 20,
+  },
+  cardContent: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  pointSpan: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 10,
+  },
+  starIcon: {
+    fontSize: 45,
+    display: 'inline-block',
+    paddingRight: 10,
+  },
+  points: {
+    marginTop: 12,
+  },
+};
+
 class EditPoints extends Component {
-  state = {
-    teamRef: null,
-    currentPoints: 0,
-    teamName: null,
-  }
-
-  componentDidMount() {
-    const { firestore, match } = this.props;
-    const teamRef = firestore.collection('events').doc(match.params.id).collection('teams').doc(match.params.teamid);
-    teamRef.get().then((doc) => {
-      const currentPoints = doc.data().credit;
-      const teamName = doc.data().team_name;
-      this.setState({ teamRef, currentPoints, teamName });
-    });
-  }
-
   render() {
     let content = <CircularProgress />;
-    const { teamRef, currentPoints, teamName } = this.state;
-    if (teamRef !== null) {
+    const { classes, team, firestore, match } = this.props;
+    const teamRef = firestore.collection('events').doc(match.params.id).collection('teams').doc(match.params.teamid);
+    if (team !== undefined) {
       content = (
-        <AdminLayout
-        >
-          <Typography variant="h4" id="title" style={{paddingBottom: 20}}>Edit Points</Typography>
+        <AdminLayout>
+          <Typography variant="h4" id="title" className={classes.title}>Edit Points</Typography>
           <Card>
-            <CardContent style={{display: "flex", flexDirection: "column"}}>
+            <CardContent className={classes.cardContent}>
               <Typography component="h5" variant="h5">
-                Team: {teamName}
+                Team:
+                {` ${team.team_name}`}
               </Typography>
 
-              <span style={{ display: 'flex', flexDirection: 'row', paddingTop: 10 }}>
-                <StarIcon color="secondary" style={{fontSize: 30, display: 'inline-block'}} />
-                <p style={{marginTop: 3, paddingLeft: 10}}>Current Points: {currentPoints}</p>
+              <span className={classes.pointSpan}>
+                <StarIcon color="secondary" className={classes.starIcon} />
+                <p className={classes.points}>
+                  Current Points:
+                  {` ${team.credit}`}
+                </p>
               </span>
             </CardContent>
           </Card>
@@ -60,4 +75,21 @@ class EditPoints extends Component {
   }
 }
 
-export default withRouter(withFirestore(EditPoints));
+const mapStateToProps = (state, props) => {
+  return {
+    team: state.firestore.data.team,
+  };
+};
+
+export default compose(
+  withRouter,
+  firestoreConnect(props => (
+    [
+      {
+        collection: 'events', doc: `${props.match.params.id}`, subcollections: [{ collection: 'teams', doc: `${props.match.params.teamid}` }], storeAs: 'team',
+      },
+    ]
+  )),
+  connect(mapStateToProps),
+  withStyles(styles),
+)(EditPoints);

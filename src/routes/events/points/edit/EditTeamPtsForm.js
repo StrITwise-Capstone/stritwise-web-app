@@ -29,7 +29,7 @@ const validationSchema = yup.object({
 });
 
 const EditTeamPtsForm = ({
-  history, enqueueSnackbar, teamRef, match
+  auth, history, enqueueSnackbar, teamRef, match
 }) => (
   <Formik
     enableReinitialize={true}
@@ -38,41 +38,34 @@ const EditTeamPtsForm = ({
       points: '',
     }}
     validationSchema={validationSchema}
-    onSubmit={(values, { setSubmitting }) => {
+    onSubmit={(values, { setSubmitting, resetForm }) => {
       // console.log(values);
       const now = new Date();
-
-      teamRef.get().then((doc) => {
-        let newPoints = (doc.data().credit * 1);
-
-        if (values.action === 'add') {
-          newPoints += (values.points * 1);
-        } else if (values.action === 'subtract') {
-          newPoints -= values.points;
-        }
-        // update team points
-        const updateValues = {
-          credit: newPoints,
-          modified_at: now,
-        };
-        teamRef.update({ ...updateValues }).then(() => {
-          enqueueSnackbar('Points successfully updated.', {
-            variant: 'success',
-          });
-          history.push(`/events/${match.params.id}/points`);
-          console.log('Document successfully updated!');
-        }).catch((error) => {
-          // The document probably doesn't exist.
-          enqueueSnackbar('Something went wrong. Points was not updated.', {
-            variant: 'error',
-          });
-          console.error('Error updating document: ', error);
-        }).finally(() => {
-          setSubmitting(false);
+      let creditModified = 0;
+      if (values.action === 'add') {
+        creditModified = (values.points * 1);
+      } else if (values.action === 'subtract') {
+        creditModified = -(values.points * 1);
+      }
+      // update team points
+      const addValues = {
+        user_id: auth.uid,
+        credit_modified: creditModified,
+        created_at: now,
+      };
+      teamRef.collection('credit_transactions').add({ ...addValues }).then(() => {
+        resetForm();
+        enqueueSnackbar('Updating points... It may take a few seconds..', {
+          variant: 'success',
         });
-
       }).catch((error) => {
-        console.log('Error getting document:', error);
+        // The document probably doesn't exist.
+        enqueueSnackbar('Something went wrong. Points was not updated.', {
+          variant: 'error',
+        });
+        console.error('Error updating document: ', error);
+      }).finally(() => {
+        setSubmitting(false);
       });
     }}
   >

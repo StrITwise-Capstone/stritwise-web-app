@@ -29,12 +29,15 @@ class Users extends Component {
   }
 
   handleDelete = (userID) => {
-    const { firestore } = this.props;
-    firestore.collection('users').doc(userID).delete().then(() => {
-      console.log('Document successfully deleted!');
-    }).catch((error) => {
-      console.error('Error removing document: ', error);
-    });
+    const { firestore, auth } = this.props;
+    const transaction = {
+      user_id: auth.uid,
+      transaction_type: 'DELETE_USER',
+      data: userID,
+    }
+    return firestore.collection('transactions').add(transaction)
+      .then(() => (console.log('Document is being deleted!')))
+      .catch(error => (console.error('Error removing document: ', error)));
   }
 
   handleDocsList = (docsList) => {
