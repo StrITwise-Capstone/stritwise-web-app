@@ -85,12 +85,11 @@ class Volunteers extends Component {
     const action = (
       <div style={{ display: 'flex' }}>
         <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        component={Link}
-        to={`/events/${match.params.id}/volunteers/create`}
-      //style={{ display: 'inline-block' }}
+          type="button"
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to={`/events/${match.params.id}/volunteers/create`}
         >
         Add Volunteer
         </Button>
@@ -106,7 +105,8 @@ class Volunteers extends Component {
           refreshState={this.refreshState}
           eventuid={match.params.id}
         />
-      </div>);
+      </div>
+    );
     return (
       <AdminLayout
         title="Volunteers"
@@ -117,6 +117,7 @@ class Volunteers extends Component {
           // For Table
           // title="Volunteers"
           colRef={colRef}
+          dataHeader={['Name', 'Mobile', 'Type', 'School', 'Dietary Restrictions', 'Student Number', 'Email']}
           handleDocsList={this.handleDocsList}
           enableEdit={true}
           handleEdit={this.handleEdit}
@@ -190,7 +191,6 @@ class Volunteers extends Component {
                 </Form>
               )}
             </Formik>
-
           </div>
         </CustomTable>
       </AdminLayout>

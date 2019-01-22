@@ -86,40 +86,6 @@ const AddUserForm = ({
       }).finally(() => {
         setSubmitting(false);
       });
-
-      {/* firebase.auth().createUserWithEmailAndPassword(
-        values.email,
-        values.password,
-      ).then(resp => firestore.collection('users').doc(resp.user.uid).set({ 
-        ...addValues,
-      })).then(() => {
-        const user = firebase.auth().currentUser;
-        if (user != null) {
-          user.sendEmailVerification().then(() => {
-          // Email sent.
-            resetForm();
-            enqueueSnackbar('New User Added. Hooray!', {
-              variant: 'success',
-            });
-          }).catch(() => {
-            // An error happened.
-            enqueueSnackbar('New User was not sent Verfication Email...', {
-              variant: 'error',
-            });
-          });
-        }
-      })
-        .then(() => {
-          logOut();
-        })
-        .catch((err) => {
-          console.log(err);
-          enqueueSnackbar('Invalid Credentials for New User. Please try again.', {
-            variant: 'error',
-          });
-        }).finally(() => {
-          setSubmitting(false);
-        }); */}
     }}
   >
     {({

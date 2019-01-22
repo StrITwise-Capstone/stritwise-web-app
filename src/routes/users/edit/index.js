@@ -66,7 +66,6 @@ class EditUser extends Component {
     if (schools.length && user.school != null) {
       const userSchoolId = user.school.value;
       user.school.label = this.getSchoolName(schools, userSchoolId);
-      console.log(user);
       content = (
         <AdminLayout
         >

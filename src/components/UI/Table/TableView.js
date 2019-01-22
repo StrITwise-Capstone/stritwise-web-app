@@ -16,6 +16,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TableToolbar from './TableToolbar';
 import TablePaginationActions from './TablePaginationActions';
+import { reactReduxFirebase } from 'react-redux-firebase';
 
 const styles = theme => ({
   root: {
@@ -45,6 +46,7 @@ const CustomTableCell = withStyles(theme => ({
 
 const TableView = ({
   classes,
+  dataHeader,
   data,
   enableEdit,
   handleEdit,
@@ -60,15 +62,11 @@ const TableView = ({
   isLoading,
 }) => {
 
-  let content = null;
   // convert the data into TableRows (dataContent)
-  let dataContent = null;
-  let dataHeader = null;
-  if (data && data.length !== 0) {
-    dataHeader = Object.keys(data[0]).slice(1).map(header => (
-      <CustomTableCell key={header}>{header}</CustomTableCell>
-    ));
-
+  let dataContent = <CircularProgress />;
+  if (isLoading) { // If still loading, table should show its loading
+    dataContent = <CircularProgress />;
+  } else if (data && data.length !== 0) { // populating dataContent if data exists
     dataContent = (data
       .map((row) => {
         const rowCopy = { ...row };
@@ -100,28 +98,33 @@ const TableView = ({
           </TableRow>
         );
       }));
+  } else if (!isLoading) {
+    dataContent = (
+      <p>There is no data at the moment.</p>
+    );
   }
 
   // Generate the Table
-  if (dataContent !== null && dataHeader !== null) {
-    // console.log(this.state);
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length);
-    content = (
-      <React.Fragment>
-        <Paper className={classes.root}>
-          <div className={classes.tableWrapper}>
-            <TableToolbar
-              title={title}
-            >
-              {children}
-            </TableToolbar>
-            <Table className={classes.table}>
-              <TableHead>
-                <TableRow>
-                  {dataHeader}
-                  <CustomTableCell />
-                </TableRow>
-              </TableHead>
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, dataContent.length);
+  return (
+    <React.Fragment>
+      <Paper className={classes.root}>
+        <div className={classes.tableWrapper}>
+          <TableToolbar
+            title={title}
+          >
+            {children}
+          </TableToolbar>
+          <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                {dataHeader.map(header => (
+                  <CustomTableCell key={header}>{header}</CustomTableCell>
+                ))}
+                <CustomTableCell />
+              </TableRow>
+            </TableHead>
+            {dataContent.length >= 0 ? (
               <TableBody>
                 {dataContent}
                 {emptyRows > 0 && (
@@ -130,29 +133,34 @@ const TableView = ({
                   </TableRow>
                 )}
               </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={size}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': 'Previous Page',
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'Next Page',
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </div>
-        </Paper>
-      </React.Fragment>
-    );
-  }
-  return content;
+            ) : (
+              <React.Fragment>
+                <div style={{'textAlign': 'center'}}>
+                  {dataContent}
+                </div>
+              </React.Fragment>
+            )}
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={size}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            backIconButtonProps={{
+              'aria-label': 'Previous Page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'Next Page',
+            }}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            ActionsComponent={TablePaginationActions}
+          />
+        </div>
+      </Paper>
+    </React.Fragment>
+  );
 };
 
 export default withRouter(withStyles(styles)(TableView));

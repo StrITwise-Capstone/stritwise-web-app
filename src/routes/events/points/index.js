@@ -76,10 +76,10 @@ class Points extends Component {
     if (filter === 'name') {
       collection = collection.where('team_name', '==', search);
     } else if (filter === 'school') {
-      const { schools }= this.props;
+      const { schools } = this.props;
       const school = schools.find(schElement => (schElement.name === search));
       if (school !== undefined) {
-        collection = collection.where(filter, '==', school.id);
+        collection = collection.where('school_id', '==', school.id);
       }
     }
     return collection;
@@ -90,7 +90,6 @@ class Points extends Component {
     const { firestore, match } = this.props;
     const { filter, search } = this.state;
     const colRef = firestore.collection('events').doc(match.params.id).collection('teams');
-    const action = null;
     return (
       <AdminLayout
         title="Points"
@@ -101,6 +100,7 @@ class Points extends Component {
           // For Table
           // title="Volunteers"
           colRef={colRef}
+          dataHeader={['Team Name', 'School', 'Credits']}
           handleDocsList={this.handleDocsList}
           enableEdit={true}
           handleEdit={this.handleEdit}
