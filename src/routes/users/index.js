@@ -126,8 +126,7 @@ class Users extends Component {
               enableReinitialize
               initialValues={{ search: '', filter: 'all' }}
               validationSchema={Yup.object({
-                search: Yup.string()
-                  .required('Required'),
+                search: Yup.string(),
                 filter: Yup.mixed()
                   .singleSelectRequired('Required'),
               })}

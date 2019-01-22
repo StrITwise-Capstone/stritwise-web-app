@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -63,9 +63,9 @@ const TableView = ({
 }) => {
 
   // convert the data into TableRows (dataContent)
-  let dataContent = <CircularProgress />;
+  let dataContent = null;
   if (isLoading) { // If still loading, table should show its loading
-    dataContent = <CircularProgress />;
+    dataContent = <CircularProgress /> ;
   } else if (data && data.length !== 0) { // populating dataContent if data exists
     dataContent = (data
       .map((row) => {
@@ -100,7 +100,7 @@ const TableView = ({
       }));
   } else if (!isLoading) {
     dataContent = (
-      <p>There is no data at the moment.</p>
+      <p style={{textAlign: 'center'}}>There is no data at the moment.</p>
     );
   }
 
@@ -116,28 +116,41 @@ const TableView = ({
             {children}
           </TableToolbar>
           <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                {dataHeader.map(header => (
-                  <CustomTableCell key={header}>{header}</CustomTableCell>
-                ))}
-                <CustomTableCell />
-              </TableRow>
-            </TableHead>
             {dataContent.length >= 0 ? (
-              <TableBody>
-                {dataContent}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 49 * emptyRows }}>
-                    <TableCell colSpan={6} />
+              <React.Fragment>
+                <TableHead>
+                  <TableRow>
+                    {dataHeader.map(header => (
+                      <CustomTableCell key={header}>{header}</CustomTableCell>
+                    ))}
+                    <CustomTableCell />
                   </TableRow>
-                )}
-              </TableBody>
+                </TableHead>
+                <TableBody>
+                  {dataContent}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 49 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+              </React.Fragment>
             ) : (
               <React.Fragment>
-                <div style={{'textAlign': 'center'}}>
-                  {dataContent}
-                </div>
+                <TableHead>
+                  <TableRow>
+                    <CustomTableCell key='errorHeader'/>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <CustomTableCell key='errorMsg'>
+                      <React.Fragment>
+                        {dataContent}
+                      </React.Fragment>
+                    </CustomTableCell>
+                  </TableRow>
+                </TableBody>
               </React.Fragment>
             )}
           </Table>
