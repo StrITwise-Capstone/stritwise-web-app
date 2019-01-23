@@ -18,6 +18,7 @@ var schema = yup.object().shape({
   'Last Name': yup.string().required(),
   'Mobile Number': yup.string().required(),
   'Email': yup.string().email().required(),
+  'Password': yup.string().required(),
   'Dietary Restrictions': yup.string().required(),
   'Student Number': yup.string().required(),
   'Type of Volunteer': yup.string().required(),
@@ -33,6 +34,7 @@ class ImportButtonForm extends Component {
       refreshState,
       handleClose,
     } = this.props;
+    console.log(data);
     // Query for school where school name matches
     Object.keys(data).map((VolunteerIndex) => {
       const volunteer = data[VolunteerIndex].values[0];
@@ -48,6 +50,7 @@ class ImportButtonForm extends Component {
         mobile: volunteer['Mobile Number'],
         school: volunteer.School,
         email: volunteer.Email,
+        password: volunteer.Password,
         dietary_restrictions: volunteer['Dietary Restrictions'],
         initials: volunteer['First Name'][0] + volunteer['Last Name'][0],
         student_no: volunteer['Student Number'],

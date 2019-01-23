@@ -45,6 +45,8 @@ const AddCrewForm = ({
       email: Yup.string()
         .email('Email not valid')
         .required('Required'),
+      password: Yup.string()
+        .required('Required'),
       school: Yup.string().required('Required'),
       studentNo: Yup.string().required('Required'),
       dietary: Yup.string(),
@@ -61,6 +63,7 @@ const AddCrewForm = ({
         last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
+        password: values.password,
         created_at: now,
         type: values.type,
         school: values.school,
@@ -123,6 +126,13 @@ const AddCrewForm = ({
           name="mobile"
           label="Mobile Number"
           type="text"
+          component={TextField}
+        />
+        <Field
+          required
+          name="password"
+          label="Password"
+          type="password"
           component={TextField}
         />
         <Field

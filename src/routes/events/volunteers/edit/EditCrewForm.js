@@ -33,6 +33,8 @@ const validationSchema = yup.object({
   email: yup.string()
     .email('Email not valid')
     .required('Required'),
+  password: yup.string()
+    .required('Required'),
   school: yup.string().required('Required'),
   studentNo: yup.string().required('Required'),
   dietary: yup.string(),
@@ -52,6 +54,7 @@ const EditCrewForm = ({
       school: `${volunteer.school}`,
       email: `${volunteer.email}`,
       dietary: `${volunteer.dietary}`,
+      password: `${volunteer.password}`,
     }}
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
@@ -63,6 +66,7 @@ const EditCrewForm = ({
         last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
+        password: values.password,
         modified_at: now,
         type: values.type,
         school: values.school,
@@ -125,6 +129,13 @@ const EditCrewForm = ({
               name="mobile"
               label="Mobile Number"
               type="text"
+              component={TextField}
+            />
+            <Field
+              required
+              name="password"
+              label="Password"
+              type="password"
               component={TextField}
             />
             <Field

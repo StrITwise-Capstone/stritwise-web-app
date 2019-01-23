@@ -52,10 +52,10 @@ const editTeam = ({
       students: yup.array()
         .of(
           yup.object().shape({
-            firstname: yup.string()
+            first_name: yup.string()
               .min(1, 'too short')
               .required('First Name Required'),
-            lastname: yup.string()
+            last_name: yup.string()
               .required('Last Name Required'),
             mobile: yup.number('Invalid Mobile Number')
               .required('Mobile Number Required')
@@ -65,6 +65,7 @@ const editTeam = ({
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
+            password: yup.string().required('Password Required'),  
             badgename: yup.string(),
             dietaryrestriction: yup.string(),
             remarks: yup.string(),
@@ -102,6 +103,7 @@ const editTeam = ({
                   last_name: students[index].last_name,
                   mobile: students[index].mobile,
                   email: students[index].email,
+                  password: students[index].password,
                   badge_name: students[index].badge_name,
                   dietary_restriction: students[index].dietary_restriction,
                   remarks: students[index].remarks,
@@ -134,6 +136,7 @@ const editTeam = ({
                 last_name: students[index].last_name,
                 mobile: students[index].mobile,
                 email: students[index].email,
+                password: students[index].password,
                 badge_name: students[index].badge_name,
                 dietary_restriction: students[index].dietary_restriction,
                 remarks: students[index].remarks,
@@ -248,6 +251,15 @@ const editTeam = ({
                           required
                         />
                         <Field
+                          name={`students[${index}].password`}
+                          type="password"
+                          label="Password"
+                          placeholder="passwordText"
+                          component={TextField}
+                          style={{ paddingRight: '50px' }}
+                          required
+                        />
+                        <Field
                           name={`students[${index}].mobile`}
                           type="text"
                           label="Phone Number"
@@ -302,10 +314,11 @@ const editTeam = ({
                         />
                       </div>
                       <div>
-                        <ErrorMessage name={`students[${index}].firstname`} />
-                        <ErrorMessage name={`students[${index}].lastname`} />
+                        <ErrorMessage name={`students[${index}].first_name`} />
+                        <ErrorMessage name={`students[${index}].last_name`} />
                         <ErrorMessage name={`students[${index}].mobile`} />
                         <ErrorMessage name={`students[${index}].email`} />
+                        <ErrorMessage name={`students[${index}].password`} />
                         <ErrorMessage name={`students[${index}].badgename`} />
                         <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
