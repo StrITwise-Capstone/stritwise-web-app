@@ -46,7 +46,12 @@ const AddCrewForm = ({
         .email('Email not valid')
         .required('Required'),
       password: Yup.string()
-        .required('Required'),
+        .required('Password Required')
+        .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+      confirmPassword: Yup.string()
+        .required('Confirm Password Required')
+        .oneOf([Yup.ref('password')], 'Passwords do not match')
+        .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
       school: Yup.string().required('Required'),
       studentNo: Yup.string().required('Required'),
       dietary: Yup.string(),
@@ -132,6 +137,13 @@ const AddCrewForm = ({
           required
           name="password"
           label="Password"
+          type="password"
+          component={TextField}
+        />
+        <Field
+          required
+          name="confirmPassword"
+          label="Confirm Password"
           type="password"
           component={TextField}
         />

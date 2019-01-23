@@ -65,7 +65,13 @@ const editTeam = ({
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
-            password: yup.string().required('Password Required'),  
+            password: yup.string()
+              .required('Password Required')
+              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+            confirmPassword: yup.string()
+              .required('Confirm Password Required')
+              .oneOf([yup.ref('password')], 'Passwords do not match')
+              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
             badgename: yup.string(),
             dietaryrestriction: yup.string(),
             remarks: yup.string(),
@@ -251,6 +257,15 @@ const editTeam = ({
                           required
                         />
                         <Field
+                          name={`students[${index}].mobile`}
+                          type="text"
+                          label="Phone Number"
+                          component={TextField}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Field
                           name={`students[${index}].password`}
                           type="password"
                           label="Password"
@@ -260,10 +275,12 @@ const editTeam = ({
                           required
                         />
                         <Field
-                          name={`students[${index}].mobile`}
-                          type="text"
-                          label="Phone Number"
+                          name={`students[${index}].confirmPassword`}
+                          type="password"
+                          label="Password"
+                          placeholder="passwordText"
                           component={TextField}
+                          style={{ paddingRight: '50px' }}
                           required
                         />
                       </div>
@@ -319,6 +336,7 @@ const editTeam = ({
                         <ErrorMessage name={`students[${index}].mobile`} />
                         <ErrorMessage name={`students[${index}].email`} />
                         <ErrorMessage name={`students[${index}].password`} />
+                        <ErrorMessage name={`students[${index}].confirmPassword`} />
                         <ErrorMessage name={`students[${index}].badgename`} />
                         <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
