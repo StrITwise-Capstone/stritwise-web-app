@@ -189,10 +189,7 @@ const mapStateToProps = state => ({
 });
 
 EditCrewForm.propTypes = {
-  schools: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-  })),
+  school: PropTypes.string,
   /* eslint-disable react/forbid-prop-types */
   enqueueSnackbar: PropTypes.any.isRequired,
   history: PropTypes.any.isRequired,
@@ -202,7 +199,7 @@ EditCrewForm.propTypes = {
 };
 
 EditCrewForm.defaultProps = {
-  schools: { },
+  schools: '',
 };
 
 export default compose(

@@ -46,7 +46,7 @@ const AddCrewForm = ({
         .email('Email not valid')
         .required('Required'),
       school: Yup.string().required('Required'),
-      studentNo: Yup.string().required('Required'),
+      studentNo: Yup.string().min(9, 'Enter a valid Student Number').required('Required'),
       dietary: Yup.string(),
       type: Yup.mixed()
         .singleSelectRequired('Required'),

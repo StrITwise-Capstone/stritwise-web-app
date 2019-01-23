@@ -111,7 +111,6 @@ class Users extends Component {
           // For Table
           // title="Users"
           colRef={colRef}
-          dataHeader={['Name', 'Mobile', 'Type', 'School']}
           handleDocsList={this.handleDocsList}
           enableEdit={true}
           handleEdit={this.handleEdit}

@@ -100,7 +100,6 @@ class Points extends Component {
           // For Table
           // title="Volunteers"
           colRef={colRef}
-          dataHeader={['Team Name', 'School', 'Credits']}
           handleDocsList={this.handleDocsList}
           enableEdit={true}
           handleEdit={this.handleEdit}
@@ -114,8 +113,7 @@ class Points extends Component {
               enableReinitialize
               initialValues={{ search: '', filter: 'all' }}
               validationSchema={Yup.object({
-                search: Yup.string()
-                  .required('Required'),
+                search: Yup.string(),
                 filter: Yup.mixed()
                   .singleSelectRequired('Required'),
               })}

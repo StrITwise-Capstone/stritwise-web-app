@@ -117,7 +117,6 @@ class Volunteers extends Component {
           // For Table
           // title="Volunteers"
           colRef={colRef}
-          dataHeader={['Name', 'Mobile', 'Type', 'School', 'Dietary Restrictions', 'Student Number', 'Email']}
           handleDocsList={this.handleDocsList}
           enableEdit={true}
           handleEdit={this.handleEdit}
@@ -132,8 +131,7 @@ class Volunteers extends Component {
               enableReinitialize
               initialValues={{ search: '', filter: 'all' }}
               validationSchema={Yup.object({
-                search: Yup.string()
-                  .required('Required'),
+                search: Yup.string(),
                 filter: Yup.mixed()
                   .singleSelectRequired('Required'),
               })}

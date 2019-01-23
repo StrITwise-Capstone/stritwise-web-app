@@ -16,7 +16,6 @@ class EditVolunteer extends Component {
 
   componentDidMount() {
     const { firestore, match } = this.props;
-    console.log(match.params.volunteerid);
     const volunteerDocRef = firestore.collection('events').doc(match.params.id).collection('volunteers').doc(match.params.volunteerid);
     volunteerDocRef.get().then((doc) => {
       const volunteer = {

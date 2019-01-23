@@ -31,7 +31,7 @@ const initialValues = {
 };
 
 const AddUserForm = ({
-  auth, logOut, enqueueSnackbar, schools,
+  auth, enqueueSnackbar, schools,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -47,6 +47,7 @@ const AddUserForm = ({
       password: Yup.string()
         .min(8, 'Password must be 8 characters or longer')
         .required('Required'),
+      school: Yup.mixed(),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const firebase = getFirebase();

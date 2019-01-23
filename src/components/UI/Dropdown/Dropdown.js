@@ -55,7 +55,10 @@ dropdown.propTypes = {
     onBlur: PropTypes.func,
   }).isRequired,
   form: PropTypes.shape({
-    touched: PropTypes.objectOf(PropTypes.bool),
+    touched: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.object,
+    ]),
     errors: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
   label: PropTypes.string.isRequired,

@@ -7,7 +7,7 @@ class Test extends Component {
   render() {
     return (
       <React.Fragment>
-        <TestLayout />
+        <IntegrationReactSelect />
       </React.Fragment>
     );
   }

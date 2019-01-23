@@ -46,7 +46,6 @@ const CustomTableCell = withStyles(theme => ({
 
 const TableView = ({
   classes,
-  dataHeader,
   data,
   enableEdit,
   handleEdit,
@@ -64,9 +63,14 @@ const TableView = ({
 
   // convert the data into TableRows (dataContent)
   let dataContent = null;
+  let dataHeader = null;
   if (isLoading) { // If still loading, table should show its loading
     dataContent = <CircularProgress /> ;
   } else if (data && data.length !== 0) { // populating dataContent if data exists
+
+    dataHeader = Object.keys(data[0]).slice(1).map(header => (
+      <CustomTableCell key={header}>{header}</CustomTableCell>
+    ));
     dataContent = (data
       .map((row) => {
         const rowCopy = { ...row };
@@ -116,13 +120,11 @@ const TableView = ({
             {children}
           </TableToolbar>
           <Table className={classes.table}>
-            {dataContent.length >= 0 ? (
+            {dataContent.length >= 0 && dataHeader.length >= 0 ? (
               <React.Fragment>
                 <TableHead>
                   <TableRow>
-                    {dataHeader.map(header => (
-                      <CustomTableCell key={header}>{header}</CustomTableCell>
-                    ))}
+                    {dataHeader}
                     <CustomTableCell />
                   </TableRow>
                 </TableHead>
