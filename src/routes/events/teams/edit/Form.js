@@ -19,7 +19,7 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 
 import TextField from './TextField';
-import ErrorMessage from './ErrorMessage';
+import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
