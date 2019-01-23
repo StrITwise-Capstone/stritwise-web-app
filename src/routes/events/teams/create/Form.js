@@ -22,6 +22,7 @@ import TextField from './TextField';
 import ErrorMessage from './ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
+import { isNullOrUndefined } from 'util';
 
 const createTeam = ({
   firestore,
@@ -48,10 +49,10 @@ const createTeam = ({
       students: yup.array()
         .of(
           yup.object().shape({
-            firstname: yup.string()
+            first_name: yup.string()
               .min(1, 'too short')
               .required('First Name Required'),
-            lastname: yup.string()
+            last_name: yup.string()
               .required('Last Name Required'),
             mobilenumber: yup.number('Invalid Mobile Number')
               .required('Mobile Number Required')
@@ -61,6 +62,14 @@ const createTeam = ({
             email: yup.string()
               .email('Invalid email')
               .required('Email Required'),
+            password: yup.string()
+              .required('Password Required')
+              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+            confirmPassword: yup.string()
+              .required('Confirm Password Required')
+              .oneOf([yup.ref('password')], 'Passwords do not match')
+              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value))
+              ,
             badgename: yup.string(),
             dietaryrestriction: yup.string(),
             remarks: yup.string(),
@@ -98,10 +107,11 @@ const createTeam = ({
         students.map((student, index) => {
           return firestore.collection('events').doc(eventuid).collection('students').add({
             team_id: docRef.id,
-            first_name: students[index].firstname,
-            last_name: students[index].lastname,
+            first_name: students[index].first_name,
+            last_name: students[index].last_name,
             mobile: students[index].mobilenumber,
             email: students[index].email,
+            password: students[index].password,
             badge_name: students[index].badgename,
             dietary_restriction: students[index].dietaryrestriction,
             remarks: students[index].remarks,
@@ -189,7 +199,7 @@ const createTeam = ({
                       </div>
                       <div>
                         <Field
-                          name={`students[${index}].firstname`}
+                          name={`students[${index}].first_name`}
                           required
                           type="text"
                           label="First Name"
@@ -198,7 +208,7 @@ const createTeam = ({
                           style={{ paddingRight: '50px' }}
                         />
                         <Field
-                          name={`students[${index}].lastname`}
+                          name={`students[${index}].last_name`}
                           required
                           type="text"
                           placeholder="Zeng"
@@ -223,6 +233,26 @@ const createTeam = ({
                           placeholder="98745123"
                           component={TextField}
                           required
+                        />
+                      </div>
+                      <div>
+                        <Field
+                            name={`students[${index}].password`}
+                            type="password"
+                            label="Password"
+                            placeholder="Test1234"
+                            component={TextField}
+                            style={{ paddingRight: '50px' }}
+                            required
+                        />
+                        <Field
+                            name={`students[${index}].confirmPassword`}
+                            type="password"
+                            label="Confirm Password"
+                            placeholder="Test1234"
+                            component={TextField}
+                            style={{ paddingRight: '50px' }}
+                            required
                         />
                       </div>
                       <div>
@@ -278,10 +308,12 @@ const createTeam = ({
                         />
                       </div>
                       <div>
-                        <ErrorMessage name={`students[${index}].firstname`} />
-                        <ErrorMessage name={`students[${index}].lastname`} />
+                        <ErrorMessage name={`students[${index}].first_name`} />
+                        <ErrorMessage name={`students[${index}].last_name`} />
                         <ErrorMessage name={`students[${index}].mobilenumber`} />
                         <ErrorMessage name={`students[${index}].email`} />
+                        <ErrorMessage name={`students[${index}].password`} />
+                        <ErrorMessage name={`students[${index}].confirmPassword`} />
                         <ErrorMessage name={`students[${index}].badgename`} />
                         <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
@@ -293,7 +325,7 @@ const createTeam = ({
                   ))}
                   { values.lengthStudents < maxStudent && (<Button
                     type="button"
-                    onClick={() => { arrayHelpers.push({ firstname: '' }); values.lengthStudents = values.lengthStudents + 1;}}
+                    onClick={() => { arrayHelpers.push({ first_name: '' }); values.lengthStudents = values.lengthStudents + 1;}}
                     size="small"
                     color="primary"
                   >

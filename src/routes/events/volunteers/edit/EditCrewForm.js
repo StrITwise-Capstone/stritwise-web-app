@@ -33,6 +33,13 @@ const validationSchema = yup.object({
   email: yup.string()
     .email('Email not valid')
     .required('Required'),
+  password: yup.string()
+    .required('Password Required')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+  confirmPassword: yup.string()
+    .required('Confirm Password Required')
+    .oneOf([yup.ref('password')], 'Passwords do not match')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
   school: yup.string().required('Required'),
   studentNo: yup.string().required('Required'),
   dietary: yup.string(),
@@ -52,6 +59,8 @@ const EditCrewForm = ({
       school: `${volunteer.school}`,
       email: `${volunteer.email}`,
       dietary: `${volunteer.dietary}`,
+      password: `${volunteer.password}`,
+      confirmPassword: `${volunteer.password}`,
     }}
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
@@ -63,6 +72,7 @@ const EditCrewForm = ({
         last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
+        password: values.password,
         modified_at: now,
         type: values.type,
         school: values.school,
@@ -125,6 +135,20 @@ const EditCrewForm = ({
               name="mobile"
               label="Mobile Number"
               type="text"
+              component={TextField}
+            />
+            <Field
+              required
+              name="password"
+              label="Password"
+              type="password"
+              component={TextField}
+            />
+            <Field
+              required
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
               component={TextField}
             />
             <Field

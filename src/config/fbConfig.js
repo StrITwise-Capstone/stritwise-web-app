@@ -5,7 +5,7 @@ import 'firebase/storage';
 import prodConfig from './prodConfig';
 import devConfig from './devConfig';
 
-const prodMode = true;
+const prodMode = false;
 
 let config = null;
 

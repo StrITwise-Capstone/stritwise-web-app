@@ -24,6 +24,7 @@ class EditVolunteer extends Component {
         lastName: doc.data().last_name,
         studentNo: doc.data().student_no,
         mobile: doc.data().mobile,
+        password: doc.data().password,
         type: doc.data().type,
         school: doc.data().school,
         email: doc.data().email,
