@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { withRouter } from 'react-router';
 import { compose } from 'redux';
 import { Link } from 'react-router-dom';
 import {

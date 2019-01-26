@@ -10,11 +10,9 @@ import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { getFirebase } from 'react-redux-firebase';
 import { getFirestore } from 'redux-firestore';
 
 import * as util from '../../../helper/util';
-import * as reduxAction from '../../../store/actions';
 import TextField from '../../../components/UI/TextField/TextField';
 import Dropdown from '../../../components/UI/Dropdown/Dropdown';
 import Select from '../../../components/UI/Select/Select';
@@ -50,7 +48,6 @@ const AddUserForm = ({
       school: Yup.mixed(),
     })}
     onSubmit={(values, { setSubmitting, resetForm }) => {
-      const firebase = getFirebase();
       const firestore = getFirestore();
       const now = new Date();
       // update user values
@@ -94,7 +91,6 @@ const AddUserForm = ({
       errors,
       touched,
       handleSubmit,
-      isSubmitting,
       /* and other goodies */
     }) => (
       <Form onSubmit={handleSubmit}>

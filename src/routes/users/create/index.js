@@ -30,21 +30,19 @@ class AddUser extends Component {
 
 
   render() {
-    const { enqueueSnackbar } = this.props;
     const { schools } = this.state;
 
     return (
-      <AdminLayout
-      >
+      <AdminLayout>
         <Typography variant="h4" id="title">Add User</Typography>
-        <AddUserForm schools={schools}/>
+        <AddUserForm schools={schools} />
       </AdminLayout>
     );
   }
 }
 
 AddUser.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired,
+  firestore: PropTypes.shape.isRequired,
 };
 
 export default withSnackbar(withFirestore(AddUser));

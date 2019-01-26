@@ -1,5 +1,5 @@
 import React from 'react';
-import { Formik, Form, Field, validateYupSchema } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import {
   MenuItem,
   Button,
@@ -17,7 +17,6 @@ import * as util from '../../../../helper/util';
 //import * as reduxAction from '../../../store/actions';
 import TextField from '../../../../components/UI/TextField/TextField';
 import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
-import Select from '../../../../components/UI/Select/Select';
 
 
 const initialValues = {

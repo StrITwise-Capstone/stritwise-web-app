@@ -9,7 +9,7 @@ import {
   CircularProgress,
   Typography,
   Chip,
-  Avatar
+  Avatar,
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
@@ -57,6 +57,7 @@ class EventCard extends Component {
       title,
       imageTitle,
       end_date,
+      start_date,
     } = this.props;
     const { imageFile } = this.state;
     const image = imageFile;
@@ -84,14 +85,14 @@ class EventCard extends Component {
           { eventEnded && 
             (
               <Chip
-                avatar={
+                avatar={(
                   <Avatar>
                     <DoneIcon />
-                  </Avatar>
+                  </Avatar>)
                 }
                 label="Event Ended"
                 color="primary"
-                style={{ float: 'right', margin:'1em'}}
+                style={{ float: 'right', margin: '1em' }}
               />)
           }
           <CardContent>
@@ -101,7 +102,7 @@ class EventCard extends Component {
             <Typography component="p">
               <strong>Start Date : </strong>
               {
-                moment(end_date.toDate()).calendar()
+                moment(start_date.toDate()).calendar()
               }
             </Typography>
             <Typography component="p">
@@ -118,7 +119,21 @@ class EventCard extends Component {
 }
 
 EventCard.propTypes = {
-  classes: PropTypes.shape.isRequired,
+  classes: PropTypes.shape({}).isRequired,
+  firebase: PropTypes.shape({}).isRequired,
+  imageSource: PropTypes.string.isRequired,
+  eventuid: PropTypes.string.isRequired,
+  history: PropTypes.shape({}).isRequired,
+  title: PropTypes.string.isRequired,
+  imageTitle: PropTypes.string,
+  end_date: PropTypes.shape({}),
+  start_date: PropTypes.shape({}),
+};
+
+EventCard.defaultProps = {
+  imageTitle: '',
+  end_date: '',
+  start_date: '',
 };
 
 export default compose(withRouter, firebaseConnect(), withStyles(styles))(EventCard);

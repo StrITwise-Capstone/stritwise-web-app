@@ -31,16 +31,18 @@ class Thumb extends Component {
     if (loading) { return <p>loading...</p>; }
 
     return (
-    <div style={{'alignItems':'center',display:'flex','margin':'1em'}}>
-      <img
-        src={thumb}
-        alt={file.name}
-        className="img-thumbnail mt-2"
-        height={300}
-        width={480}
-        style={{margin:'auto'}}
-      />
-    </div>
+      <div
+        style={{alignItems: 'center', display: 'flex', margin: '1em' }}
+      >
+        <img
+          src={thumb}
+          alt={file.name}
+          className="img-thumbnail mt-2"
+          height={300}
+          width={480}
+          style={{ margin: 'auto' }}
+        />
+      </div>
     );
   }
 }

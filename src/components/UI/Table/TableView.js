@@ -12,11 +12,11 @@ import {
   TablePagination,
   CircularProgress,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TableToolbar from './TableToolbar';
 import TablePaginationActions from './TablePaginationActions';
-import { reactReduxFirebase } from 'react-redux-firebase';
 
 const styles = theme => ({
   root: {
@@ -111,7 +111,7 @@ const TableView = ({
   // Generate the Table
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, dataContent.length);
   return (
-    <React.Fragment>
+    <Fragment>
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <TableToolbar
@@ -121,7 +121,7 @@ const TableView = ({
           </TableToolbar>
           <Table className={classes.table}>
             {dataContent.length >= 0 && dataHeader.length >= 0 ? (
-              <React.Fragment>
+              <Fragment>
                 <TableHead>
                   <TableRow>
                     {dataHeader}
@@ -136,9 +136,9 @@ const TableView = ({
                     </TableRow>
                   )}
                 </TableBody>
-              </React.Fragment>
+              </Fragment>
             ) : (
-              <React.Fragment>
+              <Fragment>
                 <TableHead>
                   <TableRow>
                     <CustomTableCell key='errorHeader'/>
@@ -147,13 +147,13 @@ const TableView = ({
                 <TableBody>
                   <TableRow>
                     <CustomTableCell key='errorMsg'>
-                      <React.Fragment>
+                      <Fragment>
                         {dataContent}
-                      </React.Fragment>
+                      </Fragment>
                     </CustomTableCell>
                   </TableRow>
                 </TableBody>
-              </React.Fragment>
+              </Fragment>
             )}
           </Table>
           <TablePagination
@@ -174,8 +174,33 @@ const TableView = ({
           />
         </div>
       </Paper>
-    </React.Fragment>
+    </Fragment>
   );
+};
+
+TableView.propTypes = {
+  classes: PropTypes.shape({}).isRequired,
+  colRef: PropTypes.shape({}),
+  handleDelete: PropTypes.func,
+  enableEdit: PropTypes.bool.isRequired,
+  handleEdit: PropTypes.func.isRequired,
+  enableDelete: PropTypes.bool.isRequired,
+  children: PropTypes.shape({}).isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape({})),
+  title: PropTypes.string,
+  size: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  handleChangePage: PropTypes.func.isRequired,
+  handleChangeRowsPerPage: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+};
+
+TableView.defaultProps = {
+  colRef: {},
+  title: '',
+  handleDelete: null,
+  data: null,
 };
 
 export default withRouter(withStyles(styles)(TableView));

@@ -14,129 +14,104 @@ import styles from './EventLayout.styles';
 
 class EventLayout extends Component {
   state = {
-    index : 0,
   }
+
   render() {
     const {
       children,
       classes,
-      eventname,
       history,
       location,
       userRole,
     } = this.props;
     const userType = userRole;
-    const eventuid = location.pathname.replace('/events/','').substring(0,20);
-    const path = location.pathname.split('/')[location.pathname.split('/').length -1];
-   
+    const eventuid = location.pathname.replace('/events/','').substring(0, 20);
+    const path = location.pathname.split('/')[location.pathname.split('/').length - 1];
     return (
       <Grid container>
         <Grid item xs={10}>
-        {children}
+          {children}
         </Grid>
         <Grid item xs={2}>
-            { (userType === 'admin' || userType === 'orion') &&
-              (
-                <div style={{'display':'inline-block','paddingTop':'35%'}}>
-                  <Typography component="p">
-                      {eventname}
+          { (userType === 'admin' || userType === 'orion') &&
+            (
+              <div style={{display: 'inline-block', paddingTop: '35%' }}>
+                <ListItem
+                  classes={{ selected: classes.selected }}
+                  selected={path === 'overview'}
+                  onClick={() => { history.push(`/events/${eventuid}/overview`); }}
+                >
+                  <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit' }}>
+                    Overview
                   </Typography>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "overview"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/overview`); }}
-                    >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Overview
-                    </Typography>
-                  </ListItem>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "teams"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams`); }}
-                  >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Teams
-                    </Typography>
-                  </ListItem>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "volunteers"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/volunteers`); }}
-                  >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Volunteers
-                    </Typography>
-                  </ListItem>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "points"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/points`); }}
-                  >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Points
-                    </Typography>
-                  </ListItem>
-                </div>
-              )
-            }
-            { userType === 'teacher' &&
-              (
-                <div style={{'display':'inline-block','paddingTop':'35%'}}>
-                  <Typography component="p">
-                      {eventname}
+                </ListItem>
+                <ListItem
+                  classes={{ selected: classes.selected }}
+                  selected={path === 'teams'}
+                  onClick={() => { history.push(`/events/${eventuid}/teams`); }}
+                >
+                  <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit' }}>
+                    Teams
                   </Typography>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "overview"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/overview`); this.setState({index : 0})}}
-                    >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Overview
-                    </Typography>
-                  </ListItem>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "teams"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams`); this.setState({index : 1})}}
-                  >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Teams
-                    </Typography>
-                  </ListItem>
-                  <ListItem 
-                    classes={{ selected: classes.selected }} 
-                    selected={path === "create"} 
-                    onClick={()=>{history.push(`/events/${eventuid}/teams/create`); this.setState({index : 2})}}
-                  >
-                    <Typography component="p" style={{color:'inherit',fontWeight:'inherit'}}>
-                      Register
-                    </Typography>
-                  </ListItem>
-                </div>
-              )
+                </ListItem>
+                <ListItem
+                  classes={{ selected: classes.selected }}
+                  selected={path === 'volunteers'}
+                  onClick={() => { history.push(`/events/${eventuid}/volunteers`); }}
+                >
+                  <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit' }}>
+                    Volunteers
+                  </Typography>
+                </ListItem>
+                <ListItem
+                  classes={{ selected: classes.selected }}
+                  selected={path === 'points'} 
+                  onClick={() => { history.push(`/events/${eventuid}/points`); }}
+                >
+                  <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit' }}>
+                    Points
+                  </Typography>
+                </ListItem>
+              </div>
+            )
             }
+          { userType === 'teacher'
+          && (
+            <div style={{ display: 'inline-block', paddingTop: '35%' }}>
+              <ListItem
+                classes={{ selected: classes.selected }}
+                selected={path === 'overview'}
+                onClick={() => {history.push(`/events/${eventuid}/overview`); }}
+                >
+                <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit' }}>
+                  Overview
+                </Typography>
+              </ListItem>
+              <ListItem
+                classes={{ selected: classes.selected }} 
+                selected={path === 'teams'} 
+                onClick={() => { history.push(`/events/${eventuid}/teams`);}}
+              >
+                <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit'}}>
+                  Teams
+                </Typography>
+              </ListItem>
+              <ListItem
+                classes={{ selected: classes.selected }} 
+                selected={path === 'create'} 
+                onClick={() => { history.push(`/events/${eventuid}/teams/create`);}}
+              >
+                <Typography component="p" style={{ color: 'inherit', fontWeight: 'inherit' }}>
+                  Register
+                </Typography>
+              </ListItem>
+            </div>)
+          }
         </Grid>
       </Grid>
     );
   }
 }
-
-EventLayout.propTypes = {
-  title: PropTypes.string,
-  subtitle: PropTypes.string,
-  action: PropTypes.element,
-  /* eslint-disable react/forbid-prop-types */
-  children: PropTypes.any.isRequired,
-  classes: PropTypes.any.isRequired,
-  /* eslint-enable */
-};
-
-EventLayout.defaultProps = {
-  title: null,
-  subtitle: null,
-  action: null,
-};
 
 const mapStateToProps = (state) => {
   return {
@@ -145,6 +120,18 @@ const mapStateToProps = (state) => {
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
   };
+};
+
+EventLayout.propTypes = {
+  classes: PropTypes.shape({}).isRequired,
+  children: PropTypes.shape({}).isRequired,
+  history: PropTypes.shape({}).isRequired,
+  location: PropTypes.shape({}).isRequired,
+  userRole: PropTypes.string,
+};
+
+EventLayout.defaultProps = {
+  userRole: null,
 };
 
 export default compose(withRouter, withStyles(styles), connect(mapStateToProps))(EventLayout);

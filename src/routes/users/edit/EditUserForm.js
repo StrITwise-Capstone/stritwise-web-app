@@ -6,7 +6,6 @@ import {
 } from 'formik';
 import {
   Button,
-  Typography,
   CircularProgress,
 } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';

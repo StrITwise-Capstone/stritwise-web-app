@@ -22,7 +22,6 @@ import TextField from './TextField';
 import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
-import { isNullOrUndefined } from 'util';
 
 const createTeam = ({
   firestore,
@@ -37,7 +36,7 @@ const createTeam = ({
   <Formik
     initialValues={{
       team_name: '',
-      students: Array.apply(null, Array(minStudent)).map(function () {return;}),
+      students: Array.apply(null, Array(minStudent)).map(function () {return null;}),
       schools,
       teacherId: teacherId ? teacherId : 'null',
       lengthStudents: minStudent,
@@ -68,8 +67,7 @@ const createTeam = ({
             confirmPassword: yup.string()
               .required('Confirm Password Required')
               .oneOf([yup.ref('password')], 'Passwords do not match')
-              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value))
-              ,
+              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
             badgename: yup.string(),
             dietaryrestriction: yup.string(),
             remarks: yup.string(),
@@ -87,12 +85,12 @@ const createTeam = ({
     onSubmit={(values, { resetForm, setSubmitting }) => {
       let schoolValue = '';
       if (schoolId !== '') {
-        schoolValue = schoolId; 
+        schoolValue = schoolId;
       } else {
         schoolValue = values.school_id.value;
       }
       const eventuid = match.params.id;
-      var students = values.students;
+      const { students } = values;
       firestore.collection('events').doc(match.params.id).collection('teams').add({
         team_name: values.team_name,
         school_id: schoolValue,

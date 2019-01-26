@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
-import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
-import {
-  CircularProgress,
-} from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import TableView from './TableView';
 
@@ -32,8 +26,8 @@ class CustomTable extends Component {
 
   componentWillMount = () => {
     const { colRef } = this.props;
-    this.setState({ filterRef: colRef}, () => {
-      this.getData()
+    this.setState({ filterRef: colRef }, () => {
+      this.getData();
     });
   }
 
@@ -169,5 +163,25 @@ class CustomTable extends Component {
     );
   }
 }
+
+CustomTable.propTypes = {
+  colRef: PropTypes.shape({}).isRequired,
+  filter: PropTypes.string.isRequired,
+  search: PropTypes.string.isRequired,
+  handleDelete: PropTypes.func,
+  enqueueSnackbar: PropTypes.func.isRequired,
+  handleCustomFilter: PropTypes.func.isRequired,
+  dataHeader: PropTypes.shape({}),
+  enableEdit: PropTypes.bool.isRequired,
+  handleEdit: PropTypes.func.isRequired,
+  enableDelete: PropTypes.bool.isRequired,
+  handleDocsList: PropTypes.func.isRequired,
+  children: PropTypes.shape({}).isRequired,
+};
+
+CustomTable.defaultProps = {
+  dataHeader: undefined,
+  handleDelete: null,
+};
 
 export default withSnackbar(CustomTable);

@@ -7,6 +7,7 @@ import {
   Typography,
   TableRow,
   TableCell,
+  TableBody,
 } from '@material-ui/core/';
 import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
@@ -180,6 +181,7 @@ class cardList extends React.Component {
       return (
         <React.Fragment>
           <Table>
+            <TableBody>
               <TableRow>
                 { teacherId === '' &&
                 (
@@ -255,6 +257,7 @@ class cardList extends React.Component {
                   style={{ float: 'right' }}
                 />
               </TableRow>
+            </TableBody>
           </Table>
           <div style={{ margin: '0 auto' }} />
           
@@ -275,12 +278,16 @@ class cardList extends React.Component {
             )
             }
             {teamsList && isNotLoading
-                  && Object.keys(teamsList).map((teamuid) => {
-                      return <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
-                        <TeamCard teamuid={teamsList[teamuid].uid} eventuid={match.params.id} currentevent={currentevent}
-                        update={() => { this.getData(); }} 
-                        />
-                </Grid>;})
+                  && Object.keys(teamsList).map( teamuid => (
+                    <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
+                      <TeamCard
+                        teamuid={teamsList[teamuid].uid}
+                        eventuid={match.params.id}
+                        currentevent={currentevent}
+                        update={() => { this.getData(); }}
+                      />
+                    </Grid>
+                  ))
             }
           </Grid>
         </React.Fragment>
@@ -288,16 +295,10 @@ class cardList extends React.Component {
     }
 }
 
-
 const mapStateToProps = (state) => {
   return {
     teamsListCount: state.firestore.data.teamsListCount,
   }
 };
 
-
-export default compose(withRouter,
-  connect(mapStateToProps),
-  firestoreConnect(),
-)
-(cardList);
+export default compose(withRouter, connect(mapStateToProps), firestoreConnect())(cardList);

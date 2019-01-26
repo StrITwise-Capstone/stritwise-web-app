@@ -13,9 +13,8 @@ const toolbarStyles = () => ({
 });
 
 class TableToolbar extends Component {
-
   render() {
-    const { classes, title, children} = this.props;
+    const { classes, title, children } = this.props;
     return (
       <Toolbar>
         <div className={classes.title}>
@@ -33,7 +32,9 @@ class TableToolbar extends Component {
 
 
 TableToolbar.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.shape({}).isRequired,
+  title: PropTypes.string.isRequired,
+  children: PropTypes.shape({}).isRequired,
 };
 
 export default withStyles(toolbarStyles)(TableToolbar);

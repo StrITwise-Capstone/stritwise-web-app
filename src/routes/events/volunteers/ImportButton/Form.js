@@ -158,6 +158,7 @@ class ImportButtonForm extends Component {
 
 ImportButtonForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
+  
 };
 
 export default compose(withSnackbar, firestoreConnect())(ImportButtonForm);

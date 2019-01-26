@@ -44,6 +44,14 @@ class AddUserForm extends Component {
         teacherId,
       } = this.props;
       const team = dataByTeamName[TeamIndex];
+      const displayEnqueueSnackbar = (i) => {
+        if (i === team.values.length) {
+          enqueueSnackbar(`Added ${i} student...`, {
+            variant: 'info',
+          });
+        refreshState();
+        }
+      }
       // Do verification
       if (schema.isValid(team)) {
         return firestore.collection('events').doc(eventuid).collection('teams').add({
@@ -76,18 +84,14 @@ class AddUserForm extends Component {
               },
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
-            }).finally(() => {
-              if (i === team.values.length) {
-                enqueueSnackbar(`Added ${i} student...`, {
-                  variant: 'info',
-                });
-              refreshState();
-              }
+            }).finally((i) => {
+              displayEnqueueSnackbar(i)
             })
           }
           handleClose();
         });
       }
+      return null; 
     });
   }
 
@@ -111,6 +115,7 @@ class AddUserForm extends Component {
           }
           return null;
         }
+        return null;
       });
       if (isValid) {
         this.uploadTeams(dataByTeamName, school_id);
