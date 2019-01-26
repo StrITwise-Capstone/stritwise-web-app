@@ -31,7 +31,7 @@ var schema = yup.object().shape({
   'Remarks': yup.string().required(),
 });
 
-class AddUserForm extends Component {
+class UploadTeamForm extends Component {
   uploadTeams = (dataByTeamName, school_id) => {
     // Query for school where school name matches
     Object.keys(dataByTeamName).map((TeamIndex) => {
@@ -194,8 +194,22 @@ class AddUserForm extends Component {
   }
 }
 
-AddUserForm.propTypes = {
+UploadTeamForm.propTypes = {
+  eventuid: PropTypes.string.isRequired,
+  refreshState: PropTypes.func.isRequired,
+  teacherId: PropTypes.string,
+  enqueueSnackbar: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  schools: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+UploadTeamForm.defaultProps = {
+  teacherId: '',
+};
+UploadTeamForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
 };
 
-export default compose(withSnackbar, firestoreConnect())(AddUserForm);
+export default compose(withSnackbar, firestoreConnect())(UploadTeamForm);

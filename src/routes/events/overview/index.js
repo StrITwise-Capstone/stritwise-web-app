@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 import {
   firestoreConnect,
   firebaseConnect,
@@ -164,6 +165,21 @@ const mapStateToProps = (state, ownProps) => {
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
   }
+};
+
+Overview.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  firebase: PropTypes.any.isRequired,
+  currentevent: PropTypes.any,
+  match: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  history: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+Overview.defaultProps = {
+  currentevent: null,
 };
 
 export default compose(

@@ -158,7 +158,18 @@ class ImportButtonForm extends Component {
 
 ImportButtonForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
-  
+  eventuid: PropTypes.string,
+  refreshState: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+
+  /*
+   eslint-enable */
+};
+
+ImportButtonForm.defaultProps = {
+  eventuid: null,
 };
 
 export default compose(withSnackbar, firestoreConnect())(ImportButtonForm);

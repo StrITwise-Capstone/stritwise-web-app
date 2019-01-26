@@ -5,6 +5,7 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import EditCrewForm from './EditCrewForm';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
@@ -55,5 +56,12 @@ class EditVolunteer extends Component {
     );
   }
 }
+
+EditVolunteer.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
 
 export default withRouter(withFirestore(EditVolunteer));

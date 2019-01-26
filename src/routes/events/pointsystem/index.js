@@ -11,6 +11,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { compose } from 'redux';
+import PropTypes from 'prop-types';
 import { Star } from '@material-ui/icons/';
 import { withRouter } from 'react-router';
 import {
@@ -261,14 +262,19 @@ class PointSystem extends Component {
 }
 const mapStateToProps = (state) => {
   return {
-    currentevent: state.firestore.data.currentevent,
-    auth: state.firebase.auth,
-    isAuthenticated: state.auth.isAuthenticated,
-    user: state.firestore.data.user,
     rankings: state.firestore.data.rankings,
   }
 };
 
+PointSystem.propTypes = {
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  rankings: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+PointSystem.defaultProps = {
+};
 export default compose(
   connect(mapStateToProps),
   withRouter,

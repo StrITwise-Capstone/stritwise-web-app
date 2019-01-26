@@ -9,6 +9,7 @@ import {
   Input,
   CircularProgress,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect, firebaseConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
@@ -256,8 +257,19 @@ const mapStateToProps = state => ({
   firebase: state.firebase,
 });
 
+editEvent.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+  eventuid: PropTypes.string.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  auth: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  firebase: PropTypes.any.isRequired,
+  event: PropTypes.any,
+  /* eslint-enable */
+};
+
 editEvent.defaultProps = {
-  authError: '',
+  event: null,
 };
 
 export default compose(

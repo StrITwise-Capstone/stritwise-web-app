@@ -7,6 +7,7 @@ import {
   Button,
   MenuItem,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
@@ -186,9 +187,16 @@ const mapStateToProps = (state) => {
 
 
 Points.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.any.isRequired,
+  history: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  schools: PropTypes.any,
+  /* eslint-enable */
 };
 
 Points.defaultProps = {
+  schools: null,
 };
 
 

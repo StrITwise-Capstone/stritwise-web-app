@@ -9,6 +9,7 @@ import {
   MenuItem,
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
 
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
@@ -205,6 +206,10 @@ const mapStateToProps = (state) => {
 
 
 Volunteers.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  /* eslint-enable */
 };
 
 Volunteers.defaultProps = {

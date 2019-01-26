@@ -6,6 +6,7 @@ import {
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
+import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
 
@@ -88,6 +89,18 @@ const mapStateToProps = (state, ownProps) => {
   }
 };
 
+createTeam.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  user: PropTypes.any.isRequired,
+  auth: PropTypes.any.isRequired,
+  currentevent: PropTypes.any,
+  /* eslint-enable */
+};
+
+createTeam.defaultProps = {
+  currentevent: null,
+};
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),

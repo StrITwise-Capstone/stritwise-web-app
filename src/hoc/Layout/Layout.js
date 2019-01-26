@@ -54,6 +54,9 @@ class App extends Component {
 
 App.propTypes = {
   children: PropTypes.node.isRequired,
+  location: PropTypes.shape({}).isRequired,
+  classes: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
 export default compose(withStyles(styles), withRouter)(App);

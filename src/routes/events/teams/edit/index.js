@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import {
-  CircularProgress
+  CircularProgress,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 
 import Form from './Form';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
@@ -61,7 +62,7 @@ class editTeam extends Component {
 
   refreshState = () => {
     const { firestore, match } = this.props;
-    const query = firestore.collection('events').doc(match.params.id).collection('students').where('team_id','==',`${match.params.teamid}`)
+    const query = firestore.collection('events').doc(match.params.id).collection('students').where('team_id', '==', `${match.params.teamid}`)
     query.get().then((querySnapshot) => {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
@@ -125,10 +126,18 @@ class editTeam extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-      currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
-      isAuthenticated: state.auth.isAuthenticated,
-      user: state.firestore.data.user,
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.firestore.data.user,
   }
+};
+
+editTeam.propTypes = {
+  currentevent: PropTypes.string.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  /* eslint-enable */
 };
 
 export default compose(

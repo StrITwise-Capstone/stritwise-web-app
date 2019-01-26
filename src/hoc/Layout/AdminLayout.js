@@ -38,8 +38,8 @@ AdminLayout.propTypes = {
   action: PropTypes.element,
   /* eslint-disable react/forbid-prop-types */
   children: PropTypes.any.isRequired,
-  classes: PropTypes.any.isRequired,
   /* eslint-enable */
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 
 AdminLayout.defaultProps = {

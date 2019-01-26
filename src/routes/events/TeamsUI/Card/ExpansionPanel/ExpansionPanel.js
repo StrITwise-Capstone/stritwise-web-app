@@ -6,6 +6,7 @@ import {
   ExpansionPanelDetails,
   Typography,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Form from './Form/Form';
@@ -22,7 +23,7 @@ const styles = theme => ({
   },
 });
 
-class SimpleExpansionPanel extends Component {
+class Student extends Component {
     render() {
     const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
     return (
@@ -45,4 +46,19 @@ class SimpleExpansionPanel extends Component {
   }
 }
 
-export default withStyles(styles)(SimpleExpansionPanel);
+Student.propTypes = {
+  eventuid: PropTypes.string.isRequired,
+  studentuid: PropTypes.string.isRequired,
+  teamuid: PropTypes.string.isRequired,
+  deletevalue: PropTypes.bool.isRequired,
+  student: PropTypes.shape({}).isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  classes: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+Student.defaultProps = {
+};
+
+
+export default withStyles(styles)(Student);

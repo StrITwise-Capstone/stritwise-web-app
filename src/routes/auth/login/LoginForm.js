@@ -19,7 +19,7 @@ const initialValues = {
 };
 
 const LoginForm = ({
-  logOut, logIn, enqueueSnackbar, history
+  logOut, logIn, enqueueSnackbar, history,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -129,8 +129,9 @@ LoginForm.propTypes = {
   logIn: PropTypes.func.isRequired,
   logOut: PropTypes.func.isRequired,
   /* eslint-disable react/forbid-prop-types */
-  enqueueSnackbar: PropTypes.any.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
   /* eslint-enable */
+  history: PropTypes.shape({}).isRequired,
 };
 
 export default compose(withSnackbar, connect(null, mapDispatchToProps), withRouter)(LoginForm);

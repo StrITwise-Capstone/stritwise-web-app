@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 import {
   firestoreConnect,
   firebaseConnect,
@@ -70,9 +71,6 @@ class ViewTeams extends Component {
     this.forceUpdate();
   }
 
-  getData = () => {
-    
-  }
 
   render() {
     const {
@@ -139,12 +137,26 @@ class ViewTeams extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-      currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
-      auth: state.firebase.auth,
-      isAuthenticated: state.auth.isAuthenticated,
-      user: state.firestore.data.user,
-    }
+  return {
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    auth: state.firebase.auth,
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.firestore.data.user,
+  }
+};
+
+ViewTeams.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.any.isRequired,
+  user: PropTypes.any.isRequired,
+  auth: PropTypes.any.isRequired,
+  currentevent: PropTypes.any,
+  history: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+ViewTeams.defaultProps = {
+  currentevent: null,
 };
 
 export default compose(

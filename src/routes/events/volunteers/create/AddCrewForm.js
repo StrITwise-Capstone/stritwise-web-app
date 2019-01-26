@@ -7,10 +7,8 @@ import {
 import { ArrowBack } from '@material-ui/icons';
 import { withSnackbar } from 'notistack';
 import * as Yup from 'yup';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
 import { getFirestore } from 'redux-firestore';
 
 import * as util from '../../../../helper/util';
@@ -31,7 +29,7 @@ const initialValues = {
 };
 
 const AddCrewForm = ({
-  auth, enqueueSnackbar, match,
+  enqueueSnackbar, match,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -200,14 +198,12 @@ const AddCrewForm = ({
   </Formik>
 );
 
-const mapStateToProps = (state) => {
-  return {
-    auth: state.firebase.auth,
-  };
-};
 
 AddCrewForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.any.isRequired,
+  /* eslint-enable */
 };
 
-export default withSnackbar(withRouter(connect(mapStateToProps)(AddCrewForm)));
+export default withSnackbar(withRouter((AddCrewForm)));

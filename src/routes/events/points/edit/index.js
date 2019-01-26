@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import StarIcon from '@material-ui/icons/Stars';
 
 import EditTeamPtsForm from './EditTeamPtsForm';
@@ -75,12 +76,23 @@ class EditPoints extends Component {
   }
 }
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
   return {
     team: state.firestore.data.team,
   };
 };
 
+EditPoints.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  classes: PropTypes.any.isRequired,
+  team: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+EditPoints.defaultProps = {
+};
 export default compose(
   withRouter,
   firestoreConnect(props => (

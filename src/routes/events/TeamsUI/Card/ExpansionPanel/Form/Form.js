@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
@@ -18,7 +19,6 @@ import DeleteButton from './DeleteButton/DeleteButton';
 import yup from '../../../../../../instances/yup';
 
 const editStudent = ({
-  auth,
   firestore,
   enqueueSnackbar,
   student,
@@ -175,6 +175,22 @@ const mapStateToProps = (state, ownProps) => {
   return ({
     school: state.firestore.data[`school${ownProps.student.school_id}`],
   });
+};
+
+editStudent.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+  eventuid: PropTypes.string.isRequired,
+  studentuid: PropTypes.string.isRequired,
+  teamuid: PropTypes.string.isRequired,
+  deletevalue: PropTypes.bool.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  student: PropTypes.any,
+  /* eslint-enable */
+};
+
+editStudent.defaultProps = {
+  student: null,
 };
 
 export default compose(

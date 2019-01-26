@@ -219,6 +219,9 @@ EditCrewForm.propTypes = {
   history: PropTypes.any.isRequired,
   firebase: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
+  volunteer: PropTypes.any.isRequired,
+  volunteerRef: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 

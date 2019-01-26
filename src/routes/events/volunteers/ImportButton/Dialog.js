@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import Form from './Form';
 import urlForDownloads from '../../../../config/urlForDownloads';
@@ -61,4 +62,16 @@ class FormDialog extends React.Component {
   }
 }
 
+FormDialog.propTypes = {
+  eventuid: PropTypes.string,
+  refreshState: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  schools: PropTypes.any,
+  /* eslint-enable */
+};
+
+FormDialog.defaultProps = {
+  eventuid: null,
+  schools: null,
+};
 export default FormDialog;

@@ -131,8 +131,6 @@ EditTeamPtsForm.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   enqueueSnackbar: PropTypes.any.isRequired,
   history: PropTypes.any.isRequired,
-  firebase: PropTypes.any.isRequired,
-  firestore: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 

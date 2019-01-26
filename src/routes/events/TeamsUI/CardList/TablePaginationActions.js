@@ -2,24 +2,29 @@ import React, { Component } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import PropTypes from 'prop-types';
 
 class TablePaginationActions extends Component {
   handleFirstPageButtonClick = event => {
-    this.props.onChangePage(event, 0);
+    const { onChangePage } = this.props;
+    onChangePage(event, 0);
   };
 
   handleBackButtonClick = event => {
-    this.props.onChangePage(event, this.props.page - 1);
+    const { onChangePage, page } = this.props;
+    onChangePage(event, page - 1);
   };
 
   handleNextButtonClick = event => {
-    this.props.onChangePage(event, this.props.page + 1);
+    const { onChangePage, page } = this.props;
+    onChangePage(event, page + 1);
   };
 
   handleLastPageButtonClick = event => {
-    this.props.onChangePage(
+    const { onChangePage, rowsPerPage, count } = this.props;
+    onChangePage(
       event,
-      Math.max(0, Math.ceil(this.props.count / this.props.rowsPerPage) - 1),
+      Math.max(0, Math.ceil(count / rowsPerPage) - 1),
     );
   };
 
@@ -45,5 +50,13 @@ class TablePaginationActions extends Component {
     );
   }
 }
+
+TablePaginationActions.propTypes = {
+  classes: PropTypes.shape({}).isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  count: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  theme: PropTypes.shape({}).isRequired,
+};
 
 export default TablePaginationActions;

@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 
 import Form from './Form';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
@@ -49,6 +50,15 @@ const mapStateToProps = state => ({
   user: state.firestore.data.user,
 });
 
+editEvent.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  events: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+editEvent.defaultProps = {
+};
 
 export default compose(
   connect(mapStateToProps),

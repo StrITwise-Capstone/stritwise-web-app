@@ -13,6 +13,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import PropTypes from 'prop-types';
 import { firestoreConnect, isEmpty } from 'react-redux-firebase';
 import TablePagination from '@material-ui/core/TablePagination';
 import { Formik, Form, Field } from 'formik';
@@ -295,6 +296,23 @@ class cardList extends React.Component {
     }
 }
 
+cardList.propTypes = {
+  eventuid: PropTypes.string,
+  currentevent: PropTypes.shape({}),
+  team: PropTypes.shape({}),
+  teacherId: PropTypes.string,
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+cardList.defaultProps = {
+  team: null,
+  currentevent: null,
+  eventuid: null,
+  teacherId: null,
+};
 const mapStateToProps = (state) => {
   return {
     teamsListCount: state.firestore.data.teamsListCount,

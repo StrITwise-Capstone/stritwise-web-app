@@ -9,6 +9,7 @@ import {
   Input,
   CircularProgress,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect, firebaseConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
@@ -113,8 +114,6 @@ const createEvent = ({
       handleSubmit,
       isSubmitting,
       setFieldValue,
-      errors,
-      touched,
     }) => {
       let content = <CircularProgress />;
       if (!isSubmitting) {
@@ -203,8 +202,16 @@ const mapStateToProps = state => ({
   auth: state.firebase.auth,
 });
 
+createEvent.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  auth: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  firebase: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
 createEvent.defaultProps = {
-  authError: '',
 };
 
 export default compose(

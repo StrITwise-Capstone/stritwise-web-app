@@ -5,45 +5,48 @@ import {
   Grid,
   withStyles,
 } from '@material-ui/core';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase'
 import { withSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import AdminLayout from '../../hoc/Layout/AdminLayout';
 import Card from '../../components/UI/Card/Card';
 
 
 const styles = {
-  root:{
+  root: {
     flexGrow: 1,
   }
 };
 
 
-class Dashboard extends Component {
+class ViewVolunteers extends Component {
   state = {
     eventsList : null,
   }
 
   createEvent = () => {
     const { history } = this.props;
-    history.push('/events/create')
+    history.push('/events/create');
   }
   
   action = () => {
-    const { isAuthenticated,user } = this.props;
+    const { isAuthenticated, user } = this.props;
     if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member')) {
-    return(<React.Fragment>
-      <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        component={Link}
-        to="/events/create"
-      >Create Event</Button>
-    </React.Fragment>)
+    return (
+      <React.Fragment>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to="/events/create"
+        >
+        Create Event
+        </Button>
+      </React.Fragment>)
     }
   }
 
@@ -106,6 +109,21 @@ const mapStateToProps = (state) => {
   };
 };
 
+ViewVolunteers.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  eventsList: PropTypes.any,
+  history: PropTypes.any.isRequired,
+  user: PropTypes.any.isRequired,
+  /* eslint-enable */
+};
+
+ViewVolunteers.defaultProps = {
+  eventsList: null,
+};
+
+
 export default compose(
   withRouter,
   connect(mapStateToProps),
@@ -116,4 +134,4 @@ export default compose(
   ]),
   withSnackbar,
   withStyles(styles)
-)(Dashboard);
+)(ViewVolunteers);

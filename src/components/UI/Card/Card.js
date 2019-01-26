@@ -120,7 +120,6 @@ class EventCard extends Component {
 
 EventCard.propTypes = {
   classes: PropTypes.shape({}).isRequired,
-  firebase: PropTypes.shape({}).isRequired,
   imageSource: PropTypes.string.isRequired,
   eventuid: PropTypes.string.isRequired,
   history: PropTypes.shape({}).isRequired,
@@ -128,6 +127,9 @@ EventCard.propTypes = {
   imageTitle: PropTypes.string,
   end_date: PropTypes.shape({}),
   start_date: PropTypes.shape({}),
+  /* eslint-disable react/forbid-prop-types */
+  firebase: PropTypes.any.isRequired,
+  /* eslint-enable */
 };
 
 EventCard.defaultProps = {

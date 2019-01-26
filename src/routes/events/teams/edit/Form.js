@@ -17,6 +17,7 @@ import {
 } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
 
 import TextField from './TextField';
 import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
@@ -352,9 +353,18 @@ const mapStateToProps = (state) => {
   };
 };
 
-editTeam.defaultProps = {
-  authError: '',
+editTeam.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+  minStudent: PropTypes.number.isRequired,
+  maxStudent: PropTypes.number.isRequired,
+  schools: PropTypes.arrayOf(PropTypes.string).isRequired,
+  /* eslint-disable react/forbid-prop-types */
+  firestore: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+
+  /* eslint-enable */
 };
+
 
 export default compose(
   connect(mapStateToProps),

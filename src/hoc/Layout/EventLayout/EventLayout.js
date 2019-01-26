@@ -123,7 +123,7 @@ const mapStateToProps = (state) => {
 };
 
 EventLayout.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
+  classes: PropTypes.objectOf(PropTypes.string).isRequired,
   children: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({}).isRequired,
   location: PropTypes.shape({}).isRequired,

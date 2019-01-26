@@ -7,6 +7,7 @@ import {
   Divider,
   Button,
 } from '@material-ui/core/';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -59,7 +60,7 @@ class teamCard extends React.Component {
   }
 
   render() {
-    const { classes, currentevent, team, eventuid, teamuid , studentsList, schools, match, history} = this.props;
+    const { classes, currentevent, team, eventuid, teamuid , studentsList, schools, match, history } = this.props;
     return (
       <React.Fragment>
         {team && studentsList && currentevent && schools
@@ -106,6 +107,34 @@ const mapStateToProps = (state, props) => {
     studentsList: state.firestore.data[`studentsList${props.teamuid}`],
     schools: state.firestore.data.schools,
   };
+};
+
+teamCard.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired,
+  update: PropTypes.func.isRequired,
+  eventuid: PropTypes.string,
+  currentevent: PropTypes.shape({}),
+  team: PropTypes.shape({}),
+  teamuid: PropTypes.string,
+  student: PropTypes.shape({}),
+  /* eslint-disable react/forbid-prop-types */
+  classes: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
+  history: PropTypes.any.isRequired,
+  schools: PropTypes.any,
+  studentsList: PropTypes.any,
+  /* eslint-enable */
+};
+
+teamCard.defaultProps = {
+  schools: null,
+  team: null,
+  currentevent: null,
+  studentsList: null,
+  student: null,
+  teamuid: null,
+  eventuid: null,
 };
 
 export default compose(
