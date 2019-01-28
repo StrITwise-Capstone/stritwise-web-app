@@ -8,7 +8,7 @@ import ListItemButton from './RouteButton/ListItem';
 
 const styles = {
   list: {
-    width: 250,
+    width: '20%',
   },
   fullList: {
     width: 'auto',

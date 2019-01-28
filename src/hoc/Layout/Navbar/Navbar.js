@@ -20,7 +20,7 @@ import DrawerList from './Drawer/DrawerList';
 import { logIn, logOut, retrieveUser } from '../../../store/actions/authActions';
 import RouteButton from './Drawer/RouteButton/RouteButton';
 
-const drawerWidth = 240;
+const drawerWidth = '20%';
 
 const styles = theme => ({
   root: {
@@ -31,14 +31,10 @@ const styles = theme => ({
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0,
+    flexShrink: 1,
   },
   drawerPaper: {
     width: drawerWidth,
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing.unit * 3,
   },
   icons: {
     marginRight: '0px',

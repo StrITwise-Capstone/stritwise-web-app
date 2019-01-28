@@ -11,7 +11,12 @@ const styles = theme => ({
   root: {
     display: 'flex',
   },
+  drawer: {
+    width: '20%',
+    flexShrink: 1,
+  },
   content: {
+    width: '80%',
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
   },
@@ -30,6 +35,7 @@ class App extends Component {
     return (
       <div className={classes.root}>
         <Navbar />
+        <div className={classes.drawer} />
         <main className={classes.content}>
           <div className={classes.toolbar} />
           { location.pathname.includes('events/') && !(location.pathname.includes('events/create'))
