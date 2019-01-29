@@ -46,9 +46,9 @@ class cardList extends React.Component {
       search: '',
     }
 
-    handleChangePage = (event, page) => {
+    handleChangePage = (event, newPage) => {
       const { firestore, eventuid } = this.props;
-      const { lastVisible, firstVisible, search } = this.state;
+      const { lastVisible, firstVisible, search, page } = this.state;
       this.setState({ isNotLoading: false });
       const callback = (array, lastVisible, page, firstVisible) => {
         this.setState({
@@ -61,7 +61,7 @@ class cardList extends React.Component {
       };
       var array = [];
       var first = null;
-      if (page > this.state.page) {
+      if (newPage > page) {
         first = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search)
           .orderBy('team_name', 'asc')
           .limit(5)
@@ -77,10 +77,10 @@ class cardList extends React.Component {
               data: documentSnapshot.data(),
             });
           });
-          callback(array.reverse(), lastVisible, page, firstVisible);
+          callback(array.reverse(), lastVisible, newPage, firstVisible);
         });
       }
-      if (page < this.state.page) {
+      if (newPage < page) {
         first = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search)
           .orderBy('team_name', 'desc')
           .limit(5)
@@ -95,7 +95,7 @@ class cardList extends React.Component {
               data: documentSnapshot.data(),
             });
           });
-          callback(array.reverse(), lastVisible, page, firstVisible);
+          callback(array.reverse(), lastVisible, newPage, firstVisible);
         });
       }
     }
@@ -136,17 +136,15 @@ class cardList extends React.Component {
     handleCustomFilter = (collection, search) => {
       const { teacherId } = this.props;
       // check if Filter has been changed
-      if ( teacherId === '') {
-        if (search === "") {
+      if (teacherId === '') {
+        if (search === '') {
           return collection;
-        } else {
-          collection = collection.where('school_id', '==', search);
-          return collection;
-        }
-      } else {
-        collection = collection.where('teacher_id', '==', teacherId);
+        } 
+        collection = collection.where('school_id', '==', search);
         return collection;
       }
+      collection = collection.where('teacher_id', '==', teacherId);
+      return collection;
     }
 
     componentDidMount = () => {

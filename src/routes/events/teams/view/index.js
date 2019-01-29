@@ -68,7 +68,8 @@ class ViewTeams extends Component {
   }
 
   refreshState = () => {
-    this.forceUpdate();
+    this.setState({isNotLoading: false});
+    this.setState({isNotLoading: true});
   }
 
 

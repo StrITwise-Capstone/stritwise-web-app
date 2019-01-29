@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Form from './Form';
+import Form from './CreateForm';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 class createEvent extends Component {

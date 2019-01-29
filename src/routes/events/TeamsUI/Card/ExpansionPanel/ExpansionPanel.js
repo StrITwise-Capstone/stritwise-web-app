@@ -24,7 +24,7 @@ const styles = theme => ({
 });
 
 class Student extends Component {
-    render() {
+  render() {
     const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
     return (
       <div className={classes.root}>

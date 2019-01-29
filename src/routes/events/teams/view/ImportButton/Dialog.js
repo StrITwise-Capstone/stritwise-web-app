@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
-import Form from './Form';
+import Form from './UploadTeamForm';
 import urlForDownloads from '../../../../../config/urlForDownloads';
 
 class FormDialog extends React.Component {

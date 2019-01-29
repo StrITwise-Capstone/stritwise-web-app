@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import {
   Button,
   MenuItem,
+  CircularProgress,
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
@@ -25,6 +26,7 @@ class Volunteers extends Component {
   state = {
     filter: 'all',
     search: '',
+    isLoading: false,
   }
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
@@ -41,7 +43,8 @@ class Volunteers extends Component {
   }
 
   refreshState = () => {
-    this.forceUpdate();
+    this.setState({isLoading: true});
+    this.setState({isLoading: false});
   }
 
   handleDocsList = (docsList) => {
@@ -81,7 +84,7 @@ class Volunteers extends Component {
 
   render() {
     const { firestore, match } = this.props;
-    const { filter, search } = this.state;
+    const { filter, search,isLoading } = this.state;
     const colRef = firestore.collection('events').doc(match.params.id).collection('volunteers');
     const action = (
       <div style={{ display: 'flex' }}>
@@ -114,6 +117,9 @@ class Volunteers extends Component {
         //subtitle="Some longer subtitle here"
         action={action}
       >
+        {isLoading && <CircularProgress/ >}
+        {!isLoading
+        && (
         <CustomTable
           // For Table
           // title="Volunteers"
@@ -191,7 +197,7 @@ class Volunteers extends Component {
               )}
             </Formik>
           </div>
-        </CustomTable>
+        </CustomTable>)}
       </AdminLayout>
     );
   }

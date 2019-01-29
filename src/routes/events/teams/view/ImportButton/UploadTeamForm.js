@@ -44,14 +44,6 @@ class UploadTeamForm extends Component {
         teacherId,
       } = this.props;
       const team = dataByTeamName[TeamIndex];
-      const displayEnqueueSnackbar = (i) => {
-        if (i === team.values.length) {
-          enqueueSnackbar(`Added ${i} student...`, {
-            variant: 'info',
-          });
-        refreshState();
-        }
-      }
       // Do verification
       if (schema.isValid(team)) {
         return firestore.collection('events').doc(eventuid).collection('teams').add({
@@ -84,11 +76,11 @@ class UploadTeamForm extends Component {
               },
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
-            }).finally((i) => {
-              displayEnqueueSnackbar(i)
-            })
+            });
           }
           handleClose();
+          if (parseInt(TeamIndex) + 1 == dataByTeamName.length)
+            refreshState();
         });
       }
       return null; 
@@ -207,9 +199,6 @@ UploadTeamForm.propTypes = {
 
 UploadTeamForm.defaultProps = {
   teacherId: '',
-};
-UploadTeamForm.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired,
 };
 
 export default compose(withSnackbar, firestoreConnect())(UploadTeamForm);
