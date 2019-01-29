@@ -6,7 +6,7 @@ import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 
-import Form from './EditForm';
+import Form from './EditEventForm';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 
 class editEvent extends Component {
