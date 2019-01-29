@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 
 import Navbar from './Navbar/Navbar';
+import { connect } from 'react-redux';
 import EventLayout from './EventLayout/EventLayout';
 
 const styles = theme => ({
@@ -31,11 +32,12 @@ class App extends Component {
       classes,
       location,
       match,
+      auth,
     } = this.props;
     return (
       <div className={classes.root}>
         <Navbar />
-        <div className={classes.drawer} />
+        {!auth.isEmpty && <div className={classes.drawer} />}
         <main className={classes.content}>
           <div className={classes.toolbar} />
           { location.pathname.includes('events/') && !(location.pathname.includes('events/create'))
@@ -58,6 +60,12 @@ class App extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    auth: state.firebase.auth,
+  };
+};
+
 App.propTypes = {
   children: PropTypes.node.isRequired,
   location: PropTypes.shape({}).isRequired,
@@ -65,4 +73,4 @@ App.propTypes = {
   match: PropTypes.shape({}).isRequired,
 };
 
-export default compose(withStyles(styles), withRouter)(App);
+export default compose(withStyles(styles), connect(mapStateToProps), withRouter)(App);

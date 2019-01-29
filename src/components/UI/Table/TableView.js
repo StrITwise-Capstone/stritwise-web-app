@@ -80,7 +80,7 @@ const TableView = ({
               <CustomTableCell key={key}>{rowCopy[key]}</CustomTableCell>
             ))}
             {(enableEdit || enableDelete) ? (
-              <CustomTableCell numeric>
+              <CustomTableCell align="right">
                 {enableEdit ? (
                   <IconButton
                     onClick={() => handleEdit(rowCopy.id)}

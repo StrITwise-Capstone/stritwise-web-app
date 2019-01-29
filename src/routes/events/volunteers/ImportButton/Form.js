@@ -26,7 +26,7 @@ var schema = yup.object().shape({
 });
 
 class ImportButtonForm extends Component {
-  uploadTeams = (data) => {
+  uploadTeams = (volunteerData) => {
     const { 
       enqueueSnackbar,
       firestore,
@@ -34,17 +34,16 @@ class ImportButtonForm extends Component {
       refreshState,
       handleClose,
     } = this.props;
-    console.log(data);
     // Query for school where school name matches
-    Object.keys(data).map((VolunteerIndex) => {
-      const volunteer = data[VolunteerIndex].values[0];
+    Object.keys(volunteerData).map((VolunteerIndex) => {
+      const volunteer = volunteerData[VolunteerIndex].values[0];
       if (volunteer['Type of Volunteer'] === 'Group Leader') {
         volunteer['Type of Volunteer'] = 'GL';
       }
       if (volunteer['Type of Volunteer'] === 'Game Master') {
         volunteer['Type of Volunteer'] = 'GM';
       }
-      const volunteerData = {
+      const data = {
         first_name: volunteer['First Name'],
         last_name: volunteer['Last Name'],
         mobile: volunteer['Mobile Number'],
@@ -57,16 +56,17 @@ class ImportButtonForm extends Component {
         created_at: new Date(Date.now()),
         modified_at: new Date(Date.now()),
       };
-      return firestore.collection('events').doc(eventuid).collection('volunteers').add(volunteerData).then((docRef) => {
-        volunteerData.password = volunteer.Password;
+      return firestore.collection('events').doc(eventuid).collection('volunteers').add(data).then((docRef) => {
+        data.password = volunteer.Password;
+        data.eventId = eventuid;
         const transaction = {
           user_id: docRef.id,
           transaction_type: 'ADD_VOLUNTEER',
-          volunteerData,
+          data,
         };
         firestore.collection('transactions').add(transaction);
-        if ( parseInt(VolunteerIndex) === data.length - 1) {
-          enqueueSnackbar(`Added ${data.length} volunteers...`, {
+        if ( parseInt(VolunteerIndex) === volunteerData.length - 1) {
+          enqueueSnackbar(`Added ${volunteerData.length} volunteers...`, {
             variant: 'info',
           });
           refreshState();

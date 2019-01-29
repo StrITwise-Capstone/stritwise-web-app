@@ -80,6 +80,7 @@ class UploadTeamForm extends Component {
               data,
             ).then((docRef) => {
               data.password = team.values[i].Password;
+              data.eventId = eventuid;
               const transaction = {
                 user_id: docRef.id,
                 transaction_type: 'ADD_STUDENT',
@@ -113,7 +114,6 @@ class UploadTeamForm extends Component {
         for (i = 0; i < team.values.length; i++) {
           if (!schema.isValidSync(team.values[i])) {
             isValid = false;
-            console.log(team);
           }
           return null;
         }
