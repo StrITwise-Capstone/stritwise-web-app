@@ -44,20 +44,27 @@ class ImportButtonForm extends Component {
       if (volunteer['Type of Volunteer'] === 'Game Master') {
         volunteer['Type of Volunteer'] = 'GM';
       }
-      return firestore.collection('events').doc(eventuid).collection('volunteers').add({
+      const volunteerData = {
         first_name: volunteer['First Name'],
         last_name: volunteer['Last Name'],
         mobile: volunteer['Mobile Number'],
         school: volunteer.School,
         email: volunteer.Email,
-        password: volunteer.Password,
         dietary_restrictions: volunteer['Dietary Restrictions'],
         initials: volunteer['First Name'][0] + volunteer['Last Name'][0],
         student_no: volunteer['Student Number'],
         type: volunteer['Type of Volunteer'],
         created_at: new Date(Date.now()),
         modified_at: new Date(Date.now()),
-      }).then((docRef) => {
+      };
+      return firestore.collection('events').doc(eventuid).collection('volunteers').add(volunteerData).then((docRef) => {
+        volunteerData.password = volunteer.Password;
+        const transaction = {
+          user_id: docRef.id,
+          transaction_type: 'ADD_VOLUNTEER',
+          volunteerData,
+        };
+        firestore.collection('transactions').add(transaction);
         if ( parseInt(VolunteerIndex) === data.length - 1) {
           enqueueSnackbar(`Added ${data.length} volunteers...`, {
             variant: 'info',

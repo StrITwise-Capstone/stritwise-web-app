@@ -57,15 +57,14 @@ class UploadTeamForm extends Component {
           enqueueSnackbar('Added 1 Team...', {
             variant: 'info',
           });
-          for (var i = 0; i < team.values.length; i++) {
-            firestore.collection('events').doc(eventuid).collection('students').add({
+          for (let i = 0; i < team.values.length; i++) {
+            const data = {
               team_id: docRef.id,
               school_id,
               first_name: team.values[i]['First Name'],
               last_name: team.values[i]['Last Name'],
               mobile: team.values[i]['Phone Number'],
               email: team.values[i].Email,
-              password: team.values[i].Password,
               badge_name: team.values[i]['Badge Name'],
               dietary_restriction: team.values[i]['Dietary Restrictions'],
               remarks: team.values[i].Remarks,
@@ -76,10 +75,21 @@ class UploadTeamForm extends Component {
               },
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
+            }
+            firestore.collection('events').doc(eventuid).collection('students').add(
+              data,
+            ).then((docRef) => {
+              data.password = team.values[i].Password;
+              const transaction = {
+                user_id: docRef.id,
+                transaction_type: 'ADD_STUDENT',
+                data,
+              };
+              firestore.collection('transactions').add(transaction);
             });
           }
           handleClose();
-          if (parseInt(TeamIndex) + 1 == dataByTeamName.length)
+          if (parseInt(TeamIndex) + 1 === dataByTeamName.length)
             refreshState();
         });
       }
