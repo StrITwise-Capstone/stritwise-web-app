@@ -31,9 +31,10 @@ class CustomTable extends Component {
     });
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
+    const { docList } = this.state;
     const { filter, search } = this.props;
-    if (filter !== prevProps.filter || search !== prevProps.search) {
+    if (filter !== prevProps.filter || search !== prevProps.search || docList !== prevState.docList) {
       /* eslint-disable */
       this.setState({ page: 0 }, () => {
       /* eslint-enable */
@@ -48,7 +49,11 @@ class CustomTable extends Component {
       enqueueSnackbar('Deleting... It may take a few minutes.', {
         variant: 'success',
       });
-      this.getData();
+      /* eslint-disable */
+      this.setState({ page: 0 }, () => {
+        /* eslint-enable */
+        this.getData();
+      });
     }).catch((error) => {
       enqueueSnackbar('Error removing document:', {
         variant: 'error',
