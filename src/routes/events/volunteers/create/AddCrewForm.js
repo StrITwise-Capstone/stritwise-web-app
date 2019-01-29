@@ -26,6 +26,8 @@ const initialValues = {
   school: '',
   studentNo: '',
   dietary: '',
+  password: '',
+  confirmpassword: '',
 };
 
 const AddCrewForm = ({
@@ -58,14 +60,13 @@ const AddCrewForm = ({
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const firestore = getFirestore();
       const now = new Date();
-
+      const eventId = match.params.id;
       // update user values
-      const addValues = {
+      const data = {
         first_name: values.firstName,
         last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
-        password: values.password,
         created_at: now,
         type: values.type,
         school: values.school,
@@ -73,12 +74,18 @@ const AddCrewForm = ({
         student_no: values.studentNo,
       };
       if (typeof (values.dietary) !== 'undefined') {
-        addValues.dietary_restriction = values.dietary;
+        data.dietary_restriction = values.dietary;
       }
       
-      firestore.collection('events').doc(match.params.id).collection('volunteers').add({ 
-        ...addValues,
-      }).then(() => {
+      firestore.collection('events').doc(eventId).collection('volunteers').add(data).then((docRef) => {
+        data.password = values.password;
+        data.eventId = eventId;
+        const transaction = {
+          user_id: docRef.id,
+          transaction_type: 'ADD_VOLUNTEER',
+          data,
+        };
+        firestore.collection('transactions').add(transaction);
         resetForm();
         enqueueSnackbar('New Volunteer Added. Hooray!', {
           variant: 'success',

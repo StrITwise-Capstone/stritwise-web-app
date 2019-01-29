@@ -104,13 +104,12 @@ const createTeam = ({
           variant: 'info',
         });
         students.map((student, index) => {
-          return firestore.collection('events').doc(eventuid).collection('students').add({
+          const data = {
             team_id: docRef.id,
             first_name: students[index].first_name,
             last_name: students[index].last_name,
             mobile: students[index].mobilenumber,
             email: students[index].email,
-            password: students[index].password,
             badge_name: students[index].badgename,
             dietary_restriction: students[index].dietaryrestriction,
             remarks: students[index].remarks,
@@ -121,7 +120,16 @@ const createTeam = ({
             },
             created_at: new Date(Date.now()),
             modified_at: new Date(Date.now()),
-          }).then(() => {
+          }
+          return firestore.collection('events').doc(eventuid).collection('students').add(data).then((docRef) => {
+            data.password = students[index].password;
+            data.eventId = eventuid;
+            const transaction = {
+              user_id: docRef.id,
+              transaction_type: 'ADD_STUDENT',
+              data,
+            };
+            firestore.collection('transactions').add(transaction);
             enqueueSnackbar('Added 1 student...', {
               variant: 'info',
             });
