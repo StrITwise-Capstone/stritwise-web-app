@@ -288,7 +288,7 @@ export default compose(
     {
       collection: 'users',
       storeAs: 'user',
-      doc: `${props.auth.uid}`,
+      doc: `${props.auth ? props.auth.uid : ''}`,
     },
     {
       collection: 'events',
