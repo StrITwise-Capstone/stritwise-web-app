@@ -129,9 +129,9 @@ export default compose(
   connect(mapStateToProps),
   firestoreConnect(props => [
     {
-      collection: 'events', orderBy: ['start_date','desc'],
-    }
+      collection: 'events', orderBy: ['start_date', 'desc'],
+    },
   ]),
   withSnackbar,
-  withStyles(styles)
+  withStyles(styles),
 )(ViewVolunteers);

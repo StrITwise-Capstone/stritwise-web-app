@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Formik, Form, Field } from 'formik';
+import { connect } from 'react-redux';
 import {
   Button,
 } from '@material-ui/core';
@@ -42,6 +43,7 @@ class UploadTeamForm extends Component {
         handleClose,
         refreshState,
         teacherId,
+        auth,
       } = this.props;
       const team = dataByTeamName[TeamIndex];
       // Do verification
@@ -75,19 +77,15 @@ class UploadTeamForm extends Component {
               },
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
-            }
-            firestore.collection('events').doc(eventuid).collection('students').add(
+            };
+            data.password = team.values[i].Password;
+            data.eventId = eventuid;
+            const transaction = {
+              user_id: auth.uid,
+              transaction_type: 'ADD_STUDENT',
               data,
-            ).then((docRef) => {
-              data.password = team.values[i].Password;
-              data.eventId = eventuid;
-              const transaction = {
-                user_id: docRef.id,
-                transaction_type: 'ADD_STUDENT',
-                data,
-              };
-              firestore.collection('transactions').add(transaction);
-            });
+            }
+            firestore.collection('transactions').add(transaction);
           }
           handleClose();
           if (parseInt(TeamIndex) + 1 === dataByTeamName.length)
@@ -211,4 +209,10 @@ UploadTeamForm.defaultProps = {
   teacherId: '',
 };
 
-export default compose(withSnackbar, firestoreConnect())(UploadTeamForm);
+const mapStateToProps = (state) => {
+  return {
+    auth: state.firebase.auth,
+  };
+};
+
+export default compose(withSnackbar, firestoreConnect(), connect(mapStateToProps))(UploadTeamForm);

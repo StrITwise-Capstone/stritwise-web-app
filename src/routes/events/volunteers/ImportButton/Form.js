@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import {
   Button,
 } from '@material-ui/core';
+import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import Input from '@material-ui/core/Input';
@@ -33,6 +34,7 @@ class ImportButtonForm extends Component {
       eventuid,
       refreshState,
       handleClose,
+      auth,
     } = this.props;
     // Query for school where school name matches
     Object.keys(volunteerData).map((VolunteerIndex) => {
@@ -56,22 +58,20 @@ class ImportButtonForm extends Component {
         created_at: new Date(Date.now()),
         modified_at: new Date(Date.now()),
       };
-      return firestore.collection('events').doc(eventuid).collection('volunteers').add(data).then((docRef) => {
-        data.password = volunteer.Password;
-        data.eventId = eventuid;
-        const transaction = {
-          user_id: docRef.id,
-          transaction_type: 'ADD_VOLUNTEER',
-          data,
-        };
-        firestore.collection('transactions').add(transaction);
-        if ( parseInt(VolunteerIndex) === volunteerData.length - 1) {
-          enqueueSnackbar(`Added ${volunteerData.length} volunteers...`, {
-            variant: 'info',
-          });
-          refreshState();
-        }
-      });
+      data.password = volunteer.Password;
+      data.eventId = eventuid;
+      const transaction = {
+        user_id: auth.uid,
+        transaction_type: 'ADD_VOLUNTEER',
+        data,
+      };
+      if ( parseInt(VolunteerIndex) === volunteerData.length - 1) {
+        enqueueSnackbar(`Added ${volunteerData.length} volunteers...`, {
+          variant: 'info',
+        });
+        refreshState();
+      }
+      return firestore.collection('transactions').add(transaction);
     });
     handleClose();
   }
@@ -179,4 +179,10 @@ ImportButtonForm.defaultProps = {
   eventuid: null,
 };
 
-export default compose(withSnackbar, firestoreConnect())(ImportButtonForm);
+const mapStateToProps = (state) => {
+  return {
+    auth: state.firebase.auth,
+  };
+};
+
+export default compose(withSnackbar, firestoreConnect(), connect(mapStateToProps))(ImportButtonForm);

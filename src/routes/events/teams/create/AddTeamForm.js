@@ -13,7 +13,6 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import {
   firestoreConnect,
-  firebaseConnect,
 } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
@@ -33,6 +32,7 @@ const createTeam = ({
   schools,
   teacherId,
   schoolId,
+  auth,
 }) => (
   <Formik
     initialValues={{
@@ -121,15 +121,14 @@ const createTeam = ({
             created_at: new Date(Date.now()),
             modified_at: new Date(Date.now()),
           }
-          return firestore.collection('events').doc(eventuid).collection('students').add(data).then((docRef) => {
-            data.password = students[index].password;
-            data.eventId = eventuid;
-            const transaction = {
-              user_id: docRef.id,
-              transaction_type: 'ADD_STUDENT',
-              data,
-            };
-            firestore.collection('transactions').add(transaction);
+          data.password = students[index].password;
+          data.eventId = eventuid;
+          const transaction = {
+            user_id: auth.uid,
+            transaction_type: 'ADD_STUDENT',
+            data,
+          };
+          return firestore.collection('transactions').add(transaction).then((docRef) => {
             enqueueSnackbar('Added 1 student...', {
               variant: 'info',
             });
@@ -357,7 +356,6 @@ const createTeam = ({
 
 const mapStateToProps = (state) => {
   return {
-    authError: state.auth.authError,
     auth: state.firebase.auth,
     firestore: state.firestore,
     firebase: state.firebase,
@@ -387,7 +385,6 @@ createTeam.defaultProps = {
 export default compose(
   connect(mapStateToProps),
   withSnackbar,
-  firebaseConnect(),
   firestoreConnect(),
   withRouter,
 )(createTeam);
