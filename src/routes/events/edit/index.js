@@ -34,11 +34,9 @@ class editEvent extends Component {
       match,
     } = this.props;
     const eventuid = match.params.id;
-    if (events !== null && events !== undefined) {
-      this.setState({
-        event: events[eventuid],
-      });
-    }
+    this.setState({
+      event: events[eventuid],
+    });
   }
 
   render() {

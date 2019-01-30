@@ -218,12 +218,12 @@ const editTeam = ({
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <p>
-                          Student #
+                          Student # 
                           {index + 1}
                         </p>
-                        { values.lengthStudents > minStudent &&
+                        { index + 1 > minStudent &&
                           (
-                          <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.lengthStudents = values.lengthStudents -1; }}>
+                          <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); if(students[index] && students[index].key) {values.deleteArray.push(students[index].key);} values.lengthStudents = values.lengthStudents -1; }}>
                             Delete
                           </Button>
                           )
@@ -335,7 +335,7 @@ const editTeam = ({
                         <ErrorMessage name={`students[${index}].last_name`} />
                         <ErrorMessage name={`students[${index}].mobile`} />
                         <ErrorMessage name={`students[${index}].email`} />
-                        <ErrorMessage name={`students[${index}].badgename`} />
+                        <ErrorMessage name={`students[${index}].badge_name`} />
                         <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                         <ErrorMessage name={`students[${index}].remarks`} />
                         <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />

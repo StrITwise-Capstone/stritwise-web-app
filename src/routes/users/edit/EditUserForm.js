@@ -26,7 +26,8 @@ const validationSchema = yup.object({
   lastName: yup.string().required('Required'),
   mobile: yup.number().moreThan(60000000, 'Enter a valid phone number')
     .lessThan(100000000, 'Enter a valid phone number')
-    .required('Required'),
+    .required('Required')
+    .typeError('Invalid Mobile Number'),
   school: yup.mixed()
     .singleSelectRequired('Required'),
 });

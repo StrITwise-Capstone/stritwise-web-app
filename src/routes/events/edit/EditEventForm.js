@@ -150,6 +150,7 @@ const editEvent = ({
                 });
                 resetForm();
                 setSubmitting(false);
+                refreshState();
               }).catch(() => {
                 enqueueSnackbar('Event Not Updated', {
                   variant: 'error',
