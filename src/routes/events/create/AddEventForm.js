@@ -164,7 +164,7 @@ const createEvent = ({
               type="text"
               component={TextField}
             />
-            <p>Upload Event Image</p>
+            <p>Upload Event Image*</p>
             <Field
               required
               name="image"

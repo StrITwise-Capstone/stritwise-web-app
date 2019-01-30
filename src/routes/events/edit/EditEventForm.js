@@ -74,6 +74,7 @@ const editEvent = ({
   event,
   eventuid,
   firebase,
+  refreshState,
 }) => {
   return (
     <Formik

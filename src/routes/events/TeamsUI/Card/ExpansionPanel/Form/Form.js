@@ -103,6 +103,7 @@ const editStudent = ({
             />
             <Field
               required
+              disabled
               name="email"
               label="Email"
               type="text"
@@ -116,14 +117,12 @@ const editStudent = ({
               component={TextField}
             />
             <Field
-              required
               name="badgename"
               label="Badge Name"
               type="text"
               component={TextField}
             />
             <Field
-              required
               name="dietary_restriction"
               label="Dietary Restriction"
               type="text"
@@ -151,7 +150,6 @@ const editStudent = ({
               component={TextField}
             />
             <Field
-              required
               name="remarks"
               label="Remarks"
               type="text"

@@ -110,9 +110,9 @@ const createTeam = ({
             last_name: students[index].last_name,
             mobile: students[index].mobilenumber,
             email: students[index].email,
-            badge_name: students[index].badgename,
-            dietary_restriction: students[index].dietaryrestriction,
-            remarks: students[index].remarks,
+            badge_name: students[index].badgename ? students[index].badgename : '',
+            dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
+            remarks: students[index].remarks ? students[index].remarks : '',
             emergency_contacts: {
               name: students[index].emergency_contact_name,
               mobile: students[index].emergency_contact_mobile,
@@ -282,6 +282,7 @@ const createTeam = ({
                         <Field
                           name={`students[${index}].emergency_contact_name`}
                           type="text"
+                          required
                           label="Emergency Contact Name"
                           placeholder="Zhang Melvin"
                           component={TextField}
@@ -290,6 +291,7 @@ const createTeam = ({
                         <Field
                           name={`students[${index}].emergency_contact_mobile`}
                           type="text"
+                          required
                           label="Mobile"
                           placeholder="98745123"
                           component={TextField}
@@ -299,6 +301,7 @@ const createTeam = ({
                           name={`students[${index}].emergency_contact_relation`}
                           type="text"
                           placeholder="Father"
+                          required
                           label="Relation"
                           component={TextField}
                         />

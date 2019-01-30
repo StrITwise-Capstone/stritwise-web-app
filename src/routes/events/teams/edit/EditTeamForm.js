@@ -8,6 +8,7 @@ import {
 import {
   Button,
   CircularProgress,
+  Typography,
 } from '@material-ui/core';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
@@ -34,6 +35,7 @@ const editTeam = ({
   students,
   refreshState,
   maxStudent,
+  auth,
 }) => (
   <Formik
     enableReinitialize={true}
@@ -82,10 +84,11 @@ const editTeam = ({
     })}
     onSubmit={(values, { resetForm, setSubmitting }) => {
       const eventuid = match.params.id;
+      const teamId = match.params.teamid;
       var students = values.students;
       var deleteArray = values.deleteArray;
       deleteArray.map((student, index) => firestore.collection('events').doc(match.params.id).collection('students').doc(deleteArray[index]).delete());
-      firestore.collection('events').doc(match.params.id).collection('teams').doc(match.params.teamid).update({
+      firestore.collection('events').doc(match.params.id).collection('teams').doc(teamId).update({
         team_name: values.team_name,
         school_id: values.school_id.value,
         credit: 0,
@@ -103,10 +106,9 @@ const editTeam = ({
                   last_name: students[index].last_name,
                   mobile: students[index].mobile,
                   email: students[index].email,
-                  password: students[index].password,
-                  badge_name: students[index].badge_name,
-                  dietary_restriction: students[index].dietary_restriction,
-                  remarks: students[index].remarks,
+                  badge_name: students[index].badge_name ? students[index].badge_name : '',
+                  dietary_restriction: students[index].dietary_restriction ? students[index].dietary_restriction : '',
+                  remarks: students[index].remarks ? students[index].remarks : '',
                   emergency_contacts: {
                     name: students[index].emergency_contact_name,
                     mobile: students[index].emergency_contact_mobile,
@@ -130,33 +132,36 @@ const editTeam = ({
               }
             }
             if (students[index].key === '') {
-              return firestore.collection('events').doc(eventuid).collection('students').add({
-                team_id: match.params.teamid,
+              const data = {
+                team_id: teamId,
                 first_name: students[index].first_name,
                 last_name: students[index].last_name,
                 mobile: students[index].mobile,
                 email: students[index].email,
-                password: students[index].password,
-                badge_name: students[index].badge_name,
-                dietary_restriction: students[index].dietary_restriction,
-                remarks: students[index].remarks,
+                password: 'Test1234',
+                badge_name: students[index].badgename ? students[index].badgename : '',
+                dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
+                remarks: students[index].remarks ? students[index].remarks : '',
                 emergency_contacts: {
                   name: students[index].emergency_contact_name,
                   mobile: students[index].emergency_contact_mobile,
                   relation: students[index].emergency_contact_relation,
                 },
+                created_at: new Date(Date.now()),
                 modified_at: new Date(Date.now()),
-              }).then(() => {
+              }
+              data.eventId = eventuid;
+              const transaction = {
+                user_id: auth.uid,
+                transaction_type: 'ADD_STUDENT',
+                data,
+              };
+              return firestore.collection('transactions').add(transaction).then((docRef) => {
                 enqueueSnackbar('Added 1 student...', {
                   variant: 'info',
                 });
                 resetForm();
                 setSubmitting(false);
-                if (index === students.length) {
-                  enqueueSnackbar('Team Updated Successfully', {
-                    variant: 'success',
-                  });
-                }
               });
             }
             return null;
@@ -224,6 +229,11 @@ const editTeam = ({
                           )
                         }
                       </div>
+                      { !students[index] && (
+                        <div>
+                          <Typography>Require reset of password upon creation</Typography>
+                        </div>)
+                      }
                       <div>
                         <Field
                           name={`students[${index}].first_name`}
@@ -242,6 +252,18 @@ const editTeam = ({
                         />
                       </div>
                       <div>
+                        {students[index] && (
+                        <Field
+                          disabled
+                          name={`students[${index}].email`}
+                          type="text"
+                          label="Email"
+                          component={TextField}
+                          style={{ paddingRight: '50px' }}
+                          required
+                        />)
+                        }
+                        {!students[index] && (
                         <Field
                           name={`students[${index}].email`}
                           type="text"
@@ -249,7 +271,8 @@ const editTeam = ({
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                           required
-                        />
+                        />)
+                        }
                         <Field
                           name={`students[${index}].mobile`}
                           type="text"
@@ -277,6 +300,7 @@ const editTeam = ({
                         <Field
                           name={`students[${index}].emergency_contact_name`}
                           type="text"
+                          required
                           label="Emergency Contact Name"
                           component={TextField}
                           style={{ paddingRight: '50px' }}
@@ -284,7 +308,8 @@ const editTeam = ({
                         <Field
                           name={`students[${index}].emergency_contact_mobile`}
                           type="text"
-                          label="Mobile"
+                          label="Mobile"r
+                          required
                           component={TextField}
                           style={{ paddingRight: '50px' }}
                         />
@@ -292,6 +317,7 @@ const editTeam = ({
                           name={`students[${index}].emergency_contact_relation`}
                           type="text"
                           label="Relation"
+                          required
                           component={TextField}
                         />
                       </div>
@@ -320,7 +346,7 @@ const editTeam = ({
                   ))}
                   { values.lengthStudents < maxStudent && (<Button
                     type="button"
-                    onClick={() => { arrayHelpers.push({ firstname: '' }); values.lengthStudents = values.lengthStudents + 1;}}
+                    onClick={() => { arrayHelpers.push({ key: '' }); values.lengthStudents = values.lengthStudents + 1;}}
                     size="small"
                     color="primary"
                   >

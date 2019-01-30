@@ -46,8 +46,6 @@ class editTeam extends Component {
           last_name: currentstudent.last_name,
           mobile: currentstudent.mobile,
           email: currentstudent.email,
-          password: currentstudent.password,
-          confirmPassword: currentstudent.password,
           badge_name: currentstudent.badge_name,
           dietary_restriction: currentstudent.dietary_restriction,
           remarks: currentstudent.remarks,

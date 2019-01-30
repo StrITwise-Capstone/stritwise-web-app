@@ -25,19 +25,31 @@ class editEvent extends Component {
       this.setState({
         event: events[eventuid],
       });
-      this.forceUpdate();
+    }
+  }
+
+  refreshState = () => {
+    const {
+      events,
+      match,
+    } = this.props;
+    const eventuid = match.params.id;
+    if (events !== null && events !== undefined) {
+      this.setState({
+        event: events[eventuid],
+      });
     }
   }
 
   render() {
     const { match } = this.props;
-    const { event } = this.state;
+    const { event, refreshState } = this.state;
     const eventuid = match.params.id;
     return (
       <AdminLayout
         title="Edit Event"
       >
-        <Form event={event} eventuid={eventuid} />
+        <Form event={event} eventuid={eventuid} refreshState={refreshState} />
       </AdminLayout>
     );
   }
@@ -52,12 +64,13 @@ const mapStateToProps = state => ({
 
 editEvent.propTypes = {
   /* eslint-disable react/forbid-prop-types */
-  events: PropTypes.any.isRequired,
+  events: PropTypes.any,
   match: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
 editEvent.defaultProps = {
+  events: null,
 };
 
 export default compose(
