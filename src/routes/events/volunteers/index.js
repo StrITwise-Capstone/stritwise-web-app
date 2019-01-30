@@ -69,14 +69,6 @@ class Volunteers extends Component {
     // check if Filter has been changed
     if (filter === 'type' || filter === 'school') {
       collection = collection.where(filter, '==', search);
-    } else if (filter === 'name') {
-      const name = search.split(' ');
-      if (name.length === 2) {
-        collection = collection.where('firstName', '==', name[0])
-          .where('lastName', '==', name[1]);
-      } else {
-        collection = collection.where('firstName', '==', name[0]);
-      }
     }
     return collection;
   }
@@ -166,7 +158,6 @@ class Volunteers extends Component {
                       </MenuItem>
                       <MenuItem value="type">Type</MenuItem>
                       <MenuItem value="school">School</MenuItem>
-                      <MenuItem value="name">Name</MenuItem>
                     </Field>
                   </div>
                   {values.filter !== 'all' ? (
