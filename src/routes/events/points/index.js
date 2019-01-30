@@ -80,6 +80,8 @@ class Points extends Component {
       const school = schools.find(schElement => (schElement.name === search));
       if (school !== undefined) {
         collection = collection.where('school_id', '==', school.id);
+      } else {
+        collection = collection.where('school_id', '==', '1');
       }
     }
     return collection;

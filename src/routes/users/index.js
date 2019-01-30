@@ -70,13 +70,13 @@ class Users extends Component {
     // check if Filter has been changed
     if (filter === 'type') {
       collection = collection.where(filter, '==', search.toLowerCase());
-    } else if (filter === 'name') {
-      const name = search.split(' ');
-      if (name.length === 2) {
-        collection = collection.where('firstName', '==', name[0])
-          .where('lastName', '==', name[1]);
+    } else if (filter === 'school') {
+      const { schools } = this.props;
+      const school = schools.find(schElement => (schElement.name === search));
+      if (school !== undefined) {
+        collection = collection.where('school_id', '==', school.id);
       } else {
-        collection = collection.where('firstName', '==', name[0]);
+        collection = collection.where('school_id', '==', '1');
       }
     }
     return collection;
@@ -153,7 +153,6 @@ class Users extends Component {
                       </MenuItem>
                       <MenuItem value="type">Type</MenuItem>
                       <MenuItem value="school">School</MenuItem>
-                      <MenuItem value="name">Name</MenuItem>
                     </Field>
                   </div>
                   {values.filter !== 'all' ? (
