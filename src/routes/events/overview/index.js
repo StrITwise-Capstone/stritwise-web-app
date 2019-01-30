@@ -106,7 +106,7 @@ class Overview extends Component {
     const { match, firestore, history, enqueueSnackbar,
     } = this.props;
     const db = firestore;
-    this.setState({isNotLoading: false });
+    this.setState({ isNotLoading: false });
     db.collection('events').doc(match.params.id).delete().then(() => {
       enqueueSnackbar('Deleted Event', {
         variant: 'success',

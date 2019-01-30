@@ -4,6 +4,7 @@ import {
   Button,
   Grid,
   withStyles,
+  Typography,
 } from '@material-ui/core';
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'redux';
@@ -31,7 +32,18 @@ class ViewVolunteers extends Component {
     const { history } = this.props;
     history.push('/events/create');
   }
-  
+
+  componentDidMount = () => {
+    const { firestore } = this.props;
+    const newEventList = {};
+    firestore.collection('events').orderBy("start_date", "desc").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        newEventList[doc.id] = doc.data();
+      });
+      this.setState({ eventsList: newEventList });
+    });
+  }
+
   action = () => {
     const { isAuthenticated, user } = this.props;
     if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member')) {
@@ -66,7 +78,9 @@ class ViewVolunteers extends Component {
   }
 
   render() {
-    const { eventsList ,classes } = this.props;
+    const { classes } = this.props;
+    const { eventsList } = this.state;
+    console.log(eventsList);
     const filteredEventsList = this.filterDisplayEvent(eventsList);
     return (
       <AdminLayout
@@ -93,6 +107,12 @@ class ViewVolunteers extends Component {
                   end_date={filteredEventsList[eventuid].end_date}
                 />
               </Grid>))
+          }
+          { !filteredEventsList && (
+            <Grid item>
+              <Typography component="p">There is no data at the moment.</Typography>
+            </Grid>
+            )
           }
         </Grid>
       </AdminLayout>
@@ -127,11 +147,7 @@ ViewVolunteers.defaultProps = {
 export default compose(
   withRouter,
   connect(mapStateToProps),
-  firestoreConnect(props => [
-    {
-      collection: 'events', orderBy: ['start_date', 'desc'],
-    },
-  ]),
+  firestoreConnect(),
   withSnackbar,
   withStyles(styles),
 )(ViewVolunteers);
