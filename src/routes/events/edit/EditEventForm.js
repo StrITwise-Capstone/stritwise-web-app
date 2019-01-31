@@ -111,8 +111,9 @@ const editEvent = ({
             });
             resetForm();
             setSubmitting(false);
-          }).catch(() => {
-            // console.log(`Event not created: ${err}`);
+            refreshState();
+          }).catch((err) => {
+            console.log(`Event not created: ${err}`);
             enqueueSnackbar('Event Not Updated', {
               variant: 'error',
             });
@@ -151,7 +152,8 @@ const editEvent = ({
                 resetForm();
                 setSubmitting(false);
                 refreshState();
-              }).catch(() => {
+              }).catch((err) => {
+                console.log(err);
                 enqueueSnackbar('Event Not Updated', {
                   variant: 'error',
                 });

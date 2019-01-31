@@ -41,13 +41,13 @@ class editEvent extends Component {
 
   render() {
     const { match } = this.props;
-    const { event, refreshState } = this.state;
+    const { event} = this.state;
     const eventuid = match.params.id;
     return (
       <AdminLayout
         title="Edit Event"
       >
-        <Form event={event} eventuid={eventuid} refreshState={refreshState} />
+        <Form event={event} eventuid={eventuid} refreshState={() => { this.refreshState(); }} />
       </AdminLayout>
     );
   }
