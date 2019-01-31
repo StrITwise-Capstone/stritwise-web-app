@@ -6,7 +6,6 @@ import {
 } from 'formik';
 import {
   Button,
-  MenuItem,
   CircularProgress,
 } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
@@ -19,7 +18,7 @@ import { withSnackbar } from 'notistack';
 
 import * as util from '../../../../helper/util';
 import TextField from '../../../../components/UI/TextField/TextField';
-import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
+import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
 const validationSchema = yup.object({
@@ -27,17 +26,17 @@ const validationSchema = yup.object({
   lastName: yup.string().required('Required'),
   mobile: yup.number().moreThan(60000000, 'Enter a valid phone number')
     .lessThan(100000000, 'Enter a valid phone number')
-    .required('Required')
-    .typeError('Invalid Mobile Number'),
-  type: yup.mixed()
+    .required('Required'),
+  team: yup.mixed()
     .singleSelectRequired('Required'),
   school: yup.string().required('Required'),
   studentNo: yup.string().required('Required'),
   dietary: yup.string(),
+
 });
 
 const EditCrewForm = ({
-  history, enqueueSnackbar, volunteer, volunteerRef, match
+  history, enqueueSnackbar, volunteer, volunteerRef, match, teams
 }) => (
   <Formik
     enableReinitialize={true}
@@ -46,9 +45,11 @@ const EditCrewForm = ({
       lastName: `${volunteer.lastName}`,
       studentNo: `${volunteer.studentNo}`,
       mobile: `${volunteer.mobile}`,
-      type: `${volunteer.type}`,
+      team: {
+        label: `${volunteer.team.label}`,
+        value: `${volunteer.team.value}`,
+      },
       school: `${volunteer.school}`,
-      email: `${volunteer.email}`,
       dietary: `${volunteer.dietary}`,
     }}
     validationSchema={validationSchema}
@@ -62,19 +63,21 @@ const EditCrewForm = ({
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
         modified_at: now,
-        type: values.type,
         school: values.school,
         student_no: values.studentNo,
       };
       if (typeof (values.dietary) !== 'undefined') {
         updateValues.dietary_restriction = values.dietary;
       }
+      if (typeof (volunteer.team.value) !== 'undefined' || volunteer.type === 'GL') {
+        updateValues.team_id = values.team.value;
+      }
       volunteerRef.update({ ...updateValues }).then(() => {
         enqueueSnackbar('Volunteer successfully updated.', {
           variant: 'success',
         });
         history.push(`/events/${match.params.id}/volunteers`);
-        console.log("Document successfully updated!");
+        console.log('Document successfully updated!');
       }).catch((error) => {
         // The document probably doesn't exist.
         enqueueSnackbar('Something went wrong. User was not updated.', {
@@ -124,23 +127,14 @@ const EditCrewForm = ({
               type="text"
               component={TextField}
             />
-            <Field
-              disabled
-              required
-              name="email"
-              label="Email"
-              type="text"
-              component={TextField}
-            />
-            <Field
-              required
-              name="type"
-              label="Type of Volunteer"
-              component={Dropdown}
-            >
-              <MenuItem value="GL">Group Leader</MenuItem>
-              <MenuItem value="GM">Game Master</MenuItem>
-            </Field>
+            {typeof (volunteer.team.value) !== 'undefined' || volunteer.type === 'GL' ? (
+              <Field
+                name="team"
+                label="Team"
+                options={teams}
+                component={Select}
+              />
+            ) : (null)}
             <Field
               required
               name="school"
