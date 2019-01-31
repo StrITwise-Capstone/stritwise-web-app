@@ -58,7 +58,8 @@ class AddUserForm extends Component {
           lastName: Yup.string().required('Required'),
           mobile: Yup.number().moreThan(60000000, 'Enter a valid phone number')
             .lessThan(100000000, 'Enter a valid phone number')
-            .required('Required'),
+            .required('Required')
+            .typeError('Invalid Phone Number'),
           email: Yup.string()
             .email('Email not valid')
             .required('Required'),

@@ -47,7 +47,9 @@ class Thumb extends Component {
   }
 }
 Thumb.propTypes = {
-  file: PropTypes.node,
+  /* eslint-disable react/forbid-prop-types */
+  file: PropTypes.any,
+  /* eslint-enable */
 };
 
 Thumb.defaultProps = {

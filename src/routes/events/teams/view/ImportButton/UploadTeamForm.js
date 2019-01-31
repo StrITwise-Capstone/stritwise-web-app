@@ -18,15 +18,15 @@ import yup from '../../../../../instances/yup';
 
 
 var schema = yup.object().shape({
-  'Team Name': yup.string().required(),
-  'First Name': yup.string().required(),
-  'Last Name': yup.string().required(),
-  'Phone Number': yup.string().required(),
-  'Email': yup.string().email().required(),
-  'Password': yup.string().required(),
-  'Emergency Contact Name': yup.string().required(),
-  'Emergency Contact Mobile': yup.string().required(),
-  'Relation to Participant': yup.string().required(),
+  'Team Name': yup.string().required().min(2),
+  'First Name': yup.string().required().min(2),
+  'Last Name': yup.string().required().min(2),
+  'Phone Number': yup.string().required().min(2),
+  'Email': yup.string().email().required().min(2),
+  'Password': yup.string().required().min(2),
+  'Emergency Contact Name': yup.string().required().min(2),
+  'Emergency Contact Mobile': yup.string().required().min(2),
+  'Relation to Participant': yup.string().required().min(2),
   'Badge Name': yup.string().required(),
   'Dietary Restrictions': yup.string().required(),
   'Remarks': yup.string().required(),
@@ -112,8 +112,8 @@ class UploadTeamForm extends Component {
         for (i = 0; i < team.values.length; i++) {
           if (!schema.isValidSync(team.values[i])) {
             isValid = false;
+            return isValid;
           }
-          return null;
         }
         return null;
       });

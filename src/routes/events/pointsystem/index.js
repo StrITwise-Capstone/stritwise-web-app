@@ -117,11 +117,11 @@ class PointSystem extends Component {
             <CircularProgress />)
           }
           {
-            rankingsList.length < 5 && (
+            rankingsList.length < 4 && (
               <Typography component="p">There's less than 4 teams.</Typography>
             )
           }
-          {isNotLoading && rankingsList.length > 4 && (
+          {isNotLoading && rankingsList.length >= 4 && (
           <Grid
             container
             spacing={12}

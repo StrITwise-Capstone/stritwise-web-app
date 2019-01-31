@@ -5,6 +5,7 @@ import {
   Grid,
   withStyles,
   Typography,
+  CircularProgress,
 } from '@material-ui/core';
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'redux';
@@ -26,6 +27,7 @@ const styles = {
 class ViewVolunteers extends Component {
   state = {
     eventsList : null,
+    isLoading: true,
   }
 
   createEvent = () => {
@@ -40,7 +42,7 @@ class ViewVolunteers extends Component {
       querySnapshot.forEach((doc) => {
         newEventList[doc.id] = doc.data();
       });
-      this.setState({ eventsList: newEventList });
+      this.setState({ eventsList: newEventList, isLoading: false });
     });
   }
 
@@ -79,8 +81,7 @@ class ViewVolunteers extends Component {
 
   render() {
     const { classes } = this.props;
-    const { eventsList } = this.state;
-    console.log(eventsList);
+    const { eventsList, isLoading } = this.state;
     const filteredEventsList = this.filterDisplayEvent(eventsList);
     return (
       <AdminLayout
@@ -94,7 +95,9 @@ class ViewVolunteers extends Component {
         alignItems="flex-start"
         className={classes.root}
         spacing={8}
-        >
+        > {isLoading && (
+            <CircularProgress />
+          )}
           {filteredEventsList
             && Object.keys(filteredEventsList).map(eventuid => (
               <Grid item xs={6} key={eventuid}>
@@ -108,7 +111,7 @@ class ViewVolunteers extends Component {
                 />
               </Grid>))
           }
-          { !filteredEventsList && (
+          { !filteredEventsList && !isLoading && (
             <Grid item>
               <Typography component="p">There is no data at the moment.</Typography>
             </Grid>

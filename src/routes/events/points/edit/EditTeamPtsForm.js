@@ -23,7 +23,7 @@ import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
 import yup from '../../../../instances/yup';
 
 const validationSchema = yup.object({
-  points: yup.number().positive().integer().required('Required'),
+  points: yup.number().positive().integer().required('Required').typeError('Invalid number format'),
   action: yup.mixed()
     .singleSelectRequired('Required'),
 });
