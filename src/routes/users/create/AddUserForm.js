@@ -81,8 +81,10 @@ class AddUserForm extends Component {
             created_at: now,
             type: values.type,
           };
-          if (typeof (values.school.value) !== 'undefined') {
-            addValues.school_id = values.school.value;
+          if (values.type === 'teacher') {
+            if (typeof (values.school.value) !== 'undefined') {
+              addValues.school_id = values.school.value;
+            }
           }
           const transaction = {
             user_id: auth.uid,

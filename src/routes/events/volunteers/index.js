@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withFirestore } from 'react-redux-firebase';
+import { firestoreConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
 import { compose } from 'redux';
 import { Link } from 'react-router-dom';
@@ -31,7 +31,7 @@ class Volunteers extends Component {
 
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (volunteerID) => {
-    const { history, match} = this.props;
+    const { history, match } = this.props;
     history.push(`/events/${match.params.id}/volunteers/${volunteerID}/edit`);
   }
 
@@ -49,12 +49,24 @@ class Volunteers extends Component {
 
   handleDocsList = (docsList) => {
     let data = [];
+    const { teams } = this.props;
+    if (!teams) {
+      return null;
+    }
+    const teamsMap = teams.reduce((map, obj) => {
+      // Disabled eslint error for performance reasons
+      /* eslint no-param-reassign: "off" */
+      map[obj.id] = obj.team_name;
+      /* eslint-enable */
+      return map;
+    }, {});
     data = docsList.map(volunteer => (
       {
         id: volunteer.uid,
         Name: `${volunteer.data.first_name} ${volunteer.data.last_name}`,
         Mobile: volunteer.data.mobile,
         Type: volunteer.data.type,
+        Team: teamsMap[volunteer.data.team_id] ? teamsMap[volunteer.data.team_id] : 'N.A.',
         School: volunteer.data.school,
         'Dietary Restrictions': volunteer.data.dietary_restriction ? volunteer.data.dietary_restriction : 'Nil',
         'Student Number': volunteer.data.student_no,
@@ -76,7 +88,7 @@ class Volunteers extends Component {
 
   render() {
     const { firestore, match } = this.props;
-    const { filter, search,isLoading } = this.state;
+    const { filter, search, isLoading } = this.state;
     const colRef = firestore.collection('events').doc(match.params.id).collection('volunteers');
     const action = (
       <div style={{ display: 'flex' }}>
@@ -109,7 +121,7 @@ class Volunteers extends Component {
         //subtitle="Some longer subtitle here"
         action={action}
       >
-        {isLoading && <CircularProgress/ >}
+        { isLoading && <CircularProgress /> }
         {!isLoading
         && (
         <CustomTable
@@ -196,7 +208,7 @@ class Volunteers extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    schools: state.firestore.ordered.schools,
+    teams: state.firestore.ordered.teams,
     auth: state.firebase.auth,
   };
 };
@@ -215,7 +227,13 @@ Volunteers.defaultProps = {
 
 export default compose(
   connect(mapStateToProps),
-  withFirestore,
+  firestoreConnect(props => (
+    [
+      {
+        collection: 'events', doc: `${props.match.params.id}`, subcollections: [{ collection: 'teams' }], storeAs: 'teams',
+      },
+    ]
+  )),
   withRouter,
   withSnackbar,
 )(Volunteers);

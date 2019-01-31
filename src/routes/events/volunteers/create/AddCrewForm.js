@@ -13,9 +13,10 @@ import { getFirestore } from 'redux-firestore';
 import { connect } from 'react-redux';
 
 import * as util from '../../../../helper/util';
-//import * as reduxAction from '../../../store/actions';
+import Select from '../../../../components/UI/Select/Select';
 import TextField from '../../../../components/UI/TextField/TextField';
 import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
+import yup from '../../../../instances/yup';
 
 
 const initialValues = {
@@ -23,6 +24,7 @@ const initialValues = {
   lastName: '',
   mobile: '',
   type: '',
+  team: {},
   email: '',
   school: '',
   studentNo: '',
@@ -51,7 +53,8 @@ class AddCrewForm extends Component {
   }
 
   render() {
-    const { enqueueSnackbar, match, auth } = this.props;
+    const { enqueueSnackbar, match, auth, teams } = this.props;
+    console.log(this.props);
     return (
       <Formik
         initialValues={initialValues}
@@ -76,6 +79,7 @@ class AddCrewForm extends Component {
           dietary: Yup.string(),
           type: Yup.mixed()
             .singleSelectRequired('Required'),
+          teams: yup.mixed(),
         })}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const firestore = getFirestore();
@@ -97,6 +101,11 @@ class AddCrewForm extends Component {
           };
           if (typeof (values.dietary) !== 'undefined') {
             addValues.dietary_restriction = values.dietary;
+          }
+          if (values.type === 'GL') {
+            if (typeof (values.team.value) !== 'undefined') {
+              addValues.team_id = values.team.value;
+            }
           }
           const transaction = {
             user_id: auth.uid,
@@ -130,7 +139,6 @@ class AddCrewForm extends Component {
           errors,
           touched,
           handleSubmit,
-          isSubmitting,
           /* and other goodies */
         }) => (
           <Form onSubmit={handleSubmit}>
@@ -185,6 +193,17 @@ class AddCrewForm extends Component {
               <MenuItem value="GL">Group Leader</MenuItem>
               <MenuItem value="GM">Game Master</MenuItem>
             </Field>
+            {values.type === 'GL' ? (
+              <Field
+                required
+                name="team"
+                label="Team"
+                options={teams}
+                component={Select}
+              />
+            ) : (
+              null
+            )}
             <Field
               required
               name="school"
