@@ -13,11 +13,10 @@ import { getFirestore } from 'redux-firestore';
 import { connect } from 'react-redux';
 
 import * as util from '../../../../helper/util';
-import Select from '../../../../components/UI/Select/Select';
 //import * as reduxAction from '../../../store/actions';
 import TextField from '../../../../components/UI/TextField/TextField';
 import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
-import DisplayStudents from '../../../../components/UI/DisplayStudentsDiv/DisplayStudentsDiv';
+
 
 const initialValues = {
   firstName: '',
@@ -30,7 +29,6 @@ const initialValues = {
   dietary: '',
   password:'',
   confirmPassword:'',
-  teamId:'',
 };
 
 class AddCrewForm extends Component {
@@ -55,7 +53,7 @@ class AddCrewForm extends Component {
   }
 
   render() {
-    const { enqueueSnackbar, match, auth, teams } = this.props;
+    const { enqueueSnackbar, match, auth } = this.props;
     return (
       <Formik
         initialValues={initialValues}
@@ -81,7 +79,6 @@ class AddCrewForm extends Component {
           dietary: Yup.string(),
           type: Yup.mixed()
             .singleSelectRequired('Required'),
-          teamId : Yup.string().required(),
         })}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const firestore = getFirestore();
@@ -100,7 +97,6 @@ class AddCrewForm extends Component {
             school: values.school,
             email: values.email,
             student_no: values.studentNo,
-            teamId: values.teamId.value,
           };
           if (typeof (values.dietary) !== 'undefined') {
             addValues.dietary_restriction = values.dietary;
@@ -212,15 +208,6 @@ class AddCrewForm extends Component {
               type="text"
               component={TextField}
             />
-            {teams && (
-            <Field
-              name="teamId"
-              label="Assign Team"
-              options={teams}
-              component={Select}
-            />)
-            }
-            <DisplayStudents teamId={values.teamId ? values.teamId.value : null} />
             <div className="align-right">
               <Button
                 type="button"
