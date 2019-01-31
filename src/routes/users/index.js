@@ -60,6 +60,7 @@ class Users extends Component {
         Mobile: user.data.mobile,
         Type: user.data.type,
         School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
+        Email: user.data.email,
       }
     ));
     return data;
