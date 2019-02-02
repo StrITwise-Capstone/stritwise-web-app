@@ -23,24 +23,24 @@ export default [
 
   /* EVENTS */ 
   <Route exact path="/events" key="/events" component={Dashboard}/>,
-  <Route exact path="/events/:id/overview" key="/events/overview" component={Overview} />,
+  <Route exact path="/events/:eventId/overview" key="/events/overview" component={Overview} />,
 
-  <Route exact path="/events/:id/teams/view" key="/events/teams/view" component={ViewTeam} />,
-  <Route exact path="/events/:id/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
+  <Route exact path="/events/:eventId/teams/view" key="/events/teams/view" component={ViewTeam} />,
+  <Route exact path="/events/:eventId/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
 
   // teams
-  <Route exact path="/events/:id/teams" key="/events/teams" component={ViewTeam} />,
-  <Route exact path="/events/:id/teams/create" key="/events/teams/create" component={CreateTeam}/>,
-  <Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>,
+  <Route exact path="/events/:eventId/teams" key="/events/teams" component={ViewTeam} />,
+  <Route exact path="/events/:eventId/teams/create" key="/events/teams/create" component={CreateTeam}/>,
+  <Route exact path="/events/:eventId/teams/:teamId/edit" key="/events/teams/edit" component={EditTeam}/>,
   
 
   // Volunteers
-  <Route exact path="/events/:id/volunteers" key="/events/volunteers" component={Volunteers} />,
-  <Route exact path="/events/:id/volunteers/create" key="/events/volunteers/create" component={CreateVolunteer} />,
-  <Route exact path="/events/:id/volunteers/:volunteerid/edit" key="/events/volunteers/edit" component={EditVolunteer} />,
+  <Route exact path="/events/:eventId/volunteers" key="/events/volunteers" component={Volunteers} />,
+  <Route exact path="/events/:eventId/volunteers/create" key="/events/volunteers/create" component={CreateVolunteer} />,
+  <Route exact path="/events/:eventId/volunteers/:volunteerid/edit" key="/events/volunteers/edit" component={EditVolunteer} />,
 
   // PointSystem
-  <Route exact path="/events/:id/points" key="/events/points" component={TeamPoints} />,
-  <Route exact path="/events/:id/points/:teamid/edit" key="/events/points/edit" component={EditTeamPoints} />,
+  <Route exact path="/events/:eventId/points" key="/events/points" component={TeamPoints} />,
+  <Route exact path="/events/:eventId/points/:teamId/edit" key="/events/points/edit" component={EditTeamPoints} />,
 
 ]

@@ -281,7 +281,7 @@ class cardList extends React.Component {
                     <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
                       <TeamCard
                         teamuid={teamsList[teamuid].uid}
-                        eventuid={match.params.id}
+                        eventuid={match.params.eventId}
                         currentevent={currentevent}
                         update={() => { this.getData(); }}
                       />

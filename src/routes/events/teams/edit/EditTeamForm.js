@@ -83,12 +83,12 @@ const editTeam = ({
         .min(minStudent, `Minimum of ${minStudent} member`),
     })}
     onSubmit={(values, { resetForm, setSubmitting }) => {
-      const eventuid = match.params.id;
-      const teamId = match.params.teamid;
+      const eventuid = match.params.eventId;
+      const teamId = match.params.teamId;
       var students = values.students;
       var deleteArray = values.deleteArray;
-      deleteArray.map((student, index) => firestore.collection('events').doc(match.params.id).collection('students').doc(deleteArray[index]).delete());
-      firestore.collection('events').doc(match.params.id).collection('teams').doc(teamId).update({
+      deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
+      firestore.collection('events').doc(match.params.eventId).collection('teams').doc(teamId).update({
         team_name: values.team_name,
         school_id: values.school_id.value,
         credit: 0,

@@ -91,7 +91,7 @@ class teamCard extends React.Component {
               </CardContent>
             </CardContent>
             <CardContent>
-              <Button onClick={()=>{history.push(`/events/${match.params.id}/teams/${teamuid}/edit`)}} color="primary">Edit</Button>
+              <Button onClick={()=>{history.push(`/events/${match.params.eventId}/teams/${teamuid}/edit`)}} color="primary">Edit</Button>
               <Button onClick={this.deleteTeam} color="primary">Delete</Button>
             </CardContent>
           </Card>

@@ -82,7 +82,7 @@ const styles = () => ({
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
     auth: state.firebase.auth,
@@ -107,8 +107,8 @@ export default compose(
   firestoreConnect(props => [
     {
       collection: 'events',
-      doc: `${props.match.params.id}`,
-      storeAs: `currentevent${props.match.params.id}`,
+      doc: `${props.match.params.eventId}`,
+      storeAs: `currentevent${props.match.params.eventId}`,
     },
   ]),
   withSnackbar,

@@ -32,12 +32,12 @@ class Volunteers extends Component {
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (volunteerID) => {
     const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/volunteers/${volunteerID}/edit`);
+    history.push(`/events/${match.params.eventId}/volunteers/${volunteerID}/edit`);
   }
 
   handleDelete = (volunteerId) => {
     const { firestore, match } = this.props;
-    return firestore.collection('events').doc(match.params.id).collection('volunteers').doc(volunteerId).delete()
+    return firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(volunteerId).delete()
       .then(() => (console.log('Document is being deleted!')))
       .catch(error => (console.error('Error removing document: ', error)));
   }
@@ -89,7 +89,7 @@ class Volunteers extends Component {
   render() {
     const { firestore, match } = this.props;
     const { filter, search, isLoading } = this.state;
-    const colRef = firestore.collection('events').doc(match.params.id).collection('volunteers');
+    const colRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers');
     const action = (
       <div style={{ display: 'flex' }}>
         <Button
@@ -97,7 +97,7 @@ class Volunteers extends Component {
           variant="contained"
           color="secondary"
           component={Link}
-          to={`/events/${match.params.id}/volunteers/create`}
+          to={`/events/${match.params.eventId}/volunteers/create`}
         >
         Add Volunteer
         </Button>
@@ -111,7 +111,7 @@ class Volunteers extends Component {
         </Button>
         <Dialog
           refreshState={this.refreshState}
-          eventuid={match.params.id}
+          eventuid={match.params.eventId}
         />
       </div>
     );
@@ -230,7 +230,7 @@ export default compose(
   firestoreConnect(props => (
     [
       {
-        collection: 'events', doc: `${props.match.params.id}`, subcollections: [{ collection: 'teams' }], storeAs: 'teams',
+        collection: 'events', doc: `${props.match.params.eventId}`, subcollections: [{ collection: 'teams' }], storeAs: 'teams',
       },
     ]
   )),

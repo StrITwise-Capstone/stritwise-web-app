@@ -101,7 +101,7 @@ const EditTeamPtsForm = ({
                 variant="outlined"
                 color="secondary"
                 component={Link}
-                to={`/events/${match.params.id}/points`}
+                to={`/events/${match.params.eventId}/points`}
               >
                 <ArrowBack />
                 BACK TO POINTS

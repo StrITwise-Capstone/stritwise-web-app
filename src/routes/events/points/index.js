@@ -26,7 +26,7 @@ class Points extends Component {
   // if (!auth.uid) return <Redirect to="/auth/login" />
   handleEdit = (teamID) => {
     const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/points/${teamID}/edit`);
+    history.push(`/events/${match.params.eventId}/points/${teamID}/edit`);
   }
 
   handleDocsList = (docsList) => {
@@ -62,7 +62,7 @@ class Points extends Component {
           variant="contained"
           color="secondary"
           component={Link}
-          to={`/events/${match.params.id}/pointsystem`}
+          to={`/events/${match.params.eventId}/pointsystem`}
         >
           Presentation View
         </Button>
@@ -91,7 +91,7 @@ class Points extends Component {
   render() {
     const { firestore, match } = this.props;
     const { filter, search } = this.state;
-    const colRef = firestore.collection('events').doc(match.params.id).collection('teams');
+    const colRef = firestore.collection('events').doc(match.params.eventId).collection('teams');
     return (
       <AdminLayout
         title="Points"

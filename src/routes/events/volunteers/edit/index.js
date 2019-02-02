@@ -18,7 +18,7 @@ class EditVolunteer extends Component {
 
   componentDidMount() {
     const { firestore, match } = this.props;
-    firestore.collection('events').doc(match.params.id).collection('teams').get().then((querySnapshot) => {
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
       const teams = [];
       querySnapshot.forEach((doc) => {
         teams.push({
@@ -31,7 +31,7 @@ class EditVolunteer extends Component {
       console.log(error);
     });
 
-    const volunteerDocRef = firestore.collection('events').doc(match.params.id).collection('volunteers').doc(match.params.volunteerid);
+    const volunteerDocRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(match.params.volunteerid);
     volunteerDocRef.get().then((doc) => {
       const volunteer = {
         id: match.params.volunteerid,

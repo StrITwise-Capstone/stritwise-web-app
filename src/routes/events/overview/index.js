@@ -73,7 +73,7 @@ class Overview extends Component {
 
   createTeam = () => {
     const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/teams/create`)
+    history.push(`/events/${match.params.eventId}/teams/create`)
   }
 
   action = () => {
@@ -86,7 +86,7 @@ class Overview extends Component {
             variant="contained"
             color="secondary"
             component={Link}
-            to={`/events/${match.params.id}/edit`}
+            to={`/events/${match.params.eventId}/edit`}
           >
             Edit
           </Button>
@@ -107,7 +107,7 @@ class Overview extends Component {
     } = this.props;
     const db = firestore;
     this.setState({ isNotLoading: false });
-    db.collection('events').doc(match.params.id).delete().then(() => {
+    db.collection('events').doc(match.params.eventId).delete().then(() => {
       enqueueSnackbar('Deleted Event', {
         variant: 'success',
       });
@@ -160,7 +160,7 @@ class Overview extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     auth: state.firebase.auth,
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
@@ -187,7 +187,7 @@ export default compose(
   withStyles(styles),
   firestoreConnect(props => [
     {
-      collection: 'events', doc: `${props.match.params.id}`, storeAs: `currentevent${props.match.params.id}`,
+      collection: 'events', doc: `${props.match.params.eventId}`, storeAs: `currentevent${props.match.params.eventId}`,
     },
     {
       collection: 'users',

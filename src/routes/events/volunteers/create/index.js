@@ -15,7 +15,7 @@ class AddVolunteer extends Component {
 
   componentDidMount() {
     const { firestore, match } = this.props;
-    firestore.collection('events').doc(match.params.id).collection('teams').get().then((querySnapshot) => {
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
       const teams = [];
       querySnapshot.forEach((doc) => {
         teams.push({

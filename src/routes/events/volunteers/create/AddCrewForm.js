@@ -90,7 +90,7 @@ class AddCrewForm extends Component {
 
           // update user values
           const addValues = {
-            eventId: match.params.id,
+            eventId: match.params.eventId,
             first_name: values.firstName,
             last_name: values.lastName,
             initials: values.firstName[0] + values.lastName[0],
@@ -233,7 +233,7 @@ class AddCrewForm extends Component {
                 variant="outlined"
                 color="secondary"
                 component={Link}
-                to={`/events/${match.params.id}/volunteers`}
+                to={`/events/${match.params.eventId}/volunteers`}
               >
                 <ArrowBack />
                 BACK TO VOLUNTEERS

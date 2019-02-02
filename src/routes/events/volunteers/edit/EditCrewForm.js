@@ -76,7 +76,7 @@ const EditCrewForm = ({
         enqueueSnackbar('Volunteer successfully updated.', {
           variant: 'success',
         });
-        history.push(`/events/${match.params.id}/volunteers`);
+        history.push(`/events/${match.params.eventId}/volunteers`);
         console.log('Document successfully updated!');
       }).catch((error) => {
         // The document probably doesn't exist.
@@ -154,7 +154,7 @@ const EditCrewForm = ({
                 variant="outlined"
                 color="secondary"
                 component={Link}
-                to={`/events/${match.params.id}/volunteers`}
+                to={`/events/${match.params.eventId}/volunteers`}
               >
                 <ArrowBack />
                 BACK TO VOLUNTEERS

@@ -64,7 +64,7 @@ class ViewTeams extends Component {
 
   createTeam = () => {
     const { history, match } = this.props;
-    history.push(`/events/${match.params.id}/teams/create`);
+    history.push(`/events/${match.params.eventId}/teams/create`);
   }
 
   refreshState = () => {
@@ -99,7 +99,7 @@ class ViewTeams extends Component {
                 variant="contained"
                 color="secondary"
                 component={Link}
-                to={`/events/${match.params.id}/teams/create`}
+                to={`/events/${match.params.eventId}/teams/create`}
               >
               Create
               </Button>
@@ -114,7 +114,7 @@ class ViewTeams extends Component {
               <Dialog
                 refreshState={() => { this.refreshState(); }}
                 schools={schools}
-                eventuid={match.params.id}
+                eventuid={match.params.eventId}
                 teacherId={teacherId}
                 schoolId={schoolId}
               />
@@ -127,7 +127,7 @@ class ViewTeams extends Component {
             && (
             <CardList
               schools={schools}
-              eventuid={match.params.id}
+              eventuid={match.params.eventId}
               currentevent={currentevent}
               teacherId={teacherId}
             />)}
@@ -139,7 +139,7 @@ class ViewTeams extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     auth: state.firebase.auth,
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
@@ -166,8 +166,8 @@ export default compose(
   firestoreConnect(props => [
     {
       collection: 'events',
-      doc: `${props.match.params.id}`,
-      storeAs: `currentevent${props.match.params.id}`,
+      doc: `${props.match.params.eventId}`,
+      storeAs: `currentevent${props.match.params.eventId}`,
     },
     {
       collection: 'users',

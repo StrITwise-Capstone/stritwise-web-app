@@ -32,10 +32,10 @@ class editTeam extends Component {
     }).catch((error) => {
       console.log(error);
     });
-    firestore.collection('events').doc(match.params.id).collection('teams').doc(match.params.teamid).get().then((doc) => {
+    firestore.collection('events').doc(match.params.eventId).collection('teams').doc(match.params.teamId).get().then((doc) => {
       this.setState({ team: doc.data() });
     });
-    const query = firestore.collection('events').doc(match.params.id).collection('students').where('team_id', '==', `${match.params.teamid}`);
+    const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`);
     query.get().then((querySnapshot) => {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
@@ -60,7 +60,7 @@ class editTeam extends Component {
 
   refreshState = () => {
     const { firestore, match } = this.props;
-    const query = firestore.collection('events').doc(match.params.id).collection('students').where('team_id', '==', `${match.params.teamid}`)
+    const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`)
     query.get().then((querySnapshot) => {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
@@ -124,7 +124,7 @@ class editTeam extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.id}`],
+    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
   }
@@ -143,8 +143,8 @@ export default compose(
   firestoreConnect(props => [
     {
       collection: 'events',
-      doc: `${props.match.params.id}`,
-      storeAs: `currentevent${props.match.params.id}`,
+      doc: `${props.match.params.eventId}`,
+      storeAs: `currentevent${props.match.params.eventId}`,
     },
   ]),
   withSnackbar,

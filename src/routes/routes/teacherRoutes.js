@@ -16,8 +16,8 @@ export default [
   <Route exact path="/profile" key="/profile" component={Profile} />,
   /* EVENTS */ 
   <Route exact path="/events" key="/events" component={Dashboard}/>,
-  <Route exact path="/events/:id/teams" key="/events/teams" component={ViewTeam} />,
-  <Route exact path="/events/:id/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
-  <Route exact path="/events/:id/teams/:teamid/edit" key="/events/teams/edit" component={EditTeam}/>,
-  <Route exact path="/events/:id/overview" key="/events/overview" component={Overview} />,
+  <Route exact path="/events/:eventId/teams" key="/events/teams" component={ViewTeam} />,
+  <Route exact path="/events/:eventId/teams/create" key="/events/teams/create"  component={CreateTeam}/>,
+  <Route exact path="/events/:eventId/teams/:teamId/edit" key="/events/teams/edit" component={EditTeam}/>,
+  <Route exact path="/events/:eventId/overview" key="/events/overview" component={Overview} />,
 ]

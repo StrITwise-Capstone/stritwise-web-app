@@ -90,9 +90,9 @@ const createTeam = ({
       } else {
         schoolValue = values.school_id.value;
       }
-      const eventuid = match.params.id;
+      const eventuid = match.params.eventId;
       const { students } = values;
-      firestore.collection('events').doc(match.params.id).collection('teams').add({
+      firestore.collection('events').doc(match.params.eventId).collection('teams').add({
         team_name: values.team_name,
         school_id: schoolValue,
         credit: 0,

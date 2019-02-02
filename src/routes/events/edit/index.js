@@ -20,7 +20,7 @@ class editEvent extends Component {
       match,
     } = this.props;
     const { event } = this.state;
-    const eventuid = match.params.id;
+    const eventuid = match.params.eventId;
     if (events !== null && events !== undefined && event === null) {
       this.setState({
         event: events[eventuid],
@@ -33,7 +33,7 @@ class editEvent extends Component {
       events,
       match,
     } = this.props;
-    const eventuid = match.params.id;
+    const eventuid = match.params.eventId;
     this.setState({
       event: events[eventuid],
     });
@@ -42,7 +42,7 @@ class editEvent extends Component {
   render() {
     const { match } = this.props;
     const { event, refreshState } = this.state;
-    const eventuid = match.params.id;
+    const eventuid = match.params.eventId;
     return (
       <AdminLayout
         title="Edit Event"

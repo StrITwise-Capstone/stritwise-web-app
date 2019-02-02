@@ -43,7 +43,7 @@ class EditPoints extends Component {
   render() {
     let content = <CircularProgress />;
     const { classes, team, firestore, match } = this.props;
-    const teamRef = firestore.collection('events').doc(match.params.id).collection('teams').doc(match.params.teamid);
+    const teamRef = firestore.collection('events').doc(match.params.eventId).collection('teams').doc(match.params.teamId);
     if (team !== undefined) {
       content = (
         <AdminLayout>
@@ -98,7 +98,7 @@ export default compose(
   firestoreConnect(props => (
     [
       {
-        collection: 'events', doc: `${props.match.params.id}`, subcollections: [{ collection: 'teams', doc: `${props.match.params.teamid}` }], storeAs: 'team',
+        collection: 'events', doc: `${props.match.params.eventId}`, subcollections: [{ collection: 'teams', doc: `${props.match.params.teamId}` }], storeAs: 'team',
       },
     ]
   )),
