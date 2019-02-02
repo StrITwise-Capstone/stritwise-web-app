@@ -25,7 +25,7 @@ const styles = theme => ({
 
 class Student extends Component {
   render() {
-    const { classes, student, teamuid, studentuid, eventuid, deletevalue } = this.props;
+    const { classes, student, teamId, deleteValue, updatePage } = this.props;
     return (
       <div className={classes.root}>
         {student && (
@@ -36,7 +36,7 @@ class Student extends Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Form student={student} eventuid={eventuid} studentuid={studentuid} teamuid={teamuid} deletevalue={deletevalue} />
+            <Form student={student} studentuid={student.key} teamId={teamId} deleteValue={deleteValue} updatePage={updatePage} />
           </ExpansionPanelDetails>
         </ExpansionPanel>)
         }
@@ -47,10 +47,8 @@ class Student extends Component {
 }
 
 Student.propTypes = {
-  eventuid: PropTypes.string.isRequired,
-  studentuid: PropTypes.string.isRequired,
-  teamuid: PropTypes.string.isRequired,
-  deletevalue: PropTypes.bool.isRequired,
+  teamId: PropTypes.string.isRequired,
+  deleteValue: PropTypes.bool.isRequired,
   student: PropTypes.shape({}).isRequired,
   /* eslint-disable react/forbid-prop-types */
   classes: PropTypes.any.isRequired,

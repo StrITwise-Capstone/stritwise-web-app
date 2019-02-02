@@ -32,7 +32,7 @@ class Thumb extends Component {
 
     return (
       <div
-        style={{alignItems: 'center', display: 'flex', margin: '1em' }}
+        style={{ alignItems: 'center', display: 'flex', margin: '1em' }}
       >
         <img
           src={thumb}

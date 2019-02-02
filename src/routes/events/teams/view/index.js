@@ -15,7 +15,7 @@ import {
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 
-import CardList from '../../TeamsUI/CardList/CardList';
+import CardList from '../../../../components/UI/TeamsUI/CardList/CardList';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 import Dialog from './ImportButton/Dialog';
 import urlForDownloads from '../../../../config/urlForDownloads';
@@ -41,13 +41,27 @@ const styles = () => ({
 
 class ViewTeams extends Component {
   state = {
-    isNotLoading: true,
+    isLoading: true,
     schools: null,
+    event: null,
   };
 
   componentDidMount() {
+    this.getSchools();
+    this.getEvent();
+  }
+
+  getEvent = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(`${match.params.eventId}`).get().then((doc) => {
+      this.setState({ event: doc.data(), isLoading: false });
+    })
+  }
+
+  getSchools = () => {
     const { firestore } = this.props;
-    this.setState({ isNotLoading: false });
+    this.setState({ isLoading: true });
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
@@ -56,7 +70,7 @@ class ViewTeams extends Component {
           value: doc.id,
         });
       });
-      this.setState({ schools, isNotLoading: true });
+      this.setState({ schools, isLoading: false });
     }).catch((error) => {
       console.log(error);
     });
@@ -68,19 +82,17 @@ class ViewTeams extends Component {
   }
 
   refreshState = () => {
-    this.setState({ isNotLoading: false });
-    this.setState({ isNotLoading: true });
+    this.setState({ isLoading: true });
+    this.setState({ isLoading: false });
   }
-
 
   render() {
     const {
       user,
       auth,
-      currentevent,
       match,
     } = this.props;
-    const { isNotLoading, schools } = this.state;
+    const { isLoading, schools, event } = this.state;
     let teacherId = '';
     let schoolId = '';
     if (user && user.type === 'teacher') {
@@ -120,15 +132,15 @@ class ViewTeams extends Component {
               />
             </div>)}
         >
-          {isNotLoading === false
+          {isLoading
             && <CircularProgress />
           }
-          {isNotLoading && schools && currentevent
+          {!isLoading
             && (
             <CardList
               schools={schools}
               eventuid={match.params.eventId}
-              currentevent={currentevent}
+              event={event}
               teacherId={teacherId}
             />)}
         </AdminLayout>
@@ -137,9 +149,8 @@ class ViewTeams extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     auth: state.firebase.auth,
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
@@ -151,25 +162,15 @@ ViewTeams.propTypes = {
   match: PropTypes.any.isRequired,
   user: PropTypes.any.isRequired,
   auth: PropTypes.any.isRequired,
-  currentevent: PropTypes.any,
   history: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
   /* eslint-enable */
-};
-
-ViewTeams.defaultProps = {
-  currentevent: null,
 };
 
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
   firestoreConnect(props => [
-    {
-      collection: 'events',
-      doc: `${props.match.params.eventId}`,
-      storeAs: `currentevent${props.match.params.eventId}`,
-    },
     {
       collection: 'users',
       storeAs: 'user',

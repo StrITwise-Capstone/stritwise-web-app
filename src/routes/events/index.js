@@ -106,15 +106,15 @@ class ViewVolunteers extends Component {
             <CircularProgress />
           )}
           {filteredEventsList
-            && Object.keys(filteredEventsList).map(eventuid => (
-              <Grid item xs={6} key={eventuid}>
+            && Object.keys(filteredEventsList).map(eventId => (
+              <Grid item xs={6} key={eventId}>
                 <Card
-                  eventuid={eventuid}
-                  imageSource={filteredEventsList[eventuid].image_path}
-                  title={filteredEventsList[eventuid].name}
-                  description={filteredEventsList[eventuid].description}
-                  start_date={filteredEventsList[eventuid].start_date}
-                  end_date={filteredEventsList[eventuid].end_date}
+                  eventId={eventId}
+                  imageSource={filteredEventsList[eventId].image_path}
+                  title={filteredEventsList[eventId].name}
+                  description={filteredEventsList[eventId].description}
+                  start_date={filteredEventsList[eventId].start_date}
+                  end_date={filteredEventsList[eventId].end_date}
                 />
               </Grid>))
           }

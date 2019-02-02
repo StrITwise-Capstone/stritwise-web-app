@@ -17,30 +17,55 @@ const textField = ({
     rowsMax,
     fullWidth,
     required,
+    style,
     placeholder,
   } = props;
   const hasError = !!(touched[field.name] && errors[field.name]);
   return (
-    <div>
-      <TextField
-        required={required}
-        disabled={disabled}
-        error={hasError}
-        helperText={hasError && errors[field.name]}
-        autoComplete={autoComplete}
-        label={label}
-        type={type}
-        name={field.name}
-        onChange={field.onChange}
-        onBlur={field.onBlur}
-        value={field.value}
-        multiline={multiline}
-        rows={rows}
-        rowsMax={rowsMax}
-        fullWidth={fullWidth}
-        placeholder={placeholder ? placeholder : ''}
-      />
-    </div>
+    <React.Fragment>
+      {style == null && (
+      <div>
+        <TextField
+          required={required}
+          disabled={disabled}
+          error={hasError}
+          helperText={hasError && errors[field.name]}
+          autoComplete={autoComplete}
+          label={label}
+          type={type}
+          name={field.name}
+          onChange={field.onChange}
+          onBlur={field.onBlur}
+          value={field.value}
+          multiline={multiline}
+          rows={rows}
+          rowsMax={rowsMax}
+          fullWidth={fullWidth}
+          placeholder={placeholder ? placeholder : ''}
+        />
+      </div>)}
+      { style
+      && (
+        <TextField
+          required={required}
+          disabled={disabled}
+          error={hasError}
+          helperText={hasError && errors[field.name]}
+          autoComplete={autoComplete}
+          label={label}
+          type={type}
+          name={field.name}
+          onChange={field.onChange}
+          onBlur={field.onBlur}
+          value={field.value}
+          multiline={multiline}
+          rows={rows}
+          rowsMax={rowsMax}
+          style={style}
+          placeholder={placeholder ? placeholder : ''}
+      />)
+      }
+    </React.Fragment>
   );
 };
 

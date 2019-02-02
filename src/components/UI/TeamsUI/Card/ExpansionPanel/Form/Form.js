@@ -9,14 +9,38 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
+import { withRouter } from 'react-router';
 
-import TextField from '../../../../../../components/UI/TextField/TextField';
+import TextField from '../../../../TextField/TextField';
 import DeleteButton from './DeleteButton/DeleteButton';
 import yup from '../../../../../../instances/yup';
+
+const initialValues = (
+  student,
+  studentuid,
+  eventId,
+  teamId,
+  deleteValue,
+) => {
+  return {
+    firstname: student.first_name,
+    lastname: student.last_name,
+    badgename: student.badge_name,
+    dietary_restriction: student.dietary_restriction,
+    remarks: student.remarks,
+    email: student.email,
+    mobile: student.mobile,
+    studentuid,
+    eventId,
+    teamId,
+    deleteValue,
+    emergency_contact_name: student.emergency_contact_name,
+    emergency_contact_mobile: student.emergency_contact_mobile,
+    emergency_contact_relation: student.emergency_contact_relation,
+}}
 
 const validationSchema = yup.object({
   firstname: yup.string()
@@ -32,43 +56,33 @@ const editStudent = ({
   enqueueSnackbar,
   student,
   studentuid,
-  eventuid,
-  teamuid,
-  deletevalue,
+  eventId,
+  teamId,
+  deleteValue,
+  match,
+  updatePage,
 }) => (
   <Formik
     enableReinitialize={true}
-    initialValues={{
-      firstname: student.first_name,
-      lastname: student.last_name,
-      badgename: student.badge_name,
-      dietary_restriction: student.dietary_restriction,
-      remarks: student.remarks,
-      email: student.email,
-      mobile: student.mobile,
-      studentuid,
-      eventuid,
-      teamuid,
-      deletevalue,
-      emergency_contact_name: student.emergency_contacts ? student.emergency_contacts.name : null,
-      emergency_contact_mobile: student.emergency_contacts ? student.emergency_contacts.mobile : null,
-      emergency_contact_relation: student.emergency_contacts ? student.emergency_contacts.relation : null,
-    }}
+    initialValues={initialValues(student, studentuid, eventId, teamId, deleteValue)}
     validationSchema={validationSchema}    
     onSubmit={(values, { setSubmitting }) => {
-      firestore.collection('events').doc(eventuid).collection('students').doc(studentuid).update({
-        first_name: values.firstname,
-        last_name: values.lastname,
-        badge_name: values.badgename,
-        mobile: values.mobile,
-        dietary_restriction: values.dietary_restriction,
-        remarks: values.remarks,
-        email: values.email,
-        modified_at: new Date(Date.now()),
-      }).then(() => {
+      const updateStudent = () => {
+        return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentuid).update({
+          first_name: values.firstname,
+          last_name: values.lastname,
+          badge_name: values.badgename,
+          mobile: values.mobile,
+          dietary_restriction: values.dietary_restriction,
+          remarks: values.remarks,
+          email: values.email,
+          modified_at: new Date(Date.now()),
+        });
+      };
+      updateStudent().then(() => {
         enqueueSnackbar('Student Updated',{
           variant: 'success',
-        })
+        });
         setSubmitting(false);
       }).catch((err) => {
         enqueueSnackbar('Student Not Updated', {
@@ -87,7 +101,9 @@ const editStudent = ({
       let content = <CircularProgress />;
       if (!isSubmitting) {
         content = (
-          <Form onSubmit={handleSubmit}  style={{width:"550px"}}>
+          <Form
+            onSubmit={handleSubmit}
+            style={{ width: '550px' }}>
             <Field
               required
               name="firstname"
@@ -160,7 +176,14 @@ const editStudent = ({
               {<Button type="submit" color="primary">Update</Button>}
             </div>
             <div className="align-right">
-              {initialValues.deletevalue && <DeleteButton teamuid={initialValues.teamuid} studentuid={initialValues.studentuid} eventuid={initialValues.eventuid} />}
+              {initialValues.deleteValue
+              && (
+                <DeleteButton
+                  teamId={initialValues.teamId}
+                  studentuid={initialValues.studentuid}
+                  updatePage={updatePage}
+                />)
+              }
             </div>
           </Form>
         );
@@ -170,21 +193,16 @@ const editStudent = ({
   </Formik>
 );
 
-const mapStateToProps = (state, ownProps) => {
-  return ({
-    school: state.firestore.data[`school${ownProps.student.school_id}`],
-  });
-};
-
 editStudent.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
-  eventuid: PropTypes.string.isRequired,
+  eventId: PropTypes.string.isRequired,
   studentuid: PropTypes.string.isRequired,
-  teamuid: PropTypes.string.isRequired,
-  deletevalue: PropTypes.bool.isRequired,
+  teamId: PropTypes.string.isRequired,
+  deleteValue: PropTypes.bool.isRequired,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   student: PropTypes.any,
+  match: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
@@ -194,6 +212,6 @@ editStudent.defaultProps = {
 
 export default compose(
   withSnackbar,
-  connect(mapStateToProps),
   firestoreConnect(),
+  withRouter,
 )(editStudent);

@@ -22,8 +22,8 @@ import * as Yup from 'yup';
 import * as util from '../../../../helper/util';
 import TablePaginationActions from './TablePaginationActions';
 import TeamCard from '../Card/TeamCard';
-import TextField from '../../../../components/UI/TextField/TextField';
-import Select from '../../../../components/UI/Select/Select';
+import TextField from '../../TextField/TextField';
+import Select from '../../Select/Select';
 
 const actionsStyles = theme => ({
   root: {
@@ -42,21 +42,21 @@ class cardList extends React.Component {
       page: 0,
       lastVisible: null,
       firstVisible: null,
-      isNotLoading: true,
+      isLoading: true,
       search: '',
     }
 
     handleChangePage = (event, newPage) => {
       const { firestore, eventuid } = this.props;
       const { lastVisible, firstVisible, search, page } = this.state;
-      this.setState({ isNotLoading: false });
+      this.setState({ isLoading: true });
       const callback = (array, lastVisible, page, firstVisible) => {
         this.setState({
           teamsList: array,
           lastVisible,
           page,
           firstVisible,
-          isNotLoading: true,
+          isLoading: false,
         });
       };
       var array = [];
@@ -66,7 +66,7 @@ class cardList extends React.Component {
           .orderBy('team_name', 'asc')
           .limit(5)
           .startAfter(lastVisible);
-        this.setState({ isNotLoading: false, teamsList: null });
+        this.setState({ isLoading: true, teamsList: null });
         first.get().then((documentSnapshots) => {
         // Get the last visible document
           const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
@@ -85,7 +85,7 @@ class cardList extends React.Component {
           .orderBy('team_name', 'desc')
           .limit(5)
           .startAfter(firstVisible);
-        this.setState({ isNotLoading: false, teamsList: null });
+        this.setState({ isLoading: true, teamsList: null });
         first.get().then((documentSnapshots) => {
           var lastVisible = documentSnapshots.docs[0];
           var firstVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
@@ -108,7 +108,7 @@ class cardList extends React.Component {
           teamsList: array,
           lastVisible,
           page: 0,
-          isNotLoading: true,
+          isLoading: false,
         });
       };
       var ref = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search);
@@ -117,7 +117,7 @@ class cardList extends React.Component {
       });
       var array = [];
       var first = ref.orderBy('team_name').limit(5);
-      this.setState({ isNotLoading: false, teamsList: null });
+      this.setState({ isLoading: true, teamsList: null });
       first.get().then((documentSnapshots) => {
         var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
         documentSnapshots.forEach((documentSnapshot) => {
@@ -128,7 +128,7 @@ class cardList extends React.Component {
         });
         callback(array, lastVisible);
       }).catch((error) => {
-        this.setState({ isNotLoading: true });
+        this.setState({ isLoading: false });
         console.log(error);
       })
     }
@@ -149,21 +149,20 @@ class cardList extends React.Component {
 
     componentDidMount = () => {
       this.getTeams();
+      this.getSchools();
+    }
+    
+    getSchools = () => {
       const { firestore } = this.props;
-      this.setState({ isNotLoading: false });
       firestore.collection('schools').get().then((querySnapshot) => {
-        const schools = [];
-        schools.push({
-          label: '',
-          value: '',
-        });
+        const schools = [{ label: '', value: '' }];
         querySnapshot.forEach((doc) => {
           schools.push({
             label: doc.data().name,
             value: doc.id,
           });
         });
-        this.setState({ schools, isNotLoading: true });
+        this.setState({ schools });
       }).catch((error) => {
         console.log(error);
       });
@@ -171,10 +170,10 @@ class cardList extends React.Component {
 
     render() {
       const {
-        teamsList, isNotLoading, page, schools, teamsListCount,
+        teamsList, isLoading, page, schools, teamsListCount,
       } = this.state;
       const {
-        match, currentevent, teacherId,
+        event, teacherId,
       } = this.props;
       const defaultOptions =  [{ label : '' , value : ''}];
       return (
@@ -194,7 +193,7 @@ class cardList extends React.Component {
                     })}
                     onSubmit={(values, { setSubmitting }) => {
                       this.setState({ search: values.search.value });
-                      this.getData();
+                      this.getTeams();
                       setSubmitting(false);
                     }}
                   >
@@ -267,23 +266,22 @@ class cardList extends React.Component {
             alignItems="flex-start"
             spacing={8}
           >
-            { !isNotLoading && (
+            { isLoading && (
               <CircularProgress />)
             }
-            { isNotLoading && isEmpty(teamsList) && (
+            { !isLoading && isEmpty(teamsList) && (
               <Grid item>
                 <Typography component="p">There is no data at the moment.</Typography>
               </Grid>
             )
             }
-            {teamsList && isNotLoading
+            {teamsList && !isLoading
                   && Object.keys(teamsList).map( teamuid => (
                     <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
                       <TeamCard
-                        teamuid={teamsList[teamuid].uid}
-                        eventuid={match.params.eventId}
-                        currentevent={currentevent}
-                        update={() => { this.getData(); }}
+                        teamId={teamsList[teamuid].uid}
+                        event={event}
+                        updatePage={() => { this.getTeams(); }}
                       />
                     </Grid>
                   ))
@@ -296,18 +294,17 @@ class cardList extends React.Component {
 
 cardList.propTypes = {
   eventuid: PropTypes.string,
-  currentevent: PropTypes.shape({}),
+  event: PropTypes.shape({}),
   team: PropTypes.shape({}),
   teacherId: PropTypes.string,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
-  match: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
 cardList.defaultProps = {
   team: null,
-  currentevent: null,
+  event: null,
   eventuid: null,
   teacherId: null,
 };

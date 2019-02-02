@@ -133,9 +133,10 @@ class Overview extends Component {
     const { imageFileURL, isLoading, event } = this.state;
     return (
       <React.Fragment>
-        {isLoading &&
+        {isLoading
+        && (
           <CircularProgress />
-        }
+        )}
         {imageFileURL
           && !isLoading
           && (
@@ -166,13 +167,12 @@ class Overview extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     auth: state.firebase.auth,
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
-  }
+  };
 };
 
 Overview.propTypes = {

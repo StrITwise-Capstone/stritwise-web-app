@@ -58,13 +58,12 @@ const mapStateToProps = state => ({
 
 editEvent.propTypes = {
   /* eslint-disable react/forbid-prop-types */
-  events: PropTypes.any,
   match: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
 editEvent.defaultProps = {
-  events: null,
 };
 
 export default compose(

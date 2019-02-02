@@ -18,12 +18,21 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 
-import TextField from './TextField';
+import TextField from '../../../../components/UI/TextField/TextField';
 import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
-const validationSchema = (minStudent) => {return yup.object({
+const initialValues = (minStudent, schools, teacherId, schoolId) => { return {
+  team_name: '',
+  students: Array.apply(null, Array(minStudent)).map(function () {return null;}),
+  schools,
+  teacherId: teacherId ? teacherId : 'null',
+  lengthStudents: minStudent,
+  schoolId: schoolId ? schoolId : '',
+}};
+
+const validationSchema = minStudent => yup.object({
   team_name: yup.string()
     .required('Required'),
   students: yup.array()
@@ -37,7 +46,7 @@ const validationSchema = (minStudent) => {return yup.object({
         mobilenumber: yup.number('Invalid Mobile Number')
           .required('Mobile Number Required')
           .typeError('Invalid Phone Number')
-          .max(99999999,'Phone number is too long')
+          .max(99999999, 'Phone number is too long')
           .min(9999999, 'Phone number is too short'),
         email: yup.string()
           .email('Invalid email')
@@ -55,16 +64,68 @@ const validationSchema = (minStudent) => {return yup.object({
         emergency_contact_name: yup.string(),
         emergency_contact_mobile: yup.number('Invalid Mobile Number')
           .typeError('Invalid Phone Number')
-          .max(99999999,'Phone number is too long')
+          .max(99999999, 'Phone number is too long')
           .min(9999999, 'Phone number is too short'),
         emergency_contact_relation: yup.string(),
       }),
     )
     .required('Must have members')
     .min(minStudent, `Minimum of ${minStudent} member`),
-})};
+});
 
-const createTeam = ({
+const createTeam = (eventId, values, firestore, schoolValue, teacherId) => {
+  return firestore.collection('events').doc(eventId).collection('teams').add({
+    team_name: values.team_name,
+    school_id: schoolValue,
+    credit: 0,
+    created_at: new Date(Date.now()),
+    modified_at: new Date(Date.now()),
+    teacher_id: teacherId,
+  });
+};
+
+const addStudents = (students, docRef, eventId, auth, firestore, enqueueSnackbar, setSubmitting, resetForm) => {
+  students.map((student, index) => {
+    const data = {
+      team_id: docRef.id,
+      first_name: students[index].first_name,
+      last_name: students[index].last_name,
+      mobile: students[index].mobilenumber,
+      email: students[index].email,
+      badge_name: students[index].badgename ? students[index].badgename : '',
+      dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
+      remarks: students[index].remarks ? students[index].remarks : '',
+      emergency_contacts: {
+        name: students[index].emergency_contact_name,
+        mobile: students[index].emergency_contact_mobile,
+        relation: students[index].emergency_contact_relation,
+      },
+      created_at: new Date(Date.now()),
+      modified_at: new Date(Date.now()),
+    };
+    data.password = students[index].password;
+    data.eventId = eventId;
+    const transaction = {
+      user_id: auth.uid,
+      transaction_type: 'ADD_STUDENT',
+      data,
+    };
+    return firestore.collection('transactions').add(transaction).then((docRef) => {
+      enqueueSnackbar('Added 1 student...', {
+        variant: 'info',
+      });
+      resetForm();
+      setSubmitting(false);
+      if (index === students.length) {
+        enqueueSnackbar('Team Created Successfully', {
+          variant: 'success',
+        });
+      }
+    });
+  });
+};
+
+const createTeamForm = ({
   firestore,
   enqueueSnackbar,
   match,
@@ -76,14 +137,7 @@ const createTeam = ({
   auth,
 }) => (
   <Formik
-    initialValues={{
-      team_name: '',
-      students: Array.apply(null, Array(minStudent)).map(function () {return null;}),
-      schools,
-      teacherId: teacherId ? teacherId : 'null',
-      lengthStudents: minStudent,
-      schoolId: schoolId ? schoolId : '',
-    }}
+    initialValues={initialValues(minStudent, schools, teacherId, schoolId)}
     validationSchema={validationSchema(minStudent)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
       let schoolValue = '';
@@ -92,57 +146,13 @@ const createTeam = ({
       } else {
         schoolValue = values.school_id.value;
       }
-      const eventuid = match.params.eventId;
+      const { eventId } = match.params;
       const { students } = values;
-      firestore.collection('events').doc(match.params.eventId).collection('teams').add({
-        team_name: values.team_name,
-        school_id: schoolValue,
-        credit: 0,
-        created_at: new Date(Date.now()),
-        modified_at: new Date(Date.now()),
-        teacher_id: teacherId,
-      }).then((docRef) => {
+      createTeam(eventId, values, firestore, schoolValue, teacherId).then((docRef) => {
         enqueueSnackbar('Added Team...', {
           variant: 'info',
         });
-        students.map((student, index) => {
-          const data = {
-            team_id: docRef.id,
-            first_name: students[index].first_name,
-            last_name: students[index].last_name,
-            mobile: students[index].mobilenumber,
-            email: students[index].email,
-            badge_name: students[index].badgename ? students[index].badgename : '',
-            dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
-            remarks: students[index].remarks ? students[index].remarks : '',
-            emergency_contacts: {
-              name: students[index].emergency_contact_name,
-              mobile: students[index].emergency_contact_mobile,
-              relation: students[index].emergency_contact_relation,
-            },
-            created_at: new Date(Date.now()),
-            modified_at: new Date(Date.now()),
-          }
-          data.password = students[index].password;
-          data.eventId = eventuid;
-          const transaction = {
-            user_id: auth.uid,
-            transaction_type: 'ADD_STUDENT',
-            data,
-          };
-          return firestore.collection('transactions').add(transaction).then((docRef) => {
-            enqueueSnackbar('Added 1 student...', {
-              variant: 'info',
-            });
-            resetForm();
-            setSubmitting(false);
-            if (index === students.length) {
-              enqueueSnackbar('Team Created Successfully', {
-                variant: 'success',
-              });
-            }
-          });
-        });
+        addStudents(students, docRef, eventId, auth, firestore, enqueueSnackbar, setSubmitting, resetForm);
       });
     }
   }
@@ -214,7 +224,7 @@ const createTeam = ({
                           label="First Name"
                           placeholder="Guang Yao"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px'}}
                         />
                         <Field
                           name={`students[${index}].last_name`}
@@ -223,6 +233,7 @@ const createTeam = ({
                           placeholder="Zeng"
                           label="Last Name"
                           component={TextField}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -232,7 +243,7 @@ const createTeam = ({
                           label="Email"
                           placeholder="guangyao@gmail.com"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px'}}
                           required
                         />
                         <Field
@@ -242,6 +253,7 @@ const createTeam = ({
                           placeholder="98745123"
                           component={TextField}
                           required
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -251,7 +263,7 @@ const createTeam = ({
                           label="Password"
                           placeholder="Test1234"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px'}}
                           required
                         />
                         <Field
@@ -260,7 +272,7 @@ const createTeam = ({
                           label="Confirm Password"
                           placeholder="Test1234"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ width: '200px'}}
                           required
                         />
                       </div>
@@ -271,7 +283,7 @@ const createTeam = ({
                           label="Badge Name"
                           placeholder="GuangYao"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px'}}
                         />
                         <Field
                           name={`students[${index}].dietaryrestriction`}
@@ -279,6 +291,7 @@ const createTeam = ({
                           label="Dietary Restriction"
                           placeholder="Nil / Halal / Vegetarian"
                           component={TextField}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -289,7 +302,7 @@ const createTeam = ({
                           label="Emergency Contact Name"
                           placeholder="Zhang Melvin"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px'}}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_mobile`}
@@ -298,7 +311,7 @@ const createTeam = ({
                           label="Mobile"
                           placeholder="98745123"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ width: '200px', marginRight: '50px'}}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_relation`}
@@ -307,6 +320,7 @@ const createTeam = ({
                           required
                           label="Relation"
                           component={TextField}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -317,6 +331,7 @@ const createTeam = ({
                           placeholder="Nil"
                           component={TextField}
                           index={index}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -369,7 +384,7 @@ const mapStateToProps = (state) => {
   }
 };
 
-createTeam.propTypes = {
+createTeamForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   minStudent: PropTypes.number.isRequired,
   maxStudent: PropTypes.number.isRequired,
@@ -382,7 +397,7 @@ createTeam.propTypes = {
   /* eslint-enable */
 };
 
-createTeam.defaultProps = {
+createTeamForm.defaultProps = {
   teacherId: '',
   schoolId: '',
   schools: null,
@@ -393,4 +408,4 @@ export default compose(
   withSnackbar,
   firestoreConnect(),
   withRouter,
-)(createTeam);
+)(createTeamForm);

@@ -18,6 +18,12 @@ class editTeam extends Component {
     studentsList: [],
   }
 
+  componentDidMount() {
+    this.getSchools();
+    this.getTeam();
+    this.getStudents();
+  }
+
   getSchools = () => {
     const { firestore } = this.props;
     firestore.collection('schools').get().then((querySnapshot) => {
@@ -40,7 +46,7 @@ class editTeam extends Component {
       this.setState({ team: doc.data() });
     });
   }
-  
+
   getStudents = () => {
     const { firestore, match } = this.props;
     const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`);
@@ -64,12 +70,6 @@ class editTeam extends Component {
       });
       this.setState({ studentsList });
     });
-  }
-
-  componentDidMount() {
-    this.getSchools();
-    this.getTeam();
-    this.getStudents();
   }
 
   refreshState = () => {

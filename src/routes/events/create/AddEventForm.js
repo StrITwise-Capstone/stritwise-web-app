@@ -82,10 +82,10 @@ const uploadImage = (firebase, enqueueSnackbar, image, imageuid) => {
     },
     (error) => {
       console.log(error);
-  });
-}
+    });
+};
 
-const createEvent = (auth, firestore, enqueueSnackbar, resetForm, values, setSubmitting, imageuid) => {
+const addEvent = (auth, firestore, enqueueSnackbar, resetForm, values, setSubmitting, imageuid) => {
   firestore.collection('events').add({
     created_by: auth.uid,
     name: values.name,
@@ -110,7 +110,8 @@ const createEvent = (auth, firestore, enqueueSnackbar, resetForm, values, setSub
     resetForm();
     setSubmitting(false);
   });
-}
+};
+
 const AddEventForm = ({
   auth,
   firestore,
@@ -122,7 +123,7 @@ const AddEventForm = ({
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const imageuid = guid();
       uploadImage(firestore, enqueueSnackbar, values.image, imageuid);
-      createEvent(auth, firestore, enqueueSnackbar, resetForm, values, setSubmitting, imageuid);
+      addEvent(auth, firestore, enqueueSnackbar, resetForm, values, setSubmitting, imageuid);
     }}
   >
     {({
@@ -223,7 +224,6 @@ AddEventForm.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   auth: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
-  firebase: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 

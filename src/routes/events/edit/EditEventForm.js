@@ -91,7 +91,7 @@ const validationSchema = yup.object({
     .typeError('Invalid number format'),
 });
 
-const updateEvent = (firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth) => {
+const editEvent = (firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth) => {
   firestore.collection('events').doc(eventId).update({
     created_by: auth.uid,
     name: values.name,
@@ -117,8 +117,9 @@ const updateEvent = (firestore, eventId, values, enqueueSnackbar, resetForm, set
     setSubmitting(false);
     resetForm();
   });
-}
-const editEvent = ({
+};
+
+const editEventForm = ({
   auth,
   firestore,
   enqueueSnackbar,
@@ -136,7 +137,7 @@ const editEvent = ({
         // login user
         const { image } = values;
         if (image === '') {
-          updateEvent(firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth);
+          editEvent(firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth);
         }
         if (image !== '') {
           const imageuid = guid();
@@ -278,7 +279,7 @@ const mapStateToProps = state => ({
   firebase: state.firebase,
 });
 
-editEvent.propTypes = {
+editEventForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   eventId: PropTypes.string.isRequired,
   refreshState: PropTypes.func.isRequired,
@@ -290,7 +291,7 @@ editEvent.propTypes = {
   /* eslint-enable */
 };
 
-editEvent.defaultProps = {
+editEventForm.defaultProps = {
   event: null,
 };
 

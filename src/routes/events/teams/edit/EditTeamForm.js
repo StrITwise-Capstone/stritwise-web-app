@@ -20,10 +20,23 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 
-import TextField from './TextField';
+import TextField from '../../../../components/UI/TextField/TextField';
 import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
+
+const initialValues = (team, minStudent, students) => {
+  return {
+    team_name: team.team_name,
+    students,
+    school_id: {
+      label: `${team.school_name}`,
+      value: team.school_id,
+    },
+    deleteArray: [],
+    lengthStudents: minStudent,
+  };
+};
 
 const validationSchema = (minStudent) => {
   return yup.object({
@@ -61,6 +74,12 @@ const validationSchema = (minStudent) => {
   });
 };
 
+const deleteStudents = (deleteArray, firestore, match) => {
+  deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
+};
+
+
+
 const editTeam = ({
   firestore,
   enqueueSnackbar,
@@ -75,106 +94,107 @@ const editTeam = ({
 }) => (
   <Formik
     enableReinitialize={true}
-    initialValues={{
-      team_name: team.team_name,
-      students,
-      school_id: {
-        label: `${team.school_name}`,
-        value: team.school_id,
-      },
-      deleteArray: [],
-      lengthStudents: minStudent,
-    }}
+    initialValues={initialValues(team, minStudent, students)}
     validationSchema={validationSchema(minStudent)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
-      const eventId = match.params.eventId;
-      const { teamId } = match.params;
-      var students = values.students;
-      var deleteArray = values.deleteArray;
-      deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
-      firestore.collection('events').doc(match.params.eventId).collection('teams').doc(teamId).update({
-        team_name: values.team_name,
-        school_id: values.school_id.value,
-        credit: 0,
-        modified_at: new Date(Date.now()),
-      }).then((docRef) => {
+      console.log('here');
+      const { eventId, teamId } = match.params;
+      const { students, deleteArray } = values;
+
+      const updateTeam = (eventId, teamId, values) => {
+        return firestore.collection('events').doc(eventId).collection('teams').doc(teamId).update({
+          team_name: values.team_name,
+          school_id: values.school_id.value,
+          credit: 0,
+          modified_at: new Date(Date.now()),
+        });
+      };
+      const updateStudents = (student, index) => {
+        return firestore.collection('events').doc(eventId).collection('students').doc(student.key).update({
+          first_name: student.first_name,
+          last_name: student.last_name,
+          mobile: student.mobile,
+          email: student.email,
+          badge_name: student.badge_name ? student.badge_name : '',
+          dietary_restriction: student.dietary_restriction ? student.dietary_restriction : '',
+          remarks: student.remarks ? student.remarks : '',
+          emergency_contacts: {
+            name: student.emergency_contact_name,
+            mobile: student.emergency_contact_mobile,
+            relation: student.emergency_contact_relation,
+          },
+          modified_at: new Date(Date.now()),
+        }).then(() => {
+          enqueueSnackbar('Updated 1 student...', {
+            variant: 'info',
+          });
+          resetForm();
+          setSubmitting(false);
+          if (index === students.length) {
+            enqueueSnackbar('Team Updated Successfully', {
+              variant: 'success',
+            });
+            refreshState();
+          }
+          refreshState();
+        });
+      };
+
+      const addNewStudent = (student) => {
+        const data = {
+          team_id: teamId,
+          first_name: student.first_name,
+          last_name: student.last_name,
+          mobile: student.mobile,
+          email: student.email,
+          password: 'Test1234',
+          badge_name: student.badgename ? student.badgename : '',
+          dietary_restriction: student.dietaryrestriction ? student.dietaryrestriction : '',
+          remarks: student.remarks ? student.remarks : '',
+          emergency_contacts: {
+            name: student.emergency_contact_name,
+            mobile: student.emergency_contact_mobile,
+            relation: student.emergency_contact_relation,
+          },
+          created_at: new Date(Date.now()),
+          modified_at: new Date(Date.now()),
+        }
+        data.eventId = eventId;
+        const transaction = {
+          user_id: auth.uid,
+          transaction_type: 'ADD_STUDENT',
+          data,
+        };
+        return firestore.collection('transactions').add(transaction).then((docRef) => {
+          enqueueSnackbar('Added 1 student...', {
+            variant: 'info',
+          });
+          resetForm();
+          setSubmitting(false);
+        });
+      }
+
+      deleteStudents(deleteArray);   
+      updateTeam(eventId, teamId, values).then((docRef) => {
         enqueueSnackbar('Updated Team...', {
           variant: 'info',
         });
         if (students) {
-          students.map((student, index) => {
-            if (students[index] !== undefined && students[index] !== null) {
-              if (students[index].key !== '') {
-                return firestore.collection('events').doc(eventId).collection('students').doc(students[index].key).update({
-                  first_name: students[index].first_name,
-                  last_name: students[index].last_name,
-                  mobile: students[index].mobile,
-                  email: students[index].email,
-                  badge_name: students[index].badge_name ? students[index].badge_name : '',
-                  dietary_restriction: students[index].dietary_restriction ? students[index].dietary_restriction : '',
-                  remarks: students[index].remarks ? students[index].remarks : '',
-                  emergency_contacts: {
-                    name: students[index].emergency_contact_name,
-                    mobile: students[index].emergency_contact_mobile,
-                    relation: students[index].emergency_contact_relation,
-                  },
-                  modified_at: new Date(Date.now()),
-                }).then(() => {
-                  enqueueSnackbar('Updated 1 student...', {
-                    variant: 'info',
-                  });
-                  resetForm();
-                  setSubmitting(false);
-                  if (index === students.length) {
-                    enqueueSnackbar('Team Updated Successfully', {
-                      variant: 'success',
-                    });
-                    refreshState();
-                  }
-                  refreshState();
-                });
+          students.map((key, index) => {
+            const student = students[index];
+            if (student !== undefined && student !== null) {
+              if (student.key !== '') {
+                updateStudents(student, index);
               }
-            }
-            if (students[index].key === '') {
-              const data = {
-                team_id: teamId,
-                first_name: students[index].first_name,
-                last_name: students[index].last_name,
-                mobile: students[index].mobile,
-                email: students[index].email,
-                password: 'Test1234',
-                badge_name: students[index].badgename ? students[index].badgename : '',
-                dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
-                remarks: students[index].remarks ? students[index].remarks : '',
-                emergency_contacts: {
-                  name: students[index].emergency_contact_name,
-                  mobile: students[index].emergency_contact_mobile,
-                  relation: students[index].emergency_contact_relation,
-                },
-                created_at: new Date(Date.now()),
-                modified_at: new Date(Date.now()),
+              if (student.key === '') {
+                addNewStudent(student);
               }
-              data.eventId = eventId;
-              const transaction = {
-                user_id: auth.uid,
-                transaction_type: 'ADD_STUDENT',
-                data,
-              };
-              return firestore.collection('transactions').add(transaction).then((docRef) => {
-                enqueueSnackbar('Added 1 student...', {
-                  variant: 'info',
-                });
-                resetForm();
-                setSubmitting(false);
-              });
             }
             return null;
           });
         }
-        return null;
       });
-    }
-    }
+    }}
   >
     {({
       values,
@@ -245,7 +265,7 @@ const editTeam = ({
                           type="text"
                           label="First Name"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].last_name`}
@@ -253,6 +273,7 @@ const editTeam = ({
                           type="text"
                           label="Last Name"
                           component={TextField}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -263,7 +284,7 @@ const editTeam = ({
                           type="text"
                           label="Email"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px' }}
                           required
                         />)
                         }
@@ -273,7 +294,7 @@ const editTeam = ({
                           type="text"
                           label="Email"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px' }}
                           required
                         />)
                         }
@@ -283,6 +304,7 @@ const editTeam = ({
                           label="Phone Number"
                           component={TextField}
                           required
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -291,13 +313,14 @@ const editTeam = ({
                           type="text"
                           label="Badge Name"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px' , width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].dietary_restriction`}
                           type="text"
                           label="Dietary Restriction"
                           component={TextField}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -307,15 +330,15 @@ const editTeam = ({
                           required
                           label="Emergency Contact Name"
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px' , width: '200px'}}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_mobile`}
                           type="text"
-                          label="Mobile"r
+                          label="Mobile"
                           required
                           component={TextField}
-                          style={{ paddingRight: '50px' }}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_relation`}
@@ -323,6 +346,7 @@ const editTeam = ({
                           label="Relation"
                           required
                           component={TextField}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -332,6 +356,7 @@ const editTeam = ({
                           label="Remarks"
                           component={TextField}
                           index={index}
+                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -376,7 +401,7 @@ const editTeam = ({
       return content;
     }}
   </Formik>
-);
+)
 
 const mapStateToProps = (state) => {
   return {

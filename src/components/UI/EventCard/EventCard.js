@@ -56,7 +56,7 @@ class EventCard extends Component {
   render() {
     const {
       classes,
-      eventuid,
+      eventId,
       history,
       title,
       imageTitle,
@@ -70,7 +70,7 @@ class EventCard extends Component {
       <Card className={classes.card}>
         <CardActionArea
           style={{ height: '100%' }}
-          onClick={() => { history.push(`/events/${eventuid}/overview`); }}
+          onClick={() => { history.push(`/events/${eventId}/overview`); }}
         >
           { imageFile === null
             && (
@@ -125,7 +125,7 @@ class EventCard extends Component {
 EventCard.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   imageSource: PropTypes.string.isRequired,
-  eventuid: PropTypes.string.isRequired,
+  eventId: PropTypes.string.isRequired,
   history: PropTypes.shape({}).isRequired,
   title: PropTypes.string.isRequired,
   imageTitle: PropTypes.string,
