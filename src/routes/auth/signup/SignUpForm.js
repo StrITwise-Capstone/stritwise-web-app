@@ -60,7 +60,6 @@ const SignUp = ({
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
       const now = new Date();
-
       firebase.auth().createUserWithEmailAndPassword(
         values.email,
         values.password,

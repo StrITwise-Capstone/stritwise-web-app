@@ -130,7 +130,9 @@ const mapStateToProps = state => ({
 EditTeamPtsForm.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   enqueueSnackbar: PropTypes.any.isRequired,
-  history: PropTypes.any.isRequired,
+  auth: PropTypes.any.isRequired,
+  teamRef: PropTypes.any.isRequired,
+  match: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 

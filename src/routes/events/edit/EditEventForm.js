@@ -91,12 +91,39 @@ const validationSchema = yup.object({
     .typeError('Invalid number format'),
 });
 
+const updateEvent = (firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth) => {
+  firestore.collection('events').doc(eventId).update({
+    created_by: auth.uid,
+    name: values.name,
+    desc: values.description,
+    start_date: new Date(values.startdate),
+    end_date: new Date(values.enddate),
+    modified_at: new Date(Date.now()),
+    min_student: parseInt(values.min_student),
+    max_student: parseInt(values.max_student),
+  }).then(() => {
+    // console.log('Event created');
+    enqueueSnackbar('Event Updated', {
+      variant: 'success',
+    });
+    resetForm();
+    setSubmitting(false);
+    refreshState();
+  }).catch((err) => {
+    console.log(`Event not created: ${err}`);
+    enqueueSnackbar('Event Not Updated', {
+      variant: 'error',
+    });
+    setSubmitting(false);
+    resetForm();
+  });
+}
 const editEvent = ({
   auth,
   firestore,
   enqueueSnackbar,
   event,
-  eventuid,
+  eventId,
   firebase,
   refreshState,
 }) => {
@@ -109,31 +136,7 @@ const editEvent = ({
         // login user
         const { image } = values;
         if (image === '') {
-          firestore.collection('events').doc(eventuid).update({
-            created_by: auth.uid,
-            name: values.name,
-            desc: values.description,
-            start_date: new Date(values.startdate),
-            end_date: new Date(values.enddate),
-            modified_at: new Date(Date.now()),
-            min_student: parseInt(values.min_student),
-            max_student: parseInt(values.max_student),
-          }).then(() => {
-            // console.log('Event created');
-            enqueueSnackbar('Event Updated', {
-              variant: 'success',
-            });
-            resetForm();
-            setSubmitting(false);
-            refreshState();
-          }).catch((err) => {
-            console.log(`Event not created: ${err}`);
-            enqueueSnackbar('Event Not Updated', {
-              variant: 'error',
-            });
-            setSubmitting(false);
-            resetForm();
-          });
+          updateEvent(firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth);
         }
         if (image !== '') {
           const imageuid = guid();
@@ -149,7 +152,7 @@ const editEvent = ({
             (error) => {
               console.log(error);
             }, () => {
-              firestore.collection('events').doc(eventuid).update({
+              firestore.collection('events').doc(eventId).update({
                 created_by: auth.uid,
                 name: values.name,
                 desc: values.description,
@@ -277,7 +280,7 @@ const mapStateToProps = state => ({
 
 editEvent.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
-  eventuid: PropTypes.string.isRequired,
+  eventId: PropTypes.string.isRequired,
   refreshState: PropTypes.func.isRequired,
   /* eslint-disable react/forbid-prop-types */
   auth: PropTypes.any.isRequired,

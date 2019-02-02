@@ -70,57 +70,59 @@ const guid = () => {
   return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 };
 
-const createEvent = ({
+const uploadImage = (firebase, enqueueSnackbar, image, imageuid) => {
+  const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
+  uploadTask.on('state_changed',
+    (snapshot) => {
+      const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      console.log(progress);
+      enqueueSnackbar('Uploading Image...', {
+        variant: 'info',
+      });
+    },
+    (error) => {
+      console.log(error);
+  });
+}
+
+const createEvent = (auth, firestore, enqueueSnackbar, resetForm, values, setSubmitting, imageuid) => {
+  firestore.collection('events').add({
+    created_by: auth.uid,
+    name: values.name,
+    desc: values.description,
+    start_date: new Date(values.startdate),
+    end_date: new Date(values.enddate),
+    image_path: `images/${imageuid}`,
+    min_student: parseInt(values.min_student),
+    max_student: parseInt(values.max_student),
+    created_at: new Date(Date.now()),
+    modified_at: new Date(Date.now()),
+  }).then(() => {
+    enqueueSnackbar('Event Created', {
+      variant: 'success',
+    });
+    resetForm();
+    setSubmitting(false);
+  }).catch(() => {
+    enqueueSnackbar('Event Not Created', {
+      variant: 'error',
+    });
+    resetForm();
+    setSubmitting(false);
+  });
+}
+const AddEventForm = ({
   auth,
   firestore,
   enqueueSnackbar,
-  firebase,
 }) => (
   <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting, resetForm }) => {
-      // login user
-      const { image } = values;
       const imageuid = guid();
-      const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
-
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-          console.log(progress);
-          enqueueSnackbar('Uploading Image...', {
-            variant: 'info',
-          });
-        },
-        (error) => {
-          console.log(error);
-        }, () => {
-          firestore.collection('events').add({
-            created_by: auth.uid,
-            name: values.name,
-            desc: values.description,
-            start_date: new Date(values.startdate),
-            end_date: new Date(values.enddate),
-            image_path: `images/${imageuid}`,
-            min_student: parseInt(values.min_student),
-            max_student: parseInt(values.max_student),
-            created_at: new Date(Date.now()),
-            modified_at: new Date(Date.now()),
-          }).then(() => {
-            enqueueSnackbar('Event Created', {
-              variant: 'success',
-            });
-            resetForm();
-            setSubmitting(false);
-          }).catch(() => {
-            enqueueSnackbar('Event Not Created', {
-              variant: 'error',
-            });
-            resetForm();
-            setSubmitting(false);
-          });
-        });
+      uploadImage(firestore, enqueueSnackbar, values.image, imageuid);
+      createEvent(auth, firestore, enqueueSnackbar, resetForm, values, setSubmitting, imageuid);
     }}
   >
     {({
@@ -216,7 +218,7 @@ const mapStateToProps = state => ({
   auth: state.firebase.auth,
 });
 
-createEvent.propTypes = {
+AddEventForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   /* eslint-disable react/forbid-prop-types */
   auth: PropTypes.any.isRequired,
@@ -225,7 +227,7 @@ createEvent.propTypes = {
   /* eslint-enable */
 };
 
-createEvent.defaultProps = {
+AddEventForm.defaultProps = {
 };
 
 export default compose(
@@ -233,4 +235,4 @@ export default compose(
   withSnackbar,
   firebaseConnect(),
   firestoreConnect(),
-)(createEvent);
+)(AddEventForm);

@@ -44,22 +44,29 @@ const styles = () => ({
 
 class Overview extends Component {
   state = {
-    isNotLoading: false,
-    imageFile: null,
+    isLoading: true,
+    imageFileURL: null,
+    event: null,
   };
 
-  componentDidUpdate() {
+  componentDidMount() {
+    this.getImage();
   }
 
   getImage = () => {
-    const { firebase, currentevent } = this.props;
-    const { imageFile } = this.state;
-    if (imageFile === null && currentevent) {
-      firebase.storage().ref(`${currentevent.image_path}`).getDownloadURL().then((img) => {
-        const imageFile = img;
-        this.setState({
-          imageFile,
-          isNotLoading: true,
+    const { firebase, firestore, match } = this.props;
+    const { imageFileURL } = this.state;
+    this.setState({ isLoading: true });
+    if (imageFileURL === null) {
+      firestore.collection('events').doc(match.params.eventId).get().then((doc)=>{
+        firebase.storage().ref(`${doc.data().image_path}`).getDownloadURL().then((imageFileURL) => {
+          this.setState({
+            imageFileURL,
+            isLoading: false,
+            event: doc.data(),
+          });
+        }).catch((error) => {
+          console.log(`Unable to retreive${error}`);
         });
       }).catch((error) => {
         console.log(`Unable to retreive${error}`);
@@ -96,13 +103,18 @@ class Overview extends Component {
           </Button>
         </React.Fragment>);
     }
+    return null;
   }
 
   deleteEvent = () => {
-    const { match, firestore, history, enqueueSnackbar,
+    const {
+      match,
+      firestore,
+      history,
+      enqueueSnackbar,
     } = this.props;
     const db = firestore;
-    this.setState({ isNotLoading: false });
+    this.setState({ isLoading: true });
     db.collection('events').doc(match.params.eventId).delete().then(() => {
       enqueueSnackbar('Deleted Event', {
         variant: 'success',
@@ -117,34 +129,34 @@ class Overview extends Component {
   }
 
   render() {
-    const { classes, currentevent, } = this.props;
-    const { imageFile, isNotLoading, } = this.state;
+    const { classes } = this.props;
+    const { imageFileURL, isLoading, event } = this.state;
     return (
       <React.Fragment>
-        {isNotLoading === false && 
-          <CircularProgress></CircularProgress>
+        {isLoading &&
+          <CircularProgress />
         }
-        {currentevent
-          && isNotLoading
+        {imageFileURL
+          && !isLoading
           && (
           <React.Fragment>
             <AdminLayout
-              title={currentevent.name}
+              title={event.name}
               action={this.getActionButtons()}
             >
               <Paper>
                 <div className={classes.imageDiv}>
-                  <img className={classes.image} src={imageFile} alt="Event"/>
+                  <img className={classes.image} src={imageFileURL} alt="Event"/>
                 </div>
                 <div style={{ padding: '1em' }}>
-                  <Typography className={classes.p} component="p">{currentevent.desc}</Typography>
+                  <Typography className={classes.p} component="p">{event.desc}</Typography>
                   <Typography className={classes.p} component="p">
                     Start Date:
-                    {moment(currentevent.start_date.toDate()).calendar()}
+                    {moment(event.start_date.toDate()).calendar()}
                   </Typography>
                   <Typography className={classes.p} component="p">
                     End Date:
-                    {moment(currentevent.end_date.toDate()).calendar()}
+                    {moment(event.end_date.toDate()).calendar()}
                   </Typography>
                 </div>
               </Paper>
@@ -165,26 +177,25 @@ const mapStateToProps = (state, ownProps) => {
 
 Overview.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
   /* eslint-disable react/forbid-prop-types */
   firebase: PropTypes.any.isRequired,
-  currentevent: PropTypes.any,
   match: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
   history: PropTypes.any.isRequired,
+  user: PropTypes.any.isRequired,
+  classes: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
 Overview.defaultProps = {
-  currentevent: null,
+  isAuthenticated: false,
 };
 
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
   firestoreConnect(props => [
-    {
-      collection: 'events', doc: `${props.match.params.eventId}`, storeAs: `currentevent${props.match.params.eventId}`,
-    },
     {
       collection: 'users',
       storeAs: 'user',

@@ -199,8 +199,9 @@ const createTeam = ({
                           Student #
                           {index + 1}
                         </p>
-                        { values.lengthStudents > minStudent &&
-                        (<Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.lengthStudents = values.lengthStudents -1; }}>
+                        { values.lengthStudents > minStudent
+                        && (
+                        <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.lengthStudents = values.lengthStudents -1; }}>
                           Delete
                         </Button>)
                         }
@@ -245,22 +246,22 @@ const createTeam = ({
                       </div>
                       <div>
                         <Field
-                            name={`students[${index}].password`}
-                            type="password"
-                            label="Password"
-                            placeholder="Test1234"
-                            component={TextField}
-                            style={{ paddingRight: '50px' }}
-                            required
+                          name={`students[${index}].password`}
+                          type="password"
+                          label="Password"
+                          placeholder="Test1234"
+                          component={TextField}
+                          style={{ paddingRight: '50px' }}
+                          required
                         />
                         <Field
-                            name={`students[${index}].confirmPassword`}
-                            type="password"
-                            label="Confirm Password"
-                            placeholder="Test1234"
-                            component={TextField}
-                            style={{ paddingRight: '50px' }}
-                            required
+                          name={`students[${index}].confirmPassword`}
+                          type="password"
+                          label="Confirm Password"
+                          placeholder="Test1234"
+                          component={TextField}
+                          style={{ paddingRight: '50px' }}
+                          required
                         />
                       </div>
                       <div>

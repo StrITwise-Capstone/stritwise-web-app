@@ -5,6 +5,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
+import { CircularProgress } from '@material-ui/core';
 
 import Form from './EditEventForm';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
@@ -12,45 +13,37 @@ import AdminLayout from '../../../hoc/Layout/AdminLayout';
 class editEvent extends Component {
   state = {
     event: null,
+    isLoading: true,
   };
 
-  componentDidUpdate() {
+  componentDidMount() {
+    this.getEvent();
   }
 
-  getEvents() {
+  getEvent() {
     const {
-      events,
       match,
+      firestore,
     } = this.props;
-    const { event } = this.state;
-    const eventuid = match.params.eventId;
-    if (events !== null && events !== undefined && event === null) {
-      this.setState({
-        event: events[eventuid],
-      });
-    }
+    firestore.collection('events').doc(match.params.eventId).get().then((doc)=>{
+      this.setState({ event: doc.data(), isLoading: false });
+    });
   }
 
   refreshState = () => {
-    const {
-      events,
-      match,
-    } = this.props;
-    const eventuid = match.params.eventId;
-    this.setState({
-      event: events[eventuid],
-    });
+    this.getEvent();
   }
 
   render() {
     const { match } = this.props;
-    const { event } = this.state;
-    const eventuid = match.params.eventId;
+    const { event, isLoading } = this.state;
+    const eventId = match.params.eventId;
     return (
       <AdminLayout
         title="Edit Event"
       >
-        <Form event={event} eventuid={eventuid} refreshState={() => { this.refreshState(); }} />
+        {isLoading && <CircularProgress />}
+        {!isLoading && (<Form event={event} eventId={eventId} refreshState={() => { this.refreshState(); }} />)}
       </AdminLayout>
     );
   }
@@ -77,10 +70,6 @@ editEvent.defaultProps = {
 export default compose(
   connect(mapStateToProps),
   withRouter,
-  firestoreConnect([
-    {
-      collection: 'events', storeAs: 'events',
-    },
-  ]),
+  firestoreConnect(),
   withSnackbar,
 )(editEvent);
