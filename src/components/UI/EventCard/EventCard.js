@@ -35,6 +35,10 @@ class EventCard extends Component {
   }
 
   componentWillMount() {
+    this.getImage();
+  }
+
+  getImage() {
     const {
       firebase,
       imageSource,

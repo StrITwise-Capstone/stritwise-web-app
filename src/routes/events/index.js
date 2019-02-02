@@ -14,7 +14,7 @@ import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 
 import AdminLayout from '../../hoc/Layout/AdminLayout';
-import Card from '../../components/UI/Card/Card';
+import Card from '../../components/UI/EventCard/EventCard';
 
 
 const styles = {
@@ -26,19 +26,18 @@ const styles = {
 
 class ViewVolunteers extends Component {
   state = {
-    eventsList : null,
+    eventsList: null,
     isLoading: true,
   }
 
-  createEvent = () => {
-    const { history } = this.props;
-    history.push('/events/create');
+  componentDidMount = () => {
+    this.getEvents();
   }
 
-  componentDidMount = () => {
+  getEvents() {
     const { firestore } = this.props;
     const newEventList = {};
-    firestore.collection('events').orderBy("start_date", "desc").get().then((querySnapshot) => {
+    firestore.collection('events').orderBy('start_date', 'desc').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         newEventList[doc.id] = doc.data();
       });
@@ -46,34 +45,41 @@ class ViewVolunteers extends Component {
     });
   }
 
-  action = () => {
+  createEvent = () => {
+    const { history } = this.props;
+    history.push('/events/create');
+  }
+
+  getActionButtons = () => {
     const { isAuthenticated, user } = this.props;
     if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member')) {
-    return (
-      <React.Fragment>
-        <Button
-          type="button"
-          variant="contained"
-          color="secondary"
-          component={Link}
-          to="/events/create"
-        >
-        Create Event
-        </Button>
-      </React.Fragment>)
+      return (
+        <React.Fragment>
+          <Button
+            type="button"
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to="/events/create"
+          >
+          Create Event
+          </Button>
+        </React.Fragment>);
     }
+    return null;
   }
 
   filterDisplayEvent = (eventsList) => {
-    const { isAuthenticated , user } = this.props;
-    let result = {}, key;
+    const { isAuthenticated, user } = this.props;
+    let result = {};
     if (isAuthenticated && (user.type === 'teacher') && eventsList) {
       const date = new Date();
-      for (key in eventsList) {
+      Object.keys(eventsList).map((key) => {
         if (eventsList[key].end_date.toDate() > date) {
           result[key] = eventsList[key];
         }
-      }
+        return null;
+      });
       return result;
     }
     return eventsList;
@@ -85,17 +91,18 @@ class ViewVolunteers extends Component {
     const filteredEventsList = this.filterDisplayEvent(eventsList);
     return (
       <AdminLayout
-        title='Events'
-        action={this.action()}
+        title="Events"
+        action={this.getActionButtons()}
       >
         <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="flex-start"
-        className={classes.root}
-        spacing={8}
-        > {isLoading && (
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="flex-start"
+          className={classes.root}
+          spacing={8}
+        >
+          {isLoading && (
             <CircularProgress />
           )}
           {filteredEventsList
@@ -115,7 +122,7 @@ class ViewVolunteers extends Component {
             <Grid item>
               <Typography component="p">There is no data at the moment.</Typography>
             </Grid>
-            )
+          )
           }
         </Grid>
       </AdminLayout>
@@ -136,14 +143,14 @@ ViewVolunteers.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
   classes: PropTypes.objectOf(PropTypes.string).isRequired,
   /* eslint-disable react/forbid-prop-types */
-  eventsList: PropTypes.any,
   history: PropTypes.any.isRequired,
   user: PropTypes.any.isRequired,
+  firestore: PropTypes.any,
   /* eslint-enable */
 };
 
 ViewVolunteers.defaultProps = {
-  eventsList: null,
+  firestore: null,
 };
 
 

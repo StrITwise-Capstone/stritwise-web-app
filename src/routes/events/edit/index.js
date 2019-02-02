@@ -41,7 +41,7 @@ class editEvent extends Component {
 
   render() {
     const { match } = this.props;
-    const { event, refreshState } = this.state;
+    const { event } = this.state;
     const eventuid = match.params.eventId;
     return (
       <AdminLayout
