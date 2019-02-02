@@ -18,6 +18,15 @@ import TextField from '../../../../../../components/UI/TextField/TextField';
 import DeleteButton from './DeleteButton/DeleteButton';
 import yup from '../../../../../../instances/yup';
 
+const validationSchema = yup.object({
+  firstname: yup.string()
+    .required('Required'),
+  lastname: yup.string()
+    .required('Required'),
+  badge_name: yup.string(),
+  email: yup.string().email('Email is not valid'),
+});
+
 const editStudent = ({
   firestore,
   enqueueSnackbar,
@@ -45,14 +54,7 @@ const editStudent = ({
       emergency_contact_mobile: student.emergency_contacts ? student.emergency_contacts.mobile : null,
       emergency_contact_relation: student.emergency_contacts ? student.emergency_contacts.relation : null,
     }}
-    validationSchema={yup.object({
-      firstname: yup.string()
-        .required('Required'),
-      lastname: yup.string()
-        .required('Required'),
-      badge_name: yup.string(),
-      email: yup.string().email('Email is not valid'),
-    })}
+    validationSchema={validationSchema}    
     onSubmit={(values, { setSubmitting }) => {
       firestore.collection('events').doc(eventuid).collection('students').doc(studentuid).update({
         first_name: values.firstname,
@@ -75,8 +77,7 @@ const editStudent = ({
         console.log(err);
         setSubmitting(false);
       });
-    }
-    }
+    }}
   >
     {({
       handleSubmit,

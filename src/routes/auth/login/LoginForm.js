@@ -18,19 +18,21 @@ const initialValues = {
   password: '',
 };
 
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email('Email not valid')
+    .required('Required'),
+  password: Yup.string()
+    .min(8, 'Password must be 8 characters or longer')
+    .required('Required'),
+});
+
 const LoginForm = ({
   logOut, logIn, enqueueSnackbar, history,
 }) => (
   <Formik
     initialValues={initialValues}
-    validationSchema={Yup.object({
-      email: Yup.string()
-        .email('Email not valid')
-        .required('Required'),
-      password: Yup.string()
-        .min(8, 'Password must be 8 characters or longer')
-        .required('Required'),
-    })}
+    validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const firebase = getFirebase();
       firebase.auth().signInWithEmailAndPassword(

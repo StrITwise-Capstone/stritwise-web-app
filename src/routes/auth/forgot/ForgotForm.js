@@ -17,16 +17,18 @@ const initialValues = {
   email: '',
 };
 
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email('Email not valid')
+    .required('Required'),
+});
+
 const ForgotForm = ({
   enqueueSnackbar,
 }) => (
   <Formik
     initialValues={initialValues}
-    validationSchema={Yup.object({
-      email: Yup.string()
-        .email('Email not valid')
-        .required('Required'),
-    })}
+    validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       const firebase = getFirebase();
       firebase.auth().sendPasswordResetEmail(values.email).then(() => {

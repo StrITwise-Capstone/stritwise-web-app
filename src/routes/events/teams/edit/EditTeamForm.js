@@ -25,6 +25,42 @@ import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+const validationSchema = (minStudent) => {
+  return yup.object({
+    team_name: yup.string()
+      .required('Required'),
+    students: yup.array()
+      .of(
+        yup.object().shape({
+          first_name: yup.string()
+            .min(1, 'too short')
+            .required('First Name Required'),
+          last_name: yup.string()
+            .required('Last Name Required'),
+          mobile: yup.number('Invalid Mobile Number')
+            .required('Mobile Number Required')
+            .max(99999999,'Phone number is too long')
+            .min(9999999, 'Phone number is too short')
+            .typeError('Invalid Phone Number'),
+          email: yup.string()
+            .email('Invalid email')
+            .required('Email Required'),
+          badgename: yup.string(),
+          dietaryrestriction: yup.string(),
+          remarks: yup.string(),
+          emergency_contact_name: yup.string(),
+          emergency_contact_mobile: yup.number('Invalid Mobile Number')
+            .typeError('Invalid Phone Number')
+            .max(99999999,'Phone number is too long')
+            .min(9999999, 'Phone number is too short'),
+          emergency_contact_relation: yup.string(),
+        }),
+      )
+      .required('Must have members')
+      .min(minStudent, `Minimum of ${minStudent} member`),
+  });
+};
+
 const editTeam = ({
   firestore,
   enqueueSnackbar,
@@ -49,42 +85,10 @@ const editTeam = ({
       deleteArray: [],
       lengthStudents: minStudent,
     }}
-    validationSchema={yup.object({
-      team_name: yup.string()
-        .required('Required'),
-      students: yup.array()
-        .of(
-          yup.object().shape({
-            first_name: yup.string()
-              .min(1, 'too short')
-              .required('First Name Required'),
-            last_name: yup.string()
-              .required('Last Name Required'),
-            mobile: yup.number('Invalid Mobile Number')
-              .required('Mobile Number Required')
-              .max(99999999,'Phone number is too long')
-              .min(9999999, 'Phone number is too short')
-              .typeError('Invalid Phone Number'),
-            email: yup.string()
-              .email('Invalid email')
-              .required('Email Required'),
-            badgename: yup.string(),
-            dietaryrestriction: yup.string(),
-            remarks: yup.string(),
-            emergency_contact_name: yup.string(),
-            emergency_contact_mobile: yup.number('Invalid Mobile Number')
-              .typeError('Invalid Phone Number')
-              .max(99999999,'Phone number is too long')
-              .min(9999999, 'Phone number is too short'),
-            emergency_contact_relation: yup.string(),
-          }),
-        )
-        .required('Must have members')
-        .min(minStudent, `Minimum of ${minStudent} member`),
-    })}
+    validationSchema={validationSchema(minStudent)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
-      const eventuid = match.params.eventId;
-      const teamId = match.params.teamId;
+      const eventId = match.params.eventId;
+      const { teamId } = match.params;
       var students = values.students;
       var deleteArray = values.deleteArray;
       deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
@@ -101,7 +105,7 @@ const editTeam = ({
           students.map((student, index) => {
             if (students[index] !== undefined && students[index] !== null) {
               if (students[index].key !== '') {
-                return firestore.collection('events').doc(eventuid).collection('students').doc(students[index].key).update({
+                return firestore.collection('events').doc(eventId).collection('students').doc(students[index].key).update({
                   first_name: students[index].first_name,
                   last_name: students[index].last_name,
                   mobile: students[index].mobile,
@@ -150,7 +154,7 @@ const editTeam = ({
                 created_at: new Date(Date.now()),
                 modified_at: new Date(Date.now()),
               }
-              data.eventId = eventuid;
+              data.eventId = eventId;
               const transaction = {
                 user_id: auth.uid,
                 transaction_type: 'ADD_STUDENT',
@@ -344,9 +348,14 @@ const editTeam = ({
                       </div>
                     </div>
                   ))}
-                  { values.lengthStudents < maxStudent && (<Button
+                  { values.lengthStudents < maxStudent
+                  && (
+                  <Button
                     type="button"
-                    onClick={() => { arrayHelpers.push({ key: '' }); values.lengthStudents = values.lengthStudents + 1;}}
+                    onClick={() => {
+                      arrayHelpers.push({ key: '' }); 
+                      values.lengthStudents = values.lengthStudents + 1;
+                    }}
                     size="small"
                     color="primary"
                   >
@@ -381,15 +390,23 @@ const mapStateToProps = (state) => {
 
 editTeam.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
+  refreshState: PropTypes.func.isRequired,
   minStudent: PropTypes.number.isRequired,
   maxStudent: PropTypes.number.isRequired,
   schools: PropTypes.arrayOf(PropTypes.string).isRequired,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   match: PropTypes.any.isRequired,
-
+  auth: PropTypes.any.isRequired,
+  team: PropTypes.any,
+  students: PropTypes.any,
   /* eslint-enable */
 };
+
+editTeam.defaultProps = {
+  team: null,
+  students: null,
+}
 
 
 export default compose(

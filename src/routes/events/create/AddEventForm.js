@@ -30,6 +30,30 @@ const initialValues = {
   min_student: '',
 };
 
+const validationSchema = yup.object({
+  name: yup.string()
+    .required('Required'),
+  description: yup.string()
+    .required('Required'),
+  image: yup.mixed()
+    .required('Required')
+    .test('fileFormat', 'Unsupported Format', value => value && SUPPORTED_FORMATS.includes(value.type)),
+  startdate: yup.date('Invalid date format')
+    .required('Required')
+    .default(() => (new Date())).typeError('Invalid date format'),
+  enddate: yup.date('Invalid date format')
+    .required('Required')
+    .default(() => (new Date())).typeError('Invalid date format'),
+  min_student: yup.number('Invalid number format')
+    .integer('Invalid number format')
+    .required('Required')
+    .typeError('Invalid number format'),
+  max_student: yup.number('Invalid number format')
+    .integer('Invalid number format')
+    .required('Required')
+    .typeError('Invalid number format'),
+});
+
 const SUPPORTED_FORMATS = [
   'image/jpg',
   'image/jpeg',
@@ -54,17 +78,7 @@ const createEvent = ({
 }) => (
   <Formik
     initialValues={initialValues}
-    validationSchema={yup.object({
-      name: yup.string()
-        .required('Required'),
-      description: yup.string()
-        .required('Required'),
-      image: yup.mixed().required('Required').test('fileFormat', 'Unsupported Format', value => value && SUPPORTED_FORMATS.includes(value.type)),
-      startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
-      enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
-      min_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
-      max_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
-    })}
+    validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting, resetForm }) => {
       // login user
       const { image } = values;

@@ -69,7 +69,7 @@ class PointSystem extends Component {
     isNotLoading: false,
   }
 
-  getData = () => {
+  getTeams = () => {
     const { rankings } = this.props;
     const { isNotLoading } = this.state;
     var array = [];
@@ -91,7 +91,7 @@ class PointSystem extends Component {
   render() {
     const { classes } = this.props;
     const { isNotLoading } = this.state;
-    const rankingsList = this.getData();
+    const rankingsList = this.getTeams();
     return (
       <div>
         <AppBar position="fixed" className={classes.appBar}>

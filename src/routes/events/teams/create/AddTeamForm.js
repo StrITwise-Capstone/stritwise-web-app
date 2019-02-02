@@ -23,6 +23,47 @@ import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+const validationSchema = (minStudent) => {return yup.object({
+  team_name: yup.string()
+    .required('Required'),
+  students: yup.array()
+    .of(
+      yup.object().shape({
+        first_name: yup.string()
+          .min(1, 'too short')
+          .required('First Name Required'),
+        last_name: yup.string()
+          .required('Last Name Required'),
+        mobilenumber: yup.number('Invalid Mobile Number')
+          .required('Mobile Number Required')
+          .typeError('Invalid Phone Number')
+          .max(99999999,'Phone number is too long')
+          .min(9999999, 'Phone number is too short'),
+        email: yup.string()
+          .email('Invalid email')
+          .required('Email Required'),
+        password: yup.string()
+          .required('Password Required')
+          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+        confirmPassword: yup.string()
+          .required('Confirm Password Required')
+          .oneOf([yup.ref('password')], 'Passwords do not match')
+          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+        badgename: yup.string(),
+        dietaryrestriction: yup.string(),
+        remarks: yup.string(),
+        emergency_contact_name: yup.string(),
+        emergency_contact_mobile: yup.number('Invalid Mobile Number')
+          .typeError('Invalid Phone Number')
+          .max(99999999,'Phone number is too long')
+          .min(9999999, 'Phone number is too short'),
+        emergency_contact_relation: yup.string(),
+      }),
+    )
+    .required('Must have members')
+    .min(minStudent, `Minimum of ${minStudent} member`),
+})};
+
 const createTeam = ({
   firestore,
   enqueueSnackbar,
@@ -43,46 +84,7 @@ const createTeam = ({
       lengthStudents: minStudent,
       schoolId: schoolId ? schoolId : '',
     }}
-    validationSchema={yup.object({
-      team_name: yup.string()
-        .required('Required'),
-      students: yup.array()
-        .of(
-          yup.object().shape({
-            first_name: yup.string()
-              .min(1, 'too short')
-              .required('First Name Required'),
-            last_name: yup.string()
-              .required('Last Name Required'),
-            mobilenumber: yup.number('Invalid Mobile Number')
-              .required('Mobile Number Required')
-              .typeError('Invalid Phone Number')
-              .max(99999999,'Phone number is too long')
-              .min(9999999, 'Phone number is too short'),
-            email: yup.string()
-              .email('Invalid email')
-              .required('Email Required'),
-            password: yup.string()
-              .required('Password Required')
-              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
-            confirmPassword: yup.string()
-              .required('Confirm Password Required')
-              .oneOf([yup.ref('password')], 'Passwords do not match')
-              .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
-            badgename: yup.string(),
-            dietaryrestriction: yup.string(),
-            remarks: yup.string(),
-            emergency_contact_name: yup.string(),
-            emergency_contact_mobile: yup.number('Invalid Mobile Number')
-              .typeError('Invalid Phone Number')
-              .max(99999999,'Phone number is too long')
-              .min(9999999, 'Phone number is too short'),
-            emergency_contact_relation: yup.string(),
-          }),
-        )
-        .required('Must have members')
-        .min(minStudent, `Minimum of ${minStudent} member`),
-    })}
+    validationSchema={validationSchema(minStudent)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
       let schoolValue = '';
       if (schoolId !== '') {

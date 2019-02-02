@@ -29,7 +29,7 @@ const validationSchema = yup.object({
 });
 
 const EditTeamPtsForm = ({
-  auth, history, enqueueSnackbar, teamRef, match
+  auth, enqueueSnackbar, teamRef, match
 }) => (
   <Formik
     enableReinitialize={true}

@@ -67,6 +67,30 @@ const guid = () => {
   return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 };
 
+const validationSchema = yup.object({
+  name: yup.string()
+    .required('Required'),
+  description: yup.string()
+    .required('Required'),
+  image: yup.mixed()
+    .test('fileFormat', 'Unsupported Format', value => value ? SUPPORTED_FORMATS.includes(value.type) : true),
+  startdate: yup.date('Invalid date format')
+    .required('Required')
+    .default(() => (new Date()))
+    .typeError('Invalid date format'),
+  enddate: yup.date('Invalid date format')
+    .required('Required').default(() => (new Date()))
+    .typeError('Invalid date format'),
+  min_student: yup.number('Invalid number format')
+    .integer('Invalid number format')
+    .required('Required')
+    .typeError('Invalid number format'),
+  max_student: yup.number('Invalid number format')
+    .integer('Invalid number format')
+    .required('Required')
+    .typeError('Invalid number format'),
+});
+
 const editEvent = ({
   auth,
   firestore,
@@ -80,17 +104,7 @@ const editEvent = ({
     <Formik
       enableReinitialize={true}
       initialValues={initialValues(event)}
-      validationSchema={yup.object({
-        name: yup.string()
-          .required('Required'),
-        description: yup.string()
-          .required('Required'),
-        image: yup.mixed().test('fileFormat', 'Unsupported Format', value => value ? SUPPORTED_FORMATS.includes(value.type) : true),
-        startdate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
-        enddate: yup.date('Invalid date format').required('Required').default(() => (new Date())).typeError('Invalid date format'),
-        min_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
-        max_student: yup.number('Invalid number format').integer('Invalid number format').required('Required').typeError('Invalid number format'),
-      })}
+      validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
         // login user
         const { image } = values;
@@ -264,6 +278,7 @@ const mapStateToProps = state => ({
 editEvent.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   eventuid: PropTypes.string.isRequired,
+  refreshState: PropTypes.func.isRequired,
   /* eslint-disable react/forbid-prop-types */
   auth: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,

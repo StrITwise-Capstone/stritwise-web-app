@@ -100,7 +100,7 @@ class cardList extends React.Component {
       }
     }
 
-    getData = () => {
+    getTeams = () => {
       const { firestore, eventuid } = this.props;
       const { search } = this.state;
       const callback = (array, lastVisible) => {
@@ -148,7 +148,7 @@ class cardList extends React.Component {
     }
 
     componentDidMount = () => {
-      this.getData();
+      this.getTeams();
       const { firestore } = this.props;
       this.setState({ isNotLoading: false });
       firestore.collection('schools').get().then((querySnapshot) => {

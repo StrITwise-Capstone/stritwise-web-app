@@ -33,6 +33,31 @@ const initialValues = {
   confirmPassword:'',
 };
 
+const validationSchema = Yup.object({
+  firstName: Yup.string().required('Required'),
+  lastName: Yup.string().required('Required'),
+  mobile: Yup.number().moreThan(60000000, 'Enter a valid phone number')
+    .lessThan(100000000, 'Enter a valid phone number')
+    .required('Required')
+    .typeError('Invalid Mobile Number'),
+  email: Yup.string()
+    .email('Email not valid')
+    .required('Required'),
+  password: Yup.string()
+    .required('Password Required')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+  confirmPassword: Yup.string()
+    .required('Confirm Password Required')
+    .oneOf([Yup.ref('password')], 'Passwords do not match')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+  school: Yup.string().required('Required'),
+  studentNo: Yup.string().min(9, 'Enter a valid Student Number').required('Required'),
+  dietary: Yup.string(),
+  type: Yup.mixed()
+    .singleSelectRequired('Required'),
+  teams: yup.mixed(),
+})
+
 class AddCrewForm extends Component {
   state = {
     transactionStatus: {},
@@ -60,30 +85,7 @@ class AddCrewForm extends Component {
     return (
       <Formik
         initialValues={initialValues}
-        validationSchema={Yup.object({
-          firstName: Yup.string().required('Required'),
-          lastName: Yup.string().required('Required'),
-          mobile: Yup.number().moreThan(60000000, 'Enter a valid phone number')
-            .lessThan(100000000, 'Enter a valid phone number')
-            .required('Required')
-            .typeError('Invalid Mobile Number'),
-          email: Yup.string()
-            .email('Email not valid')
-            .required('Required'),
-          password: Yup.string()
-            .required('Password Required')
-            .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
-          confirmPassword: Yup.string()
-            .required('Confirm Password Required')
-            .oneOf([Yup.ref('password')], 'Passwords do not match')
-            .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
-          school: Yup.string().required('Required'),
-          studentNo: Yup.string().min(9, 'Enter a valid Student Number').required('Required'),
-          dietary: Yup.string(),
-          type: Yup.mixed()
-            .singleSelectRequired('Required'),
-          teams: yup.mixed(),
-        })}
+        validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const firestore = getFirestore();
           const now = new Date();

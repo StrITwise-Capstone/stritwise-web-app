@@ -68,8 +68,8 @@ class ViewTeams extends Component {
   }
 
   refreshState = () => {
-    this.setState({isNotLoading: false});
-    this.setState({isNotLoading: true});
+    this.setState({ isNotLoading: false });
+    this.setState({ isNotLoading: true });
   }
 
 
@@ -153,6 +153,7 @@ ViewTeams.propTypes = {
   auth: PropTypes.any.isRequired,
   currentevent: PropTypes.any,
   history: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 

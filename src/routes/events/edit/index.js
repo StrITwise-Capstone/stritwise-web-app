@@ -15,6 +15,9 @@ class editEvent extends Component {
   };
 
   componentDidUpdate() {
+  }
+
+  getEvents() {
     const {
       events,
       match,

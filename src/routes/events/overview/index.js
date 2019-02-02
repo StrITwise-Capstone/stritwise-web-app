@@ -48,14 +48,10 @@ class Overview extends Component {
     imageFile: null,
   };
 
-  componentDidMount() {
-    this.setState({
-      imageFile: null,
-      isNotLoading: false,
-    })
+  componentDidUpdate() {
   }
 
-  componentDidUpdate() {
+  getImage = () => {
     const { firebase, currentevent } = this.props;
     const { imageFile } = this.state;
     if (imageFile === null && currentevent) {
@@ -76,7 +72,7 @@ class Overview extends Component {
     history.push(`/events/${match.params.eventId}/teams/create`)
   }
 
-  action = () => {
+  getActionButtons = () => {
     const { isAuthenticated, user, match } = this.props;
     if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member')) {
       return (
@@ -134,7 +130,7 @@ class Overview extends Component {
           <React.Fragment>
             <AdminLayout
               title={currentevent.name}
-              action={this.action()}
+              action={this.getActionButtons()}
             >
               <Paper>
                 <div className={classes.imageDiv}>

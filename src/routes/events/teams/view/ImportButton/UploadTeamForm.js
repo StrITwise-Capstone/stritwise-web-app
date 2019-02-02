@@ -16,6 +16,10 @@ import * as util from '../../../../../helper/util';
 import Select from '../../../../../components/UI/Select/Select';
 import yup from '../../../../../instances/yup';
 
+const initialValues = {
+  file: '',
+  school: '',
+}
 
 var schema = yup.object().shape({
   'Team Name': yup.string().required().min(2),
@@ -157,8 +161,7 @@ class UploadTeamForm extends Component {
   render() {
     return (
       <Formik
-        initialValues={{
-        }}
+        initialValues={initialValues}
         onSubmit={this.handleSubmit}
         render={props => (
           <Form>

@@ -13,12 +13,29 @@ import { withRouter } from 'react-router';
 import Form from './AddTeamForm';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
+const styles = () => ({
+  root: {
+    paddingTop:'10px',
+  },
+  title: {
+    textAlign: 'center',
+    padding: '10px',
+  },
+  form: {
+    margin: '10px',
+  },
+});
+
 class createTeam extends Component {
   state = {
     schools: [],
   }
 
   componentDidMount() {
+    this.getSchools();
+  }
+
+  getSchools = () => {
     const { firestore } = this.props;
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
@@ -49,11 +66,11 @@ class createTeam extends Component {
       >
         {currentevent == null
           && (
-          <CircularProgress/>
+          <CircularProgress />
           )}
         {currentevent
           && (
-          <Form 
+          <Form
             schools={schools ? schools : null}
             minStudent={currentevent.min_student ? currentevent.min_student : 1}
             maxStudent={currentevent.max_student ? currentevent.max_student : 10}
@@ -65,20 +82,6 @@ class createTeam extends Component {
     );
   }
 }
-
-
-const styles = () => ({
-  root: {
-    paddingTop:'10px',
-  },
-  title: {
-    textAlign: 'center',
-    padding: '10px',
-  },
-  form: {
-    margin: '10px',
-  },
-});
 
 const mapStateToProps = (state, ownProps) => {
   return {

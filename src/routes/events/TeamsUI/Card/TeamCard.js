@@ -34,13 +34,12 @@ const styles = {
 
 class teamCard extends React.Component {
 
-  deleteTeam = () => {
+  deleteStudent = () => {
     const { 
       firestore,
       teamuid,
       eventuid,
       enqueueSnackbar,
-      update,
     } = this.props;
     const ref = firestore.collection('events').doc(eventuid).collection('students').where('team_id','==',`${teamuid}`);
     ref.get().then(querySnapshot => querySnapshot.forEach((doc) => {
@@ -51,12 +50,27 @@ class teamCard extends React.Component {
         });
       });
     }));
+  }
+
+  deleteTeam = () => {
+    const { 
+      firestore,
+      teamuid,
+      eventuid,
+      enqueueSnackbar,
+      update,
+    } = this.props;
     firestore.collection('events').doc(eventuid).collection('teams').doc(teamuid).delete().then(()=>{
       enqueueSnackbar('Team Deleted', {
         variant: 'success',
       });
       update();
     });
+  }
+
+  deleteTeamAndStudent = () =>{
+    this.deleteTeam();
+    this.deleteStudent();
   }
 
   render() {
@@ -92,7 +106,7 @@ class teamCard extends React.Component {
             </CardContent>
             <CardContent>
               <Button onClick={()=>{history.push(`/events/${match.params.eventId}/teams/${teamuid}/edit`)}} color="primary">Edit</Button>
-              <Button onClick={this.deleteTeam} color="primary">Delete</Button>
+              <Button onClick={this.deleteTeamAndStudent} color="primary">Delete</Button>
             </CardContent>
           </Card>
           )}

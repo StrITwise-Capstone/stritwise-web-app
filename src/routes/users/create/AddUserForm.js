@@ -27,6 +27,23 @@ const initialValues = {
   password: '',
   school: {},
 };
+
+const validationSchema = Yup.object({
+  firstName: Yup.string().required('Required'),
+  lastName: Yup.string().required('Required'),
+  mobile: Yup.number().moreThan(60000000, 'Enter a valid phone number')
+    .lessThan(100000000, 'Enter a valid phone number')
+    .required('Required')
+    .typeError('Invalid Phone Number'),
+  email: Yup.string()
+    .email('Email not valid')
+    .required('Required'),
+  password: Yup.string()
+    .min(8, 'Password must be 8 characters or longer')
+    .required('Required'),
+  school: Yup.mixed(),
+});
+
 class AddUserForm extends Component {
   state = {
     transactionStatus: {},
@@ -53,21 +70,7 @@ class AddUserForm extends Component {
     return (
       <Formik
         initialValues={initialValues}
-        validationSchema={Yup.object({
-          firstName: Yup.string().required('Required'),
-          lastName: Yup.string().required('Required'),
-          mobile: Yup.number().moreThan(60000000, 'Enter a valid phone number')
-            .lessThan(100000000, 'Enter a valid phone number')
-            .required('Required')
-            .typeError('Invalid Phone Number'),
-          email: Yup.string()
-            .email('Email not valid')
-            .required('Required'),
-          password: Yup.string()
-            .min(8, 'Password must be 8 characters or longer')
-            .required('Required'),
-          school: Yup.mixed(),
-        })}
+        validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const firestore = getFirestore();
           const now = new Date();

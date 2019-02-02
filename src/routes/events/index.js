@@ -20,7 +20,7 @@ import Card from '../../components/UI/EventCard/EventCard';
 const styles = {
   root: {
     flexGrow: 1,
-  }
+  },
 };
 
 
