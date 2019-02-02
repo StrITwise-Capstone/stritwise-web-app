@@ -47,7 +47,7 @@ class editEvent extends Component {
       <AdminLayout
         title="Edit Event"
       >
-        <Form event={event} eventuid={eventuid} refreshState={refreshState} />
+        <Form event={event} eventuid={eventuid} refreshState={() => { this.refreshState(); }} />
       </AdminLayout>
     );
   }

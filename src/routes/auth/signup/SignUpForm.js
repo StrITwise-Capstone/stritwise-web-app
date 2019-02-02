@@ -60,7 +60,6 @@ const SignUp = ({
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
       const now = new Date();
-      const timestamp = now.getTime();
 
       firebase.auth().createUserWithEmailAndPassword(
         values.email,
@@ -71,8 +70,9 @@ const SignUp = ({
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
         school: values.school.value,
+        email: values.email,
         type: 'teacher',
-        created_at: timestamp,
+        created_at: now,
       })).then(() => {
         const user = firebase.auth().currentUser;
         if (user != null) {
