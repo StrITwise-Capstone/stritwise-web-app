@@ -11,19 +11,18 @@ import Papa from 'papaparse';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import * as d3 from 'd3';
-
 import yup from '../../../../instances/yup';
 
-var schema = yup.object().shape({
+const schema = yup.object().shape({
   'First Name': yup.string().required(),
   'Last Name': yup.string().required(),
   'Mobile Number': yup.string().required(),
-  'Email': yup.string().email().required(),
-  'Password': yup.string().required(),
+  Email: yup.string().email().required(),
+  Password: yup.string().required(),
   'Dietary Restrictions': yup.string().required(),
   'Student Number': yup.string().required(),
   'Type of Volunteer': yup.string().required(),
-  'School': yup.string().required(),
+  School: yup.string().required(),
 });
 
 class ImportButtonForm extends Component {

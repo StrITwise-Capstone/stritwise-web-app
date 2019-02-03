@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/users/create/AddUserForm.js</title>
+    <title>JSDoc: Source: routes/events/volunteers/create/AddCrewForm.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/users/create/AddUserForm.js</h1>
+    <h1 class="page-title">Source: routes/events/volunteers/create/AddCrewForm.js</h1>
 
     
 
@@ -35,15 +35,16 @@ import {
 import { ArrowBack } from '@material-ui/icons';
 import { withSnackbar } from 'notistack';
 import * as Yup from 'yup';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { getFirestore } from 'redux-firestore';
+import { connect } from 'react-redux';
 
-import * as util from '../../../helper/util';
-import TextField from '../../../components/UI/TextField/TextField';
-import Dropdown from '../../../components/UI/Dropdown/Dropdown';
-import Select from '../../../components/UI/Select/Select';
+import * as util from '../../../../helper/util';
+import Select from '../../../../components/UI/Select/Select';
+import TextField from '../../../../components/UI/TextField/TextField';
+import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
+import yup from '../../../../instances/yup';
 
 
 const initialValues = {
@@ -51,9 +52,13 @@ const initialValues = {
   lastName: '',
   mobile: '',
   type: '',
+  team: {},
   email: '',
+  school: '',
+  studentNo: '',
+  dietary: '',
   password: '',
-  school: {},
+  confirmPassword: '',
 };
 
 const validationSchema = Yup.object({
@@ -62,21 +67,31 @@ const validationSchema = Yup.object({
   mobile: Yup.number().moreThan(60000000, 'Enter a valid phone number')
     .lessThan(100000000, 'Enter a valid phone number')
     .required('Required')
-    .typeError('Invalid Phone Number'),
+    .typeError('Invalid Mobile Number'),
   email: Yup.string()
     .email('Email not valid')
     .required('Required'),
   password: Yup.string()
-    .min(8, 'Password must be 8 characters or longer')
-    .required('Required'),
-  school: Yup.mixed(),
+    .required('Password Required')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value &amp;&amp; /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+  confirmPassword: Yup.string()
+    .required('Confirm Password Required')
+    .oneOf([Yup.ref('password')], 'Passwords do not match')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value &amp;&amp; /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+  school: Yup.string().required('Required'),
+  studentNo: Yup.string().min(9, 'Enter a valid Student Number').required('Required'),
+  dietary: Yup.string(),
+  type: Yup.mixed()
+    .singleSelectRequired('Required'),
+  teams: yup.mixed(),
 });
 
 /**
- * Class representing the AddUserForm component.
- * @param {Object[]} schools - List of school documents.
+ * Class representing the AddCrewForm component.
+ * @param {Object[]} teams - List of team documents.
  */
-class AddUserForm extends Component {
+
+class AddCrewForm extends Component {
   state = {
     transactionStatus: {},
   }
@@ -90,7 +105,7 @@ class AddUserForm extends Component {
     const { enqueueSnackbar } = this.props;
     if (transactionStatus !== prevState.transactionStatus) {
       if (transactionStatus.completed) {
-        enqueueSnackbar('User created successfully!', {
+        enqueueSnackbar('Volunteer created successfully!', {
           variant: 'success',
         });
       } else if (transactionStatus.completed === false) {
@@ -102,7 +117,10 @@ class AddUserForm extends Component {
   }
 
   render() {
-    const { auth, enqueueSnackbar, schools } = this.props;
+    const {
+      enqueueSnackbar, match, auth, teams,
+    } = this.props;
+    console.log(this.props);
     return (
       &lt;Formik
         initialValues={initialValues}
@@ -110,30 +128,37 @@ class AddUserForm extends Component {
         onSubmit={(values, { setSubmitting, resetForm }) => {
           const firestore = getFirestore();
           const now = new Date();
+
           // update user values
           const addValues = {
-            email: values.email,
-            password: values.password,
-            firstName: values.firstName,
-            lastName: values.lastName,
+            eventId: match.params.eventId,
+            first_name: values.firstName,
+            last_name: values.lastName,
             initials: values.firstName[0] + values.lastName[0],
             mobile: values.mobile,
+            password: values.password,
             created_at: now,
             type: values.type,
+            school: values.school,
+            email: values.email,
+            student_no: values.studentNo,
           };
-          if (values.type === 'teacher') {
-            if (typeof (values.school.value) !== 'undefined') {
-              addValues.school_id = values.school.value;
+          if (typeof (values.dietary) !== 'undefined') {
+            addValues.dietary_restriction = values.dietary;
+          }
+          if (values.type === 'GL') {
+            if (typeof (values.team.value) !== 'undefined') {
+              addValues.team_id = values.team.value;
             }
           }
           const transaction = {
             user_id: auth.uid,
-            transaction_type: 'ADD_USER',
+            transaction_type: 'ADD_VOLUNTEER',
             data: addValues,
           };
           firestore.collection('transactions').add(transaction).then((docRef) => {
             resetForm();
-            enqueueSnackbar('Creating user... It may take a few minutes.', {
+            enqueueSnackbar('Creating Volunteer... It may take a few minutes.', {
               variant: 'info',
             });
             firestore.collection('transactions').doc(docRef.id).onSnapshot((doc) => {
@@ -145,7 +170,7 @@ class AddUserForm extends Component {
             });
           }).catch((err) => {
             console.log(err);
-            enqueueSnackbar('Invalid Credentials for New User. Please try again.', {
+            enqueueSnackbar('Invalid Credentials for New Volunteer. Please try again.', {
               variant: 'error',
             });
           }).finally(() => {
@@ -177,37 +202,16 @@ class AddUserForm extends Component {
             />
             &lt;Field
               required
-              name="mobile"
-              label="Mobile Number"
+              name="studentNo"
+              label="Student Number"
               type="text"
               component={TextField}
             />
             &lt;Field
               required
-              name="type"
-              label="Type of User"
-              component={Dropdown}
-            >
-              &lt;MenuItem value="orion">Orion Member&lt;/MenuItem>
-              &lt;MenuItem value="admin">Admin&lt;/MenuItem>
-              &lt;MenuItem value="teacher">Secondary School Teacher&lt;/MenuItem>
-            &lt;/Field>
-            {values.type === 'teacher' ? (
-              &lt;Field
-                required
-                name="school"
-                label="School"
-                options={schools}
-                component={Select}
-              />
-            ) : (
-              null
-            )}
-            &lt;Field
-              required
-              name="email"
-              label="Email"
-              type="email"
+              name="mobile"
+              label="Mobile Number"
+              type="text"
               component={TextField}
             />
             &lt;Field
@@ -217,16 +221,63 @@ class AddUserForm extends Component {
               type="password"
               component={TextField}
             />
+            &lt;Field
+              required
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              component={TextField}
+            />
+            &lt;Field
+              required
+              name="type"
+              label="Type of Volunteer"
+              component={Dropdown}
+            >
+              &lt;MenuItem value="GL">Group Leader&lt;/MenuItem>
+              &lt;MenuItem value="GM">Game Master&lt;/MenuItem>
+            &lt;/Field>
+            {values.type === 'GL' ? (
+              &lt;Field
+                required
+                name="team"
+                label="Team"
+                options={teams}
+                component={Select}
+              />
+            ) : (
+              null
+            )}
+            &lt;Field
+              required
+              name="school"
+              label="School"
+              type="text"
+              component={TextField}
+            />
+            &lt;Field
+              required
+              name="email"
+              label="Email"
+              type="email"
+              component={TextField}
+            />
+            &lt;Field
+              name="dietary"
+              label="Dietary Restrictions"
+              type="text"
+              component={TextField}
+            />
             &lt;div className="align-right">
               &lt;Button
                 type="button"
                 variant="outlined"
                 color="secondary"
                 component={Link}
-                to="/users"
+                to={`/events/${match.params.eventId}/volunteers`}
               >
                 &lt;ArrowBack />
-                BACK TO USERS
+                BACK TO VOLUNTEERS
               &lt;/Button>
               &lt;Button
                 type="submit"
@@ -234,7 +285,7 @@ class AddUserForm extends Component {
                 color="primary"
                 disabled={util.isFormValid(errors, touched)}
               >
-                ADD USER
+                ADD VOLUNTEER
               &lt;/Button>
             &lt;/div>
           &lt;/Form>
@@ -248,20 +299,21 @@ const mapStateToProps = state => ({
   auth: state.firebase.auth,
 });
 
-AddUserForm.propTypes = {
+AddCrewForm.propTypes = {
   auth: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  schools: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.string,
+  teams: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
   })),
+  match: PropTypes.shape({}).isRequired,
 };
 
-AddUserForm.defaultProps = {
-  schools: [],
+AddCrewForm.defaultProps = {
+  teams: [],
 };
 
-export default withSnackbar(connect(mapStateToProps)(AddUserForm));
+export default withSnackbar(withRouter(connect(mapStateToProps)(AddCrewForm)));
 </code></pre>
         </article>
     </section>

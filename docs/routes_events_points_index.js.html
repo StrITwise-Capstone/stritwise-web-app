@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/users/index.js</title>
+    <title>JSDoc: Source: routes/events/points/index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/users/index.js</h1>
+    <h1 class="page-title">Source: routes/events/points/index.js</h1>
 
     
 
@@ -27,7 +27,6 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
@@ -36,45 +35,33 @@ import {
   Button,
   MenuItem,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
-import * as util from '../../helper/util';
-import TextField from '../../components/UI/TextField/TextField';
-import Dropdown from '../../components/UI/Dropdown/Dropdown';
-import AdminLayout from '../../hoc/Layout/AdminLayout';
-import Table from '../../components/UI/Table/Table';
+import * as util from '../../../helper/util';
+import TextField from '../../../components/UI/TextField/TextField';
+import Dropdown from '../../../components/UI/Dropdown/Dropdown';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
+import CustomTable from '../../../components/UI/Table/Table';
 
 /**
- * Class representing the Users component.
+ * Class representing the Points component.
  */
-class Users extends Component {
+class Points extends Component {
   state = {
     // Filter option.
     filter: 'all',
-    // search value
+    // Search value.
     search: '',
   }
 
   /**
    * Function that is invoked to perform update operation on the data.
    */
-  handleEdit = (userID) => {
-    const { history } = this.props;
-    history.push(`/users/${userID}/edit`);
-  }
-
-  /**
-   * Function that is invoked to perform delete operation on the data.
-   */
-  handleDelete = (userID) => {
-    const { firestore, auth } = this.props;
-    const transaction = {
-      user_id: auth.uid,
-      transaction_type: 'DELETE_USER',
-      data: userID,
-    };
-    return firestore.collection('transactions').add(transaction);
+  handleEdit = (teamID) => {
+    const { history, match } = this.props;
+    history.push(`/events/${match.params.eventId}/points/${teamID}/edit`);
   }
 
   /**
@@ -93,14 +80,12 @@ class Users extends Component {
       /* eslint-enable */
       return map;
     }, {});
-    data = docsList.map(user => (
+    data = docsList.map(team => (
       {
-        id: user.uid,
-        Name: `${user.data.firstName} ${user.data.lastName}`,
-        Mobile: user.data.mobile,
-        Type: user.data.type,
-        School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
-        Email: user.data.email,
+        id: team.uid,
+        'Team Name': team.data.team_name,
+        School: schoolsMap[team.data.school_id],
+        Credits: team.data.credit,
       }
     ));
     return data;
@@ -110,8 +95,8 @@ class Users extends Component {
    * Function that is invoked to apply the filter to the filterRef variable in state.
    */
   handleCustomFilter = (collection, filter, search) => {
-    if (filter === 'type') {
-      collection = collection.where(filter, '==', search.toLowerCase());
+    if (filter === 'name') {
+      collection = collection.where('team_name', '==', search);
     } else if (filter === 'school') {
       const { schools } = this.props;
       const school = schools.find(schElement => (schElement.name === search));
@@ -126,36 +111,36 @@ class Users extends Component {
 
 
   render() {
-    const { firestore } = this.props;
+    const { firestore, match } = this.props;
     const { filter, search } = this.state;
-    const colRef = firestore.collection('users');
+    const colRef = firestore.collection('events').doc(match.params.eventId).collection('teams');
     const action = (
-      &lt;React.Fragment>
+      &lt;div style={{ display: 'flex' }}>
         &lt;Button
           type="button"
           variant="contained"
           color="secondary"
           component={Link}
-          to="/users/create"
+          to={`/events/${match.params.eventId}/pointsystem`}
         >
-          Add User
+          Presentation View
         &lt;/Button>
-      &lt;/React.Fragment>
+      &lt;/div>
     );
     return (
       &lt;AdminLayout
-        title="Users"
+        title="Points"
         // subtitle="Some longer subtitle here"
         action={action}
       >
-        &lt;Table
-          // title="Users"
+        &lt;CustomTable
+          // For Table
+          // title="Volunteers"
           colRef={colRef}
           handleDocsList={this.handleDocsList}
           enableEdit
           handleEdit={this.handleEdit}
-          enableDelete
-          handleDelete={this.handleDelete}
+          enableDelete={false}
           handleCustomFilter={this.handleCustomFilter}
           filter={filter}
           search={search}
@@ -191,8 +176,8 @@ class Users extends Component {
                       &lt;MenuItem value="all">
                         &lt;em>All&lt;/em>
                       &lt;/MenuItem>
-                      &lt;MenuItem value="type">Type&lt;/MenuItem>
                       &lt;MenuItem value="school">School&lt;/MenuItem>
+                      &lt;MenuItem value="name">Team Name&lt;/MenuItem>
                     &lt;/Field>
                   &lt;/div>
                   {values.filter !== 'all' ? (
@@ -224,7 +209,7 @@ class Users extends Component {
             &lt;/Formik>
 
           &lt;/div>
-        &lt;/Table>
+        &lt;/CustomTable>
       &lt;/AdminLayout>
     );
   }
@@ -236,23 +221,24 @@ const mapStateToProps = state => ({
 });
 
 
-Users.propTypes = {
+Points.propTypes = {
   schools: PropTypes.arrayOf(PropTypes.shape({})),
   firestore: PropTypes.shape({}).isRequired,
   auth: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
-Users.defaultProps = {
+Points.defaultProps = {
   schools: [],
-};
+}
 
 export default compose(
   connect(mapStateToProps),
   firestoreConnect([
     { collection: 'schools' },
   ]),
-)(Users);
+)(Points);
 </code></pre>
         </article>
     </section>

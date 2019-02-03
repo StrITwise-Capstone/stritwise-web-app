@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/users/edit/index.js</title>
+    <title>JSDoc: Source: routes/events/volunteers/edit/index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/users/edit/index.js</h1>
+    <h1 class="page-title">Source: routes/events/volunteers/edit/index.js</h1>
 
     
 
@@ -27,77 +27,78 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withFirestore } from 'react-redux-firebase';
 import { withRouter } from 'react-router';
 import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import EditUserForm from './EditUserForm';
-import AdminLayout from '../../../hoc/Layout/AdminLayout';
+import PropTypes from 'prop-types';
+import EditCrewForm from './EditCrewForm';
+import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
 /**
- * Class representing the EditUser component.
+ * Class representing the EditVolunteer component.
  */
-class EditUser extends Component {
+class EditVolunteer extends Component {
   state = {
-    // List of school documents.
-    schools: [],
-    // A specific user document.
-    user: {},
+    // List of team documents.
+    teams: [],
+    // A specific volunteer document.
+    volunteer: null,
   }
 
   /**
-   * Populates the school array in the state with all the documents from the schools collection.
-   * Populates the User variable in the state with a specific user document
+   * Populates the teams array in the state with all the documents from the schools collection.
+   * Populates the volunteer variable in the state with a specific user document
    * from the users collection.
    */
   componentDidMount() {
     const { firestore, match } = this.props;
-    firestore.collection('schools').get().then((querySnapshot) => {
-      const schools = [];
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
+      const teams = [];
       querySnapshot.forEach((doc) => {
-        schools.push({
-          label: doc.data().name,
+        teams.push({
+          label: doc.data().team_name,
           value: doc.id,
         });
       });
-      this.setState({ schools });
+      this.setState({ teams });
     }).catch((error) => {
       console.log(error);
     });
 
-    const userID = match.params.id;
-    const userDocRef = firestore.collection('users').doc(userID);
-    userDocRef.get().then((doc) => {
-      if (doc.exists) {
-        const user = {
-          id: userID,
-          firstName: doc.data().firstName,
-          lastName: doc.data().lastName,
-          mobile: doc.data().mobile,
-          school: {
-            label: '',
-            value: doc.data().school_id,
-          },
-        };
-        this.setState({ user });
-      }
+    const volunteerDocRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(match.params.volunteerid);
+    volunteerDocRef.get().then((doc) => {
+      const volunteer = {
+        id: match.params.volunteerid,
+        firstName: doc.data().first_name,
+        lastName: doc.data().last_name,
+        studentNo: doc.data().student_no,
+        mobile: doc.data().mobile,
+        type: doc.data().type,
+        team: {
+          label: '',
+          value: doc.data().team_id,
+        },
+        school: doc.data().school,
+        dietary: doc.data().dietary_restrictions ? doc.data().dietary_restrictions : '',
+      };
+      this.setState({ volunteer });
     }).catch((error) => {
       console.log('Error getting document:', error);
     });
   }
 
   /**
-   * Searches the schools array in state for a particular school_id
-   * @returns {string} The school name.
+   * Searches the teams array in state for a particular team_id
+   * @returns {string} The team name.
    */
-  getSchoolName = (schools, userSchoolId) => {
-    if (schools !== null &amp;&amp; userSchoolId !== null) {
-      const currentSchool = schools.find(schoolElement => (schoolElement.value === userSchoolId));
-      if (currentSchool) {
-        return currentSchool.label;
+  getTeamName = (teams, volunteerTeamId) => {
+    if (teams !== null &amp;&amp; volunteerTeamId !== null) {
+      const currentTeam = teams.find(teamElement => (teamElement.value === volunteerTeamId));
+      if (currentTeam) {
+        return currentTeam.label;
       }
       return 'N.A. ';
     }
@@ -106,14 +107,14 @@ class EditUser extends Component {
 
   render() {
     let content = &lt;CircularProgress />;
-    const { schools, user } = this.state;
-    if (schools.length &amp;&amp; user.school != null) {
-      const userSchoolId = user.school.value;
-      user.school.label = this.getSchoolName(schools, userSchoolId);
+    const { volunteer, teams } = this.state;
+    if (teams.length &amp;&amp; volunteer !== null) {
+      const volunteerTeamId = volunteer.team.value;
+      volunteer.team.label = this.getTeamName(teams, volunteerTeamId);
       content = (
         &lt;AdminLayout>
-          &lt;Typography variant="h4" id="title">Edit User&lt;/Typography>
-          &lt;EditUserForm schools={schools} user={user} />
+          &lt;Typography variant="h4" id="title">Edit Volunteer&lt;/Typography>
+          &lt;EditCrewForm teams={teams} volunteer={volunteer} />
         &lt;/AdminLayout>
       );
     }
@@ -125,12 +126,12 @@ class EditUser extends Component {
   }
 }
 
-EditUser.propTypes = {
+EditVolunteer.propTypes = {
   firestore: PropTypes.shape({}).isRequired,
   match: PropTypes.shape({}).isRequired,
 };
 
-export default  withRouter(withFirestore(EditUser));
+export default withRouter(withFirestore(EditVolunteer));
 </code></pre>
         </article>
     </section>

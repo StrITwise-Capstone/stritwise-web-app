@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: AddUserForm</title>
+    <title>JSDoc: Class: EditVolunteer</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: AddUserForm</h1>
+    <h1 class="page-title">Class: EditVolunteer</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>AddUserForm<span class="signature">(schools)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>EditVolunteer<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing the AddUserForm component.</div>
+            <div class="class-description">Class representing the EditVolunteer component.</div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="AddUserForm"><span class="type-signature"></span>new AddUserForm<span class="signature">(schools)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="EditVolunteer"><span class="type-signature"></span>new EditVolunteer<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -58,55 +58,6 @@
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>schools</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Object></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">List of school documents.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -142,7 +93,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="routes_users_create_AddUserForm.js.html">routes/users/create/AddUserForm.js</a>, <a href="routes_users_create_AddUserForm.js.html#line51">line 51</a>
+        <a href="routes_events_volunteers_edit_index.js.html">routes/events/volunteers/edit/index.js</a>, <a href="routes_events_volunteers_edit_index.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -186,6 +137,72 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="getTeamName"><span class="type-signature"></span>getTeamName<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Searches the teams array in state for a particular team_id
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="routes_events_volunteers_edit_index.js.html">routes/events/volunteers/edit/index.js</a>, <a href="routes_events_volunteers_edit_index.js.html#line69">line 69</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -196,7 +213,7 @@
     
 
     
-    <h4 class="name" id="componentDidUpdate"><span class="type-signature"></span>componentDidUpdate<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="componentDidMount"><span class="type-signature"></span>componentDidMount<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -204,8 +221,9 @@
 
 
 <div class="description">
-    Enqueues a message to the Snackbar component based on the
-transactionStatus object in the state.
+    Populates the teams array in the state with all the documents from the schools collection.
+Populates the volunteer variable in the state with a specific user document
+from the users collection.
 </div>
 
 
@@ -249,7 +267,7 @@ transactionStatus object in the state.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="routes_users_create_AddUserForm.js.html">routes/users/create/AddUserForm.js</a>, <a href="routes_users_create_AddUserForm.js.html#line60">line 60</a>
+        <a href="routes_events_volunteers_edit_index.js.html">routes/events/volunteers/edit/index.js</a>, <a href="routes_events_volunteers_edit_index.js.html#line28">line 28</a>
     </li></ul></dd>
     
 

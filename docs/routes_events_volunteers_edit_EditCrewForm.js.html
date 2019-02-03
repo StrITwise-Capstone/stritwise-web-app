@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/users/edit/EditUserForm.js</title>
+    <title>JSDoc: Source: routes/events/volunteers/edit/EditCrewForm.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/users/edit/EditUserForm.js</h1>
+    <h1 class="page-title">Source: routes/events/volunteers/edit/EditCrewForm.js</h1>
 
     
 
@@ -44,62 +44,74 @@ import PropTypes from 'prop-types';
 import { withFirestore } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 
-import * as util from '../../../helper/util';
-import TextField from '../../../components/UI/TextField/TextField';
-import Select from '../../../components/UI/Select/Select';
-import yup from '../../../instances/yup';
+import * as util from '../../../../helper/util';
+import TextField from '../../../../components/UI/TextField/TextField';
+import Select from '../../../../components/UI/Select/Select';
+import yup from '../../../../instances/yup';
 
 const validationSchema = yup.object({
   firstName: yup.string().required('Required'),
   lastName: yup.string().required('Required'),
   mobile: yup.number().moreThan(60000000, 'Enter a valid phone number')
     .lessThan(100000000, 'Enter a valid phone number')
-    .required('Required')
-    .typeError('Invalid Mobile Number'),
-  school: yup.mixed()
+    .required('Required'),
+  team: yup.mixed()
     .singleSelectRequired('Required'),
+  school: yup.string().required('Required'),
+  studentNo: yup.string().required('Required'),
+  dietary: yup.string(),
+
 });
 
 /**
- * Class representing the EditUserForm component.
- * @param {Object[]} schools - List of school documents.
- * @param {Object} user - A specific user document.
+ * Class representing the EditCrewForm component.
+ * @param {Object[]} teams - List of team documents.
+ * @param {Object} volunteer - A specific volunteer document.
  */
-const EditUserForm = ({
-  history, firestore, enqueueSnackbar, user, schools,
+const EditCrewForm = ({
+  history, firestore, enqueueSnackbar, match, volunteer, teams,
 }) => (
   &lt;Formik
     enableReinitialize
     initialValues={{
-      firstName: `${user.firstName}`,
-      lastName: `${user.lastName}`,
-      mobile: `${user.mobile}`,
-      school: {
-        label: `${user.school.label}`,
-        value: `${user.school.value}`,
+      firstName: `${volunteer.firstName}`,
+      lastName: `${volunteer.lastName}`,
+      studentNo: `${volunteer.studentNo}`,
+      mobile: `${volunteer.mobile}`,
+      team: {
+        label: `${volunteer.team.label}`,
+        value: `${volunteer.team.value}`,
       },
+      school: `${volunteer.school}`,
+      dietary: `${volunteer.dietary}`,
     }}
     validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
+      // console.log(values);
       const now = new Date();
 
-      const userRef = firestore.collection('users').doc(user.id);
+      const volunteerRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(match.params.volunteerid);
       // update user values
       const updateValues = {
-        firstName: values.firstName,
-        lastName: values.lastName,
+        first_name: values.firstName,
+        last_name: values.lastName,
         initials: values.firstName[0] + values.lastName[0],
         mobile: values.mobile,
         modified_at: now,
+        school: values.school,
+        student_no: values.studentNo,
       };
-      if (typeof (user.school.value) !== 'undefined') {
-        updateValues.school_id = values.school.value;
+      if (typeof (values.dietary) !== 'undefined') {
+        updateValues.dietary_restriction = values.dietary;
       }
-      userRef.update({ ...updateValues }).then(() => {
-        enqueueSnackbar('User successfully updated.', {
+      if (typeof (volunteer.team.value) !== 'undefined' || volunteer.type === 'GL') {
+        updateValues.team_id = values.team.value;
+      }
+      volunteerRef.update({ ...updateValues }).then(() => {
+        enqueueSnackbar('Volunteer successfully updated.', {
           variant: 'success',
         });
-        history.push('/users');
+        history.push(`/events/${match.params.eventId}/volunteers`);
         console.log('Document successfully updated!');
       }).catch((error) => {
         // The document probably doesn't exist.
@@ -138,29 +150,49 @@ const EditUserForm = ({
             />
             &lt;Field
               required
+              name="studentNo"
+              label="Student Number"
+              type="text"
+              component={TextField}
+            />
+            &lt;Field
+              required
               name="mobile"
               label="Mobile Number"
               type="text"
               component={TextField}
             />
-            {typeof (user.school.value) !== 'undefined' &amp;&amp; (
+            {typeof (volunteer.team.value) !== 'undefined' || volunteer.type === 'GL' ? (
               &lt;Field
-                name="school"
-                label="School"
-                options={schools}
+                name="team"
+                label="Team"
+                options={teams}
                 component={Select}
               />
-            )}
+            ) : (null)}
+            &lt;Field
+              required
+              name="school"
+              label="School"
+              type="text"
+              component={TextField}
+            />
+            &lt;Field
+              name="dietary"
+              label="Dietary Restrictions"
+              type="text"
+              component={TextField}
+            />
             &lt;div className="align-right">
               &lt;Button
                 type="button"
                 variant="outlined"
                 color="secondary"
                 component={Link}
-                to="/users"
+                to={`/events/${match.params.eventId}/volunteers`}
               >
                 &lt;ArrowBack />
-                BACK TO USERS
+                BACK TO VOLUNTEERS
               &lt;/Button>
               &lt;Button
                 type="submit"
@@ -183,20 +215,21 @@ const mapStateToProps = state => ({
   auth: state.firebase.auth,
 });
 
-EditUserForm.propTypes = {
-  schools: PropTypes.arrayOf(PropTypes.shape({
+EditCrewForm.propTypes = {
+  teams: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string,
     value: PropTypes.string,
   })),
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({}).isRequired,
-  user: PropTypes.shape({}),
+  volunteer: PropTypes.shape({}),
   firestore: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
-EditUserForm.defaultProps = {
-  schools: [],
-  user: {},
+EditCrewForm.defaultProps = {
+  teams: [],
+  volunteer: {},
 };
 
 export default compose(
@@ -204,7 +237,7 @@ export default compose(
   withSnackbar,
   withRouter,
   withFirestore,
-)(EditUserForm);
+)(EditCrewForm);
 </code></pre>
         </article>
     </section>

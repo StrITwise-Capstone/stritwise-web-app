@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: routes/users/index.js</title>
+    <title>JSDoc: Source: routes/events/volunteers/index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: routes/users/index.js</h1>
+    <h1 class="page-title">Source: routes/events/volunteers/index.js</h1>
 
     
 
@@ -27,54 +27,63 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
+import { withRouter } from 'react-router';
 import { compose } from 'redux';
 import { Link } from 'react-router-dom';
 import {
   Button,
   MenuItem,
+  CircularProgress,
 } from '@material-ui/core';
+import { withSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
 
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
-import * as util from '../../helper/util';
-import TextField from '../../components/UI/TextField/TextField';
-import Dropdown from '../../components/UI/Dropdown/Dropdown';
-import AdminLayout from '../../hoc/Layout/AdminLayout';
-import Table from '../../components/UI/Table/Table';
+import * as util from '../../../helper/util';
+import TextField from '../../../components/UI/TextField/TextField';
+import Dropdown from '../../../components/UI/Dropdown/Dropdown';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
+import CustomTable from '../../../components/UI/Table/Table';
+import Dialog from './ImportButton/Dialog';
+import urlForDownloads from '../../../config/urlForDownloads';
 
 /**
- * Class representing the Users component.
+ * Class representing the Volunteers component.
  */
-class Users extends Component {
+class Volunteers extends Component {
   state = {
     // Filter option.
     filter: 'all',
-    // search value
+    // Search value.
     search: '',
+    // Checks if retrieval of Table data is still running.
+    isLoading: false,
   }
 
   /**
    * Function that is invoked to perform update operation on the data.
    */
-  handleEdit = (userID) => {
-    const { history } = this.props;
-    history.push(`/users/${userID}/edit`);
+  handleEdit = (volunteerID) => {
+    const { history, match } = this.props;
+    history.push(`/events/${match.params.eventId}/volunteers/${volunteerID}/edit`);
   }
 
   /**
    * Function that is invoked to perform delete operation on the data.
    */
-  handleDelete = (userID) => {
-    const { firestore, auth } = this.props;
-    const transaction = {
-      user_id: auth.uid,
-      transaction_type: 'DELETE_USER',
-      data: userID,
-    };
-    return firestore.collection('transactions').add(transaction);
+  handleDelete = (volunteerId) => {
+    const { firestore, match } = this.props;
+    return firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(volunteerId).delete()
+      .then(() => (console.log('Document is being deleted!')))
+      .catch(error => (console.error('Error removing document: ', error)));
+  }
+
+  refreshState = () => {
+    this.setState({isLoading: true});
+    this.setState({isLoading: false});
   }
 
   /**
@@ -82,25 +91,28 @@ class Users extends Component {
    */
   handleDocsList = (docsList) => {
     let data = [];
-    const { schools } = this.props;
-    if (!schools) {
+    const { teams } = this.props;
+    if (!teams) {
       return null;
     }
-    const schoolsMap = schools.reduce((map, obj) => {
+    const teamsMap = teams.reduce((map, obj) => {
       // Disabled eslint error for performance reasons
       /* eslint no-param-reassign: "off" */
-      map[obj.id] = obj.name;
+      map[obj.id] = obj.team_name;
       /* eslint-enable */
       return map;
     }, {});
-    data = docsList.map(user => (
+    data = docsList.map(volunteer => (
       {
-        id: user.uid,
-        Name: `${user.data.firstName} ${user.data.lastName}`,
-        Mobile: user.data.mobile,
-        Type: user.data.type,
-        School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
-        Email: user.data.email,
+        id: volunteer.uid,
+        Name: `${volunteer.data.first_name} ${volunteer.data.last_name}`,
+        Mobile: volunteer.data.mobile,
+        Type: volunteer.data.type,
+        Team: teamsMap[volunteer.data.team_id] ? teamsMap[volunteer.data.team_id] : 'N.A.',
+        School: volunteer.data.school,
+        'Dietary Restrictions': volunteer.data.dietary_restriction ? volunteer.data.dietary_restriction : 'Nil',
+        'Student Number': volunteer.data.student_no,
+        Email: volunteer.data.email,
       }
     ));
     return data;
@@ -110,46 +122,54 @@ class Users extends Component {
    * Function that is invoked to apply the filter to the filterRef variable in state.
    */
   handleCustomFilter = (collection, filter, search) => {
-    if (filter === 'type') {
-      collection = collection.where(filter, '==', search.toLowerCase());
-    } else if (filter === 'school') {
-      const { schools } = this.props;
-      const school = schools.find(schElement => (schElement.name === search));
-      if (school !== undefined) {
-        collection = collection.where('school_id', '==', school.id);
-      } else {
-        collection = collection.where('school_id', '==', '1');
-      }
+    if (filter === 'type' || filter === 'school') {
+      collection = collection.where(filter, '==', search);
     }
     return collection;
   }
 
 
   render() {
-    const { firestore } = this.props;
-    const { filter, search } = this.state;
-    const colRef = firestore.collection('users');
+    const { firestore, match } = this.props;
+    const { filter, search, isLoading } = this.state;
+    const colRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers');
     const action = (
-      &lt;React.Fragment>
+      &lt;div style={{ display: 'flex' }}>
         &lt;Button
           type="button"
           variant="contained"
           color="secondary"
           component={Link}
-          to="/users/create"
+          to={`/events/${match.params.eventId}/volunteers/create`}
         >
-          Add User
+        Add Volunteer
         &lt;/Button>
-      &lt;/React.Fragment>
+        &lt;Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          href={urlForDownloads.volunteersTemplate}
+        >
+        Download Template
+        &lt;/Button>
+        &lt;Dialog
+          refreshState={this.refreshState}
+          eventuid={match.params.eventId}
+        />
+      &lt;/div>
     );
     return (
       &lt;AdminLayout
-        title="Users"
+        title="Volunteers"
         // subtitle="Some longer subtitle here"
         action={action}
       >
-        &lt;Table
-          // title="Users"
+        { isLoading &amp;&amp; &lt;CircularProgress /> }
+        {!isLoading
+        &amp;&amp; (
+        &lt;CustomTable
+          // For Table
+          // title="Volunteers"
           colRef={colRef}
           handleDocsList={this.handleDocsList}
           enableEdit
@@ -222,37 +242,43 @@ class Users extends Component {
                 &lt;/Form>
               )}
             &lt;/Formik>
-
           &lt;/div>
-        &lt;/Table>
+        &lt;/CustomTable>)}
       &lt;/AdminLayout>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  schools: state.firestore.ordered.schools,
+  teams: state.firestore.ordered.teams,
   auth: state.firebase.auth,
 });
 
 
-Users.propTypes = {
-  schools: PropTypes.arrayOf(PropTypes.shape({})),
+Volunteers.propTypes = {
+  teams: PropTypes.arrayOf(PropTypes.shape({})),
   firestore: PropTypes.shape({}).isRequired,
   auth: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
-Users.defaultProps = {
-  schools: [],
+Volunteers.defaultProps = {
+  teams: [],
 };
 
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect([
-    { collection: 'schools' },
-  ]),
-)(Users);
+  firestoreConnect(props => (
+    [
+      {
+        collection: 'events', doc: `${props.match.params.eventId}`, subcollections: [{ collection: 'teams' }], storeAs: 'teams',
+      },
+    ]
+  )),
+  withRouter,
+  withSnackbar,
+)(Volunteers);
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: hoc/Layout/AdminLayout.js</title>
+    <title>JSDoc: Source: routes/events/volunteers/create/index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: hoc/Layout/AdminLayout.js</h1>
+    <h1 class="page-title">Source: routes/events/volunteers/create/index.js</h1>
 
     
 
@@ -28,63 +28,59 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
 import { Typography } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { withFirestore } from 'react-redux-firebase';
 
-import styles from './AdminLayout.styles';
+import AddCrewForm from './AddCrewForm';
+import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
 /**
- * Admin Layout for the entire application.
- * @param {Component} children - Children of the page.
- * @param {string} title - Title of the page.
- * @param {string} subtitle - Subtitle of the page.
- * @param {Component} action - Action bar of the page. Actions buttons are recommended to be placed
- *  in this area
+ * Class representing the AddVolunteer component.
  */
-class AdminLayout extends Component {
-  render() {
-    const {
-      children,
-      classes,
-      title,
-      subtitle,
-      action,
-    } = this.props;
+class AddVolunteer extends Component {
+  state = {
+    // List of team documents.
+    teams: [],
+  }
 
+  /**
+   * Populates the team array in the state with all the documents from the teams collection.
+   */
+  componentDidMount() {
+    const { firestore, match } = this.props;
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
+      const teams = [];
+      querySnapshot.forEach((doc) => {
+        teams.push({
+          label: doc.data().team_name,
+          value: doc.id,
+        });
+      });
+      this.setState({ teams });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+
+  render() {
+    const { teams } = this.state;
     return (
-      &lt;div className={classes.root}>
-        &lt;div className={classes.header}>
-          &lt;div>
-            &lt;Typography variant="h4">{title}&lt;/Typography>
-            &lt;Typography variant="subtitle1">{subtitle}&lt;/Typography>
-          &lt;/div>
-          &lt;div>
-            {action}
-          &lt;/div>
-        &lt;/div>
-        {children}
-      &lt;/div>
+      &lt;AdminLayout>
+        &lt;Typography variant="h4" id="title">Add Volunteer&lt;/Typography>
+        &lt;AddCrewForm teams={teams} />
+      &lt;/AdminLayout>
     );
   }
 }
 
-AdminLayout.propTypes = {
-  title: PropTypes.string,
-  subtitle: PropTypes.string,
-  action: PropTypes.element,
-  /* eslint-disable react/forbid-prop-types */
-  children: PropTypes.any.isRequired,
-  /* eslint-enable */
-  classes: PropTypes.objectOf(PropTypes.string).isRequired,
+AddVolunteer.propTypes = {
+  firestore: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
-AdminLayout.defaultProps = {
-  title: null,
-  subtitle: null,
-  action: null,
-};
-
-export default withStyles(styles)(AdminLayout);
+export default withSnackbar(withFirestore(AddVolunteer));
 </code></pre>
         </article>
     </section>
