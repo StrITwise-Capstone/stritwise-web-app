@@ -1,4 +1,32 @@
-import React, { Fragment } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/UI/Table/TableView.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/UI/Table/TableView.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -82,98 +110,98 @@ const TableView = ({
   let dataContent = null;
   let dataHeader = null;
   if (isLoading) { // If still loading, table should show its loading
-    dataContent = <CircularProgress />;
-  } else if (data && data.length !== 0) {
+    dataContent = &lt;CircularProgress />;
+  } else if (data &amp;&amp; data.length !== 0) {
     // populating dataContent if data exists
     dataHeader = Object.keys(data[0]).slice(1).map(header => (
-      <CustomTableCell key={header}>{header}</CustomTableCell>
+      &lt;CustomTableCell key={header}>{header}&lt;/CustomTableCell>
     ));
     dataContent = (data
       .map((row) => {
         const rowCopy = { ...row };
         return (
-          <TableRow key={rowCopy.id}>
+          &lt;TableRow key={rowCopy.id}>
             {Object.keys(rowCopy).slice(1).map(key => (
-              <CustomTableCell key={key}>{rowCopy[key]}</CustomTableCell>
+              &lt;CustomTableCell key={key}>{rowCopy[key]}&lt;/CustomTableCell>
             ))}
             {(enableEdit || enableDelete) ? (
-              <CustomTableCell align="right">
+              &lt;CustomTableCell align="right">
                 {enableEdit ? (
-                  <IconButton
+                  &lt;IconButton
                     onClick={() => handleEdit(rowCopy.id)}
                     color="inherit"
                   >
-                    <EditIcon />
-                  </IconButton>
+                    &lt;EditIcon />
+                  &lt;/IconButton>
                 ) : null}
                 {enableDelete ? (
-                  <IconButton
+                  &lt;IconButton
                     onClick={() => handleDelete(rowCopy.id)}
                     color="inherit"
                   >
-                    <DeleteIcon />
-                  </IconButton>
+                    &lt;DeleteIcon />
+                  &lt;/IconButton>
                 ) : null}
-              </CustomTableCell>
+              &lt;/CustomTableCell>
             ) : null}
-          </TableRow>
+          &lt;/TableRow>
         );
       }));
   } else if (!isLoading) {
     dataContent = (
-      <p style={{ textAlign: 'center' }}>There is no data at the moment.</p>
+      &lt;p style={{ textAlign: 'center' }}>There is no data at the moment.&lt;/p>
     );
   }
 
   // Generate the Table
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, dataContent.length);
   return (
-    <Fragment>
-      <Paper className={classes.root}>
-        <div className={classes.tableWrapper}>
-          <TableToolbar
+    &lt;Fragment>
+      &lt;Paper className={classes.root}>
+        &lt;div className={classes.tableWrapper}>
+          &lt;TableToolbar
             title={title}
           >
             {children}
-          </TableToolbar>
-          <Table className={classes.table}>
-            {dataContent.length >= 0 && dataHeader.length >= 0 ? (
-              <Fragment>
-                <TableHead>
-                  <TableRow>
+          &lt;/TableToolbar>
+          &lt;Table className={classes.table}>
+            {dataContent.length >= 0 &amp;&amp; dataHeader.length >= 0 ? (
+              &lt;Fragment>
+                &lt;TableHead>
+                  &lt;TableRow>
                     {dataHeader}
-                    <CustomTableCell />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+                    &lt;CustomTableCell />
+                  &lt;/TableRow>
+                &lt;/TableHead>
+                &lt;TableBody>
                   {dataContent}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 49 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
+                  {emptyRows > 0 &amp;&amp; (
+                    &lt;TableRow style={{ height: 49 * emptyRows }}>
+                      &lt;TableCell colSpan={6} />
+                    &lt;/TableRow>
                   )}
-                </TableBody>
-              </Fragment>
+                &lt;/TableBody>
+              &lt;/Fragment>
             ) : (
-              <Fragment>
-                <TableHead>
-                  <TableRow>
-                    <CustomTableCell key="errorHeader" />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <CustomTableCell key="errorMsg">
-                      <Fragment>
+              &lt;Fragment>
+                &lt;TableHead>
+                  &lt;TableRow>
+                    &lt;CustomTableCell key="errorHeader" />
+                  &lt;/TableRow>
+                &lt;/TableHead>
+                &lt;TableBody>
+                  &lt;TableRow>
+                    &lt;CustomTableCell key="errorMsg">
+                      &lt;Fragment>
                         {dataContent}
-                      </Fragment>
-                    </CustomTableCell>
-                  </TableRow>
-                </TableBody>
-              </Fragment>
+                      &lt;/Fragment>
+                    &lt;/CustomTableCell>
+                  &lt;/TableRow>
+                &lt;/TableBody>
+              &lt;/Fragment>
             )}
-          </Table>
-          <TablePagination
+          &lt;/Table>
+          &lt;TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={size}
@@ -189,9 +217,9 @@ const TableView = ({
             onChangeRowsPerPage={handleChangeRowsPerPage}
             ActionsComponent={TablePaginationActions}
           />
-        </div>
-      </Paper>
-    </Fragment>
+        &lt;/div>
+      &lt;/Paper>
+    &lt;/Fragment>
   );
 };
 
@@ -221,3 +249,26 @@ TableView.defaultProps = {
 };
 
 export default withRouter(withStyles(styles)(TableView));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddUser.html">AddUser</a></li><li><a href="AddUserForm.html">AddUserForm</a></li><li><a href="AdminLayout.html">AdminLayout</a></li><li><a href="EditUser.html">EditUser</a></li><li><a href="Table.html">Table</a></li><li><a href="TablePaginationActions.html">TablePaginationActions</a></li><li><a href="TableToolbar.html">TableToolbar</a></li><li><a href="Users.html">Users</a></li></ul><h3>Global</h3><ul><li><a href="global.html#EditUserForm">EditUserForm</a></li><li><a href="global.html#TableView">TableView</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Feb 04 2019 01:22:17 GMT+0800 (Russia TZ 7 Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

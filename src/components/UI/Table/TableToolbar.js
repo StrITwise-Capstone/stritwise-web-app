@@ -11,7 +11,12 @@ const toolbarStyles = () => ({
     flex: '1 1 auto',
   },
 });
-
+/**
+ * Class representing a sub-Component of the Table,
+ * responsible for rendering the Table toolbar and Formik filter form.
+ * @param {string} title - title of the table.
+ * @param {Component} children - Children of the page: Filter Formik Form.
+ */
 class TableToolbar extends Component {
   render() {
     const { classes, title, children } = this.props;

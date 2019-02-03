@@ -17,18 +17,28 @@ import Dropdown from '../../../components/UI/Dropdown/Dropdown';
 import AdminLayout from '../../../hoc/Layout/AdminLayout';
 import CustomTable from '../../../components/UI/Table/Table';
 
+/**
+ * Class representing the Points component.
+ */
 class Points extends Component {
   state = {
+    // Filter option.
     filter: 'all',
+    // Search value.
     search: '',
   }
 
-  // if (!auth.uid) return <Redirect to="/auth/login" />
+  /**
+   * Function that is invoked to perform update operation on the data.
+   */
   handleEdit = (teamID) => {
     const { history, match } = this.props;
     history.push(`/events/${match.params.eventId}/points/${teamID}/edit`);
   }
 
+  /**
+   * Function that is invoked to map documents to the intended format.
+   */
   handleDocsList = (docsList) => {
     let data = [];
     const { schools } = this.props;
@@ -53,26 +63,10 @@ class Points extends Component {
     return data;
   }
 
-  action = () => {
-    const { match } = this.props;
-    return (
-      <React.Fragment>
-        <Button
-          type="button"
-          variant="contained"
-          color="secondary"
-          component={Link}
-          to={`/events/${match.params.eventId}/pointsystem`}
-        >
-          Presentation View
-        </Button>
-      </React.Fragment>);
-  }
-
-
-  // Non-custom filter implmentation
+  /**
+   * Function that is invoked to apply the filter to the filterRef variable in state.
+   */
   handleCustomFilter = (collection, filter, search) => {
-    // check if Filter has been changed
     if (filter === 'name') {
       collection = collection.where('team_name', '==', search);
     } else if (filter === 'school') {
@@ -92,18 +86,31 @@ class Points extends Component {
     const { firestore, match } = this.props;
     const { filter, search } = this.state;
     const colRef = firestore.collection('events').doc(match.params.eventId).collection('teams');
+    const action = (
+      <div style={{ display: 'flex' }}>
+        <Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to={`/events/${match.params.eventId}/pointsystem`}
+        >
+          Presentation View
+        </Button>
+      </div>
+    );
     return (
       <AdminLayout
         title="Points"
-        //subtitle="Some longer subtitle here"
-        action={this.action()}
+        // subtitle="Some longer subtitle here"
+        action={action}
       >
         <CustomTable
           // For Table
           // title="Volunteers"
           colRef={colRef}
           handleDocsList={this.handleDocsList}
-          enableEdit={true}
+          enableEdit
           handleEdit={this.handleEdit}
           enableDelete={false}
           handleCustomFilter={this.handleCustomFilter}
@@ -180,27 +187,23 @@ class Points extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    schools: state.firestore.ordered.schools,
-    auth: state.firebase.auth,
-  };
-};
+const mapStateToProps = state => ({
+  schools: state.firestore.ordered.schools,
+  auth: state.firebase.auth,
+});
 
 
 Points.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  match: PropTypes.any.isRequired,
-  history: PropTypes.any.isRequired,
-  firestore: PropTypes.any.isRequired,
-  schools: PropTypes.any,
-  /* eslint-enable */
+  schools: PropTypes.arrayOf(PropTypes.shape({})),
+  firestore: PropTypes.shape({}).isRequired,
+  auth: PropTypes.shape({}).isRequired,
+  history: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
 Points.defaultProps = {
-  schools: null,
-};
-
+  schools: [],
+}
 
 export default compose(
   connect(mapStateToProps),

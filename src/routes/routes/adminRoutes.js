@@ -24,7 +24,7 @@ import EditTeamPoints from '../events/points/edit';
 export default [
   /* USERS */
   <Route exact path="/users" key="/users" component={Users} />,
-  <Route exact path="/users/:eventId/edit" key="/users/edit" component={EditUser} />,
+  <Route exact path="/users/:id/edit" key="/users/edit" component={EditUser} />,
   <Route exact path="/users/create" key="/users/create" component={createUser} />,
   
   /*PROFILE */

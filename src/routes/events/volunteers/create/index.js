@@ -7,12 +7,18 @@ import { withFirestore } from 'react-redux-firebase';
 import AddCrewForm from './AddCrewForm';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
+/**
+ * Class representing the AddVolunteer component.
+ */
 class AddVolunteer extends Component {
-
   state = {
+    // List of team documents.
     teams: [],
   }
 
+  /**
+   * Populates the team array in the state with all the documents from the teams collection.
+   */
   componentDidMount() {
     const { firestore, match } = this.props;
     firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
@@ -35,14 +41,15 @@ class AddVolunteer extends Component {
     return (
       <AdminLayout>
         <Typography variant="h4" id="title">Add Volunteer</Typography>
-        <AddCrewForm teams={teams}/>
+        <AddCrewForm teams={teams} />
       </AdminLayout>
     );
   }
 }
 
 AddVolunteer.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired,
+  firestore: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
 export default withSnackbar(withFirestore(AddVolunteer));

@@ -13,7 +13,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withFirebase, withFirestore } from 'react-redux-firebase';
+import { withFirestore } from 'react-redux-firebase';
 import { withSnackbar } from 'notistack';
 
 import * as util from '../../../../helper/util';
@@ -35,11 +35,16 @@ const validationSchema = yup.object({
 
 });
 
+/**
+ * Class representing the EditCrewForm component.
+ * @param {Object[]} teams - List of team documents.
+ * @param {Object} volunteer - A specific volunteer document.
+ */
 const EditCrewForm = ({
-  history, enqueueSnackbar, volunteer, volunteerRef, match, teams
+  history, firestore, enqueueSnackbar, match, volunteer, teams,
 }) => (
   <Formik
-    enableReinitialize={true}
+    enableReinitialize
     initialValues={{
       firstName: `${volunteer.firstName}`,
       lastName: `${volunteer.lastName}`,
@@ -56,6 +61,8 @@ const EditCrewForm = ({
     onSubmit={(values, { setSubmitting }) => {
       // console.log(values);
       const now = new Date();
+
+      const volunteerRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(match.params.volunteerid);
       // update user values
       const updateValues = {
         first_name: values.firstName,
@@ -181,26 +188,25 @@ const mapStateToProps = state => ({
 });
 
 EditCrewForm.propTypes = {
-  school: PropTypes.string,
-  /* eslint-disable react/forbid-prop-types */
-  enqueueSnackbar: PropTypes.any.isRequired,
-  history: PropTypes.any.isRequired,
-  firebase: PropTypes.any.isRequired,
-  firestore: PropTypes.any.isRequired,
-  volunteer: PropTypes.any.isRequired,
-  volunteerRef: PropTypes.any.isRequired,
-  match: PropTypes.any.isRequired,
-  /* eslint-enable */
+  teams: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string,
+  })),
+  enqueueSnackbar: PropTypes.func.isRequired,
+  history: PropTypes.shape({}).isRequired,
+  volunteer: PropTypes.shape({}),
+  firestore: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
 EditCrewForm.defaultProps = {
-  schools: '',
+  teams: [],
+  volunteer: {},
 };
 
 export default compose(
   connect(mapStateToProps),
   withSnackbar,
   withRouter,
-  withFirebase,
   withFirestore,
 )(EditCrewForm);

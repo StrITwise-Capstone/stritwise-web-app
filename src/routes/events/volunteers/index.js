@@ -22,19 +22,30 @@ import CustomTable from '../../../components/UI/Table/Table';
 import Dialog from './ImportButton/Dialog';
 import urlForDownloads from '../../../config/urlForDownloads';
 
+/**
+ * Class representing the Volunteers component.
+ */
 class Volunteers extends Component {
   state = {
+    // Filter option.
     filter: 'all',
+    // Search value.
     search: '',
+    // Checks if retrieval of Table data is still running.
     isLoading: false,
   }
 
-  // if (!auth.uid) return <Redirect to="/auth/login" />
+  /**
+   * Function that is invoked to perform update operation on the data.
+   */
   handleEdit = (volunteerID) => {
     const { history, match } = this.props;
     history.push(`/events/${match.params.eventId}/volunteers/${volunteerID}/edit`);
   }
 
+  /**
+   * Function that is invoked to perform delete operation on the data.
+   */
   handleDelete = (volunteerId) => {
     const { firestore, match } = this.props;
     return firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(volunteerId).delete()
@@ -47,6 +58,9 @@ class Volunteers extends Component {
     this.setState({isLoading: false});
   }
 
+  /**
+   * Function that is invoked to map documents to the intended format.
+   */
   handleDocsList = (docsList) => {
     let data = [];
     const { teams } = this.props;
@@ -76,9 +90,10 @@ class Volunteers extends Component {
     return data;
   }
 
-  // Non-custom filter implmentation
+  /**
+   * Function that is invoked to apply the filter to the filterRef variable in state.
+   */
   handleCustomFilter = (collection, filter, search) => {
-    // check if Filter has been changed
     if (filter === 'type' || filter === 'school') {
       collection = collection.where(filter, '==', search);
     }
@@ -118,7 +133,7 @@ class Volunteers extends Component {
     return (
       <AdminLayout
         title="Volunteers"
-        //subtitle="Some longer subtitle here"
+        // subtitle="Some longer subtitle here"
         action={action}
       >
         { isLoading && <CircularProgress /> }
@@ -129,9 +144,9 @@ class Volunteers extends Component {
           // title="Volunteers"
           colRef={colRef}
           handleDocsList={this.handleDocsList}
-          enableEdit={true}
+          enableEdit
           handleEdit={this.handleEdit}
-          enableDelete={true}
+          enableDelete
           handleDelete={this.handleDelete}
           handleCustomFilter={this.handleCustomFilter}
           filter={filter}
@@ -206,24 +221,23 @@ class Volunteers extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    teams: state.firestore.ordered.teams,
-    auth: state.firebase.auth,
-  };
-};
+const mapStateToProps = state => ({
+  teams: state.firestore.ordered.teams,
+  auth: state.firebase.auth,
+});
 
 
 Volunteers.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  firestore: PropTypes.any.isRequired,
-  match: PropTypes.any.isRequired,
-  /* eslint-enable */
+  teams: PropTypes.arrayOf(PropTypes.shape({})),
+  firestore: PropTypes.shape({}).isRequired,
+  auth: PropTypes.shape({}).isRequired,
+  history: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
 Volunteers.defaultProps = {
+  teams: [],
 };
-
 
 export default compose(
   connect(mapStateToProps),

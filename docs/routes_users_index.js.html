@@ -1,4 +1,32 @@
-import React, { Component } from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/users/index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/users/index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
@@ -102,8 +130,8 @@ class Users extends Component {
     const { filter, search } = this.state;
     const colRef = firestore.collection('users');
     const action = (
-      <React.Fragment>
-        <Button
+      &lt;React.Fragment>
+        &lt;Button
           type="button"
           variant="contained"
           color="secondary"
@@ -111,16 +139,16 @@ class Users extends Component {
           to="/users/create"
         >
           Add User
-        </Button>
-      </React.Fragment>
+        &lt;/Button>
+      &lt;/React.Fragment>
     );
     return (
-      <AdminLayout
+      &lt;AdminLayout
         title="Users"
         // subtitle="Some longer subtitle here"
         action={action}
       >
-        <Table
+        &lt;Table
           // title="Users"
           colRef={colRef}
           handleDocsList={this.handleDocsList}
@@ -132,8 +160,8 @@ class Users extends Component {
           filter={filter}
           search={search}
         >
-          <div>
-            <Formik
+          &lt;div>
+            &lt;Formik
               enableReinitialize
               initialValues={{ search: '', filter: 'all' }}
               validationSchema={Yup.object({
@@ -152,52 +180,52 @@ class Users extends Component {
                 handleSubmit,
                 values,
               }) => (
-                <Form onSubmit={handleSubmit}>
-                  <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                    <Field
+                &lt;Form onSubmit={handleSubmit}>
+                  &lt;div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                    &lt;Field
                       required
                       name="filter"
                       label="Filter"
                       component={Dropdown}
                     >
-                      <MenuItem value="all">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value="type">Type</MenuItem>
-                      <MenuItem value="school">School</MenuItem>
-                    </Field>
-                  </div>
+                      &lt;MenuItem value="all">
+                        &lt;em>All&lt;/em>
+                      &lt;/MenuItem>
+                      &lt;MenuItem value="type">Type&lt;/MenuItem>
+                      &lt;MenuItem value="school">School&lt;/MenuItem>
+                    &lt;/Field>
+                  &lt;/div>
                   {values.filter !== 'all' ? (
-                    <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                      <Field
+                    &lt;div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                      &lt;Field
                         required
                         name="search"
                         label="Search"
                         type="text"
                         component={TextField}
                       />
-                    </div>
+                    &lt;/div>
                   ) : (
                     null
                   )}
 
-                  <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
-                    <Button
+                  &lt;div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                    &lt;Button
                       type="submit"
                       variant="outlined"
                       color="primary"
                       disabled={util.isFormValid(errors, touched)}
                     >
                       Filter
-                    </Button>
-                  </div>
-                </Form>
+                    &lt;/Button>
+                  &lt;/div>
+                &lt;/Form>
               )}
-            </Formik>
+            &lt;/Formik>
 
-          </div>
-        </Table>
-      </AdminLayout>
+          &lt;/div>
+        &lt;/Table>
+      &lt;/AdminLayout>
     );
   }
 }
@@ -209,14 +237,10 @@ const mapStateToProps = state => ({
 
 
 Users.propTypes = {
-  schools: PropTypes.arrayOf(PropTypes.shape({})),
+  schools: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   firestore: PropTypes.shape({}).isRequired,
   auth: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({}).isRequired,
-};
-
-Users.defaultProps = {
-  schools: [],
 };
 
 export default compose(
@@ -225,3 +249,26 @@ export default compose(
     { collection: 'schools' },
   ]),
 )(Users);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddUser.html">AddUser</a></li><li><a href="AddUserForm.html">AddUserForm</a></li><li><a href="AdminLayout.html">AdminLayout</a></li><li><a href="EditUser.html">EditUser</a></li><li><a href="Table.html">Table</a></li><li><a href="TablePaginationActions.html">TablePaginationActions</a></li><li><a href="TableToolbar.html">TableToolbar</a></li><li><a href="Users.html">Users</a></li></ul><h3>Global</h3><ul><li><a href="global.html#EditUserForm">EditUserForm</a></li><li><a href="global.html#TableView">TableView</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Feb 04 2019 01:22:17 GMT+0800 (Russia TZ 7 Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

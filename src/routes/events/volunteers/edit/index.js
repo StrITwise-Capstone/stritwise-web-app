@@ -9,13 +9,22 @@ import PropTypes from 'prop-types';
 import EditCrewForm from './EditCrewForm';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
+/**
+ * Class representing the EditVolunteer component.
+ */
 class EditVolunteer extends Component {
   state = {
+    // List of team documents.
     teams: [],
+    // A specific volunteer document.
     volunteer: null,
-    volunteerRef: null,
   }
 
+  /**
+   * Populates the teams array in the state with all the documents from the schools collection.
+   * Populates the volunteer variable in the state with a specific user document
+   * from the users collection.
+   */
   componentDidMount() {
     const { firestore, match } = this.props;
     firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
@@ -47,12 +56,16 @@ class EditVolunteer extends Component {
         school: doc.data().school,
         dietary: doc.data().dietary_restrictions ? doc.data().dietary_restrictions : '',
       };
-      this.setState({ volunteer, volunteerRef: volunteerDocRef });
+      this.setState({ volunteer });
     }).catch((error) => {
       console.log('Error getting document:', error);
     });
   }
 
+  /**
+   * Searches the teams array in state for a particular team_id
+   * @returns {string} The team name.
+   */
   getTeamName = (teams, volunteerTeamId) => {
     if (teams !== null && volunteerTeamId !== null) {
       const currentTeam = teams.find(teamElement => (teamElement.value === volunteerTeamId));
@@ -66,15 +79,14 @@ class EditVolunteer extends Component {
 
   render() {
     let content = <CircularProgress />;
-    const { volunteer, volunteerRef, teams } = this.state;
+    const { volunteer, teams } = this.state;
     if (teams.length && volunteer !== null) {
       const volunteerTeamId = volunteer.team.value;
       volunteer.team.label = this.getTeamName(teams, volunteerTeamId);
       content = (
-        <AdminLayout
-        >
+        <AdminLayout>
           <Typography variant="h4" id="title">Edit Volunteer</Typography>
-          <EditCrewForm teams={teams} volunteer={volunteer} volunteerRef={volunteerRef} />
+          <EditCrewForm teams={teams} volunteer={volunteer} />
         </AdminLayout>
       );
     }
@@ -87,10 +99,8 @@ class EditVolunteer extends Component {
 }
 
 EditVolunteer.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  firestore: PropTypes.any.isRequired,
-  match: PropTypes.any.isRequired,
-  /* eslint-enable */
+  firestore: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
 };
 
 export default withRouter(withFirestore(EditVolunteer));

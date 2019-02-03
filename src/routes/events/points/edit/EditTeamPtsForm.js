@@ -28,11 +28,15 @@ const validationSchema = yup.object({
     .singleSelectRequired('Required'),
 });
 
+/**
+ * Class representing the EditCrewForm component.
+ * @param {Object} teamRef -  Document referenece of specific team.
+ */
 const EditTeamPtsForm = ({
   auth, enqueueSnackbar, teamRef, match,
 }) => (
   <Formik
-    enableReinitialize={true}
+    enableReinitialize
     initialValues={{
       action: '',
       points: '',
@@ -128,15 +132,14 @@ const mapStateToProps = state => ({
 });
 
 EditTeamPtsForm.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  enqueueSnackbar: PropTypes.any.isRequired,
-  auth: PropTypes.any.isRequired,
-  teamRef: PropTypes.any.isRequired,
-  match: PropTypes.any.isRequired,
-  /* eslint-enable */
+  enqueueSnackbar: PropTypes.func.isRequired,
+  auth: PropTypes.shape({}).isRequired,
+  teamRef: PropTypes.shape({}),
+  match: PropTypes.shape({}).isRequired,
 };
 
 EditTeamPtsForm.defaultProps = {
+  teamRef: null,
 };
 
 export default compose(

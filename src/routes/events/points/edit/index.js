@@ -39,10 +39,15 @@ const styles = {
   },
 };
 
+/**
+ * Class representing the EditPoints component.
+ */
 class EditPoints extends Component {
   render() {
     let content = <CircularProgress />;
-    const { classes, team, firestore, match } = this.props;
+    const {
+      classes, team, firestore, match,
+    } = this.props;
     const teamRef = firestore.collection('events').doc(match.params.eventId).collection('teams').doc(match.params.teamId);
     if (team !== undefined) {
       content = (
@@ -76,23 +81,21 @@ class EditPoints extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    team: state.firestore.data.team,
-  };
-};
+const mapStateToProps = state => ({
+  team: state.firestore.data.team,
+});
 
 EditPoints.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  classes: PropTypes.any.isRequired,
-  team: PropTypes.any.isRequired,
-  match: PropTypes.any.isRequired,
-  firestore: PropTypes.any.isRequired,
-  /* eslint-enable */
+  classes: PropTypes.shape({}).isRequired,
+  team: PropTypes.shape({}),
+  match: PropTypes.shape({}).isRequired,
+  firestore: PropTypes.shape({}).isRequired,
 };
 
 EditPoints.defaultProps = {
+  team: {},
 };
+
 export default compose(
   withRouter,
   firestoreConnect(props => (

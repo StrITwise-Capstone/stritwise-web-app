@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
@@ -13,7 +13,11 @@ const actionsStyles = theme => ({
   },
 });
 
-class TablePaginationActions extends React.Component {
+/**
+ * Class representing a sub-Component of the Table,
+ * responsible for performing Table pagination actions.
+ */
+class TablePaginationActions extends Component {
   handleFirstPageButtonClick = (event) => {
     const { onChangePage } = this.props;
     onChangePage(event, 0);
@@ -25,7 +29,7 @@ class TablePaginationActions extends React.Component {
   };
 
   handleNextButtonClick = (event) => {
-    const { onChangePage,page } = this.props;
+    const { onChangePage, page } = this.props;
     onChangePage(event, page + 1);
   };
 
@@ -70,9 +74,9 @@ TablePaginationActions.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   onChangePage: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
   theme: PropTypes.shape({}).isRequired,
 };
-
 
 export default withStyles(actionsStyles, { withTheme: true })(TablePaginationActions);

@@ -214,12 +214,10 @@ SignUp.propTypes = {
     label: PropTypes.string,
     value: PropTypes.string,
   })),
-  /* eslint-disable react/forbid-prop-types */
-  enqueueSnackbar: PropTypes.any.isRequired,
-  history: PropTypes.any.isRequired,
-  firebase: PropTypes.any.isRequired,
-  firestore: PropTypes.any.isRequired,
-  /* eslint-enable */
+  enqueueSnackbar: PropTypes.func.isRequired,
+  history: PropTypes.shape({}).isRequired,
+  firebase: PropTypes.shape({}).isRequired,
+  firestore: PropTypes.shape({}).isRequired,
 };
 
 SignUp.defaultProps = {

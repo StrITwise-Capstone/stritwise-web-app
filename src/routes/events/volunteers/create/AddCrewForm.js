@@ -29,8 +29,8 @@ const initialValues = {
   school: '',
   studentNo: '',
   dietary: '',
-  password:'',
-  confirmPassword:'',
+  password: '',
+  confirmPassword: '',
 };
 
 const validationSchema = Yup.object({
@@ -56,13 +56,22 @@ const validationSchema = Yup.object({
   type: Yup.mixed()
     .singleSelectRequired('Required'),
   teams: yup.mixed(),
-})
+});
+
+/**
+ * Class representing the AddCrewForm component.
+ * @param {Object[]} teams - List of team documents.
+ */
 
 class AddCrewForm extends Component {
   state = {
     transactionStatus: {},
   }
 
+  /**
+   * Enqueues a message to the Snackbar component based on the
+   * transactionStatus object in the state.
+   */
   componentDidUpdate(prevState) {
     const { transactionStatus } = this.state;
     const { enqueueSnackbar } = this.props;
@@ -80,7 +89,9 @@ class AddCrewForm extends Component {
   }
 
   render() {
-    const { enqueueSnackbar, match, auth, teams } = this.props;
+    const {
+      enqueueSnackbar, match, auth, teams,
+    } = this.props;
     console.log(this.props);
     return (
       <Formik
@@ -116,7 +127,7 @@ class AddCrewForm extends Component {
             user_id: auth.uid,
             transaction_type: 'ADD_VOLUNTEER',
             data: addValues,
-          }
+          };
           firestore.collection('transactions').add(transaction).then((docRef) => {
             resetForm();
             enqueueSnackbar('Creating Volunteer... It may take a few minutes.', {
@@ -126,9 +137,9 @@ class AddCrewForm extends Component {
               const transactionStatus = {
                 completed: doc.data().completed,
                 errorMessage: doc.data().errorMessage,
-              }
+              };
               this.setState({ transactionStatus });
-            })
+            });
           }).catch((err) => {
             console.log(err);
             enqueueSnackbar('Invalid Credentials for New Volunteer. Please try again.', {
@@ -253,24 +264,25 @@ class AddCrewForm extends Component {
         )}
       </Formik>
     );
-}};
+  }
+}
 
-const mapStateToProps = (state) => {
-  return {
-    auth: state.firebase.auth,
-  };
-};
+const mapStateToProps = state => ({
+  auth: state.firebase.auth,
+});
 
 AddCrewForm.propTypes = {
-  auth: PropTypes.objectOf(PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool,
-    PropTypes.object,
-  ])).isRequired,
+  auth: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  /* eslint-disable react/forbid-prop-types */
-  match: PropTypes.any.isRequired,
-  /* eslint-enable */
+  teams: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+  })),
+  match: PropTypes.shape({}).isRequired,
+};
+
+AddCrewForm.defaultProps = {
+  teams: [],
 };
 
 export default withSnackbar(withRouter(connect(mapStateToProps)(AddCrewForm)));
