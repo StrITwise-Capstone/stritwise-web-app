@@ -5,6 +5,14 @@ import { withStyles } from '@material-ui/core/styles';
 
 import styles from './AdminLayout.styles';
 
+/**
+ * Admin Layout for the entire application.
+ * @param {Component} children - Children of the page.
+ * @param {string} title - Title of the page.
+ * @param {string} subtitle - Subtitle of the page.
+ * @param {Component} action - Action bar of the page. Actions buttons are recommended to be placed
+ *  in this area
+ */
 class AdminLayout extends Component {
   render() {
     const {
