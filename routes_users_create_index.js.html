@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: routes/users/create/index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,65 +17,72 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: routes/users/create/index.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h2>Folder Structure</h2><p>After creation, your project should look like this:</p>
-<pre class="prettyprint source"><code>stritwise-web-app/
-  node_modules/
-  package.json
-  public/
-    assets/
-    index.html
-  src/
-    components/
-      Error/
-      UI/
-    config/
-    hoc/
-      Layout/
-    routes/
-      some-route/
-      routes.js
-    store/
-      actions/
-        actionTypes.js
-        index.js
-        someAction.js
-      reducers/
-        someReducer.js
-    App.js
-    App.test.js
-    index.css
-    index.js
-  .eslintrc
-  .gitignore</code></pre></article>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
+import { Typography } from '@material-ui/core';
+import { withFirestore } from 'react-redux-firebase';
+
+import AddUserForm from './AddUserForm';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
+
+/**
+ * Class representing the AddUser component.
+ */
+class AddUser extends Component {
+  state = {
+    // List of school documents.
+    schools: [],
+  }
+
+  /**
+   * Populates the school array in the state with all the documents from the schools collection.
+   */
+  componentDidMount() {
+    const { firestore } = this.props;
+    firestore.collection('schools').get().then((querySnapshot) => {
+      const schools = [];
+      querySnapshot.forEach((doc) => {
+        schools.push({
+          label: doc.data().name,
+          value: doc.id,
+        });
+      });
+      this.setState({ schools });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  render() {
+    const { schools } = this.state;
+
+    return (
+      &lt;AdminLayout>
+        &lt;Typography variant="h4" id="title">Add User&lt;/Typography>
+        &lt;AddUserForm schools={schools} />
+      &lt;/AdminLayout>
+    );
+  }
+}
+
+AddUser.propTypes = {
+  firestore: PropTypes.shape({}).isRequired,
+};
+
+export default withSnackbar(withFirestore(AddUser));
+</code></pre>
+        </article>
     </section>
-
-
 
 
 
