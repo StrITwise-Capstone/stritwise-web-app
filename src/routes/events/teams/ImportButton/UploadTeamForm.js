@@ -12,46 +12,81 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import * as d3 from 'd3';
 
-import * as util from '../../../../../helper/util';
-import Select from '../../../../../components/UI/Select/Select';
-import yup from '../../../../../instances/yup';
+import * as util from '../../../../helper/util';
+import Select from '../../../../components/UI/Select/Select';
+import yup from '../../../../instances/yup';
 
 const initialValues = {
   file: '',
   school: '',
 }
 
-var schema = yup.object().shape({
-  'Team Name': yup.string().required().min(2),
-  'First Name': yup.string().required().min(2),
-  'Last Name': yup.string().required().min(2),
-  'Phone Number': yup.string().required().min(2),
-  'Email': yup.string().email().required().min(2),
-  'Password': yup.string().required().min(2),
-  'Emergency Contact Name': yup.string().required().min(2),
-  'Emergency Contact Mobile': yup.string().required().min(2),
-  'Relation to Participant': yup.string().required().min(2),
-  'Badge Name': yup.string().required(),
-  'Dietary Restrictions': yup.string().required(),
-  'Remarks': yup.string().required(),
-});
+var validationSchema = yup.array().of(yup.object().shape({
+  key: yup.string().required().min(1),
+  values: yup.array().of(
+    yup.object().shape({
+    'Team Name': yup.string().required().min(2),
+    'First Name': yup.string().required().min(2),
+    'Last Name': yup.string().required().min(2),
+    'Phone Number': yup.string().required().min(2),
+    'Email': yup.string().email().required().min(2),
+    'Password': yup.string().required().min(2),
+    'Emergency Contact Name': yup.string().required().min(2),
+    'Emergency Contact Mobile': yup.string().required().min(2),
+    'Relation to Participant': yup.string().required().min(2),
+    'Badge Name': yup.string().required(),
+    'Dietary Restrictions': yup.string().required(),
+    'Remarks': yup.string().required(),
+    })
+  )
+}));
+
+const parseData = (unParsedContents) => {
+  let array = [];
+  return Papa.parse(unParsedContents, {
+    delimiter: "", // auto-detect
+    newline: "", // auto-detect
+    quoteChar: '"',
+    escapeChar: '"',
+    header: true,
+    preview: 0,
+    encoding: '',
+    worker: false,
+    comments: false,
+    skipEmptyLines: 'greedy',
+    complete: function getResults(results) {
+      return array;
+    },
+  });
+}
+
+const validateData = (teamsData) => {
+  let isValid = true;
+  if (!validationSchema.isValidSync(teamsData)) {
+    isValid = false;
+  }
+  return isValid;
+}
 
 class UploadTeamForm extends Component {
-  uploadTeams = (dataByTeamName, school_id) => {
-    // Query for school where school name matches
-    Object.keys(dataByTeamName).map((TeamIndex) => {
-      const { 
-        enqueueSnackbar,
-        firestore,
-        eventuid,
-        handleClose,
-        refreshState,
-        teacherId,
-        auth,
-      } = this.props;
-      const team = dataByTeamName[TeamIndex];
-      // Do verification
-      if (schema.isValid(team)) {
+  handleSubmit = (values) => {
+    const {
+      enqueueSnackbar,
+    } = this.props;
+    
+    const uploadTeams = (dataByTeamName, school_id) => {
+      Object.keys(dataByTeamName).map((TeamIndex) => {
+        const {
+          firestore,
+          eventuid,
+          handleClose,
+          refreshState,
+          teacherId,
+          auth,
+        } = this.props;
+        const team = dataByTeamName[TeamIndex];
+        console.log(team);
+        // Do verification
         return firestore.collection('events').doc(eventuid).collection('teams').add({
           team_name: team.key,
           credit: 0,
@@ -88,72 +123,36 @@ class UploadTeamForm extends Component {
               user_id: auth.uid,
               transaction_type: 'ADD_STUDENT',
               data,
-            }
+            };
             firestore.collection('transactions').add(transaction);
           }
           handleClose();
-          if (parseInt(TeamIndex) + 1 === dataByTeamName.length)
-            refreshState();
+          if (parseInt(TeamIndex) + 1 === dataByTeamName.length) refreshState();
         });
       }
-      return null; 
-    });
-  }
-
-  handleSubmit = (values) => {
-    const setData = (result) => {
-      const {
-        enqueueSnackbar,
-      } = this.props;
-      const school_id = values.school.value;
-      const dataByTeamName = d3.nest()
-        .key(function(d) { return d['Team Name']; })
-        .entries(result);
-      let isValid = true;
-      Object.keys(dataByTeamName).map((TeamIndex) => {
-        const team = dataByTeamName[TeamIndex];
-        let i = 0;
-        for (i = 0; i < team.values.length; i++) {
-          if (!schema.isValidSync(team.values[i])) {
-            isValid = false;
-            return isValid;
-          }
-        }
-        return null;
-      });
-      if (isValid) {
-        this.uploadTeams(dataByTeamName, school_id);
-      }
-      if (!isValid) {
-        enqueueSnackbar('Error Adding Team...', {
-          variant: 'error',
-        });
-      }
-    };
+      );
+    }
     const input = values.file;
     if (!input) {
       return;
     }
     const reader = new FileReader();
     reader.onload = function readFile(event) {
-      const contents = event.target.result;
-      let array = [];
-      const result = Papa.parse(contents, {
-        delimiter: "", // auto-detect
-        newline: "", // auto-detect
-        quoteChar: '"',
-        escapeChar: '"',
-        header: true,
-        preview: 0,
-        encoding: '',
-        worker: false,
-        comments: false,
-        skipEmptyLines: 'greedy',
-        complete: function getResults(results) {
-          return array;
-        },
-      });
-      setData(result.data);
+      const unParsedContents = event.target.result;
+      const school_id = values.school.value;
+      let teamsData = parseData(unParsedContents).data;
+      teamsData = d3.nest()
+        .key(function(d) { return d['Team Name']; })
+        .entries(teamsData);
+      
+      if (validateData(teamsData)) {
+        uploadTeams(teamsData, school_id);
+      }
+      if (!validateData(teamsData)) {
+        enqueueSnackbar('Error Adding Team...', {
+          variant: 'error',
+        });
+      }
     };
     reader.readAsText(input);
   };

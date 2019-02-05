@@ -14,9 +14,9 @@ import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
 
-import TextField from '../../../../TextField/TextField';
 import DeleteButton from './DeleteButton/DeleteButton';
-import yup from '../../../../../../instances/yup';
+import yup from '../../../../../../../instances/yup';
+import TextField from '../../../../../../../components/UI/TextField/TextField';
 
 const initialValues = (
   student,

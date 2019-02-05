@@ -15,10 +15,10 @@ import {
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 
-import CardList from '../../../../components/UI/TeamsUI/CardList/CardList';
-import AdminLayout from '../../../../hoc/Layout/AdminLayout';
+import CardList from './TeamsUI/CardList/CardList';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
 import Dialog from './ImportButton/Dialog';
-import urlForDownloads from '../../../../config/urlForDownloads';
+import urlForDownloads from '../../../config/urlForDownloads';
 
 const styles = () => ({
   button: {
@@ -56,7 +56,7 @@ class ViewTeams extends Component {
     this.setState({ isLoading: true });
     firestore.collection('events').doc(`${match.params.eventId}`).get().then((doc) => {
       this.setState({ event: doc.data(), isLoading: false });
-    })
+    });
   }
 
   getSchools = () => {

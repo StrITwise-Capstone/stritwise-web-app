@@ -68,6 +68,7 @@ class teamCard extends Component {
 
   getStudents = () => {
     const { firestore, match, teamId } = this.props;
+    this.setState({ isLoading: true });
     const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${teamId}`);
     query.get().then((querySnapshot) => {
       const studentsList = [];
@@ -126,9 +127,9 @@ class teamCard extends Component {
   }
 
   componentDidMount = () => {
-    this.getStudents();
     this.getTeam();
     this.getSchools();
+    this.getStudents();
   }
 
   render() {
@@ -153,7 +154,7 @@ class teamCard extends Component {
             <CircularProgress />
           )
         }
-        {!isLoading && team
+        {!isLoading && team && studentsList
           && (
           <Card>
             <CardContent onClick={this.handleClickOpen}>

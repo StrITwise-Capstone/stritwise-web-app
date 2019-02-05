@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 
 import Dashboard from '../events';
-import ViewTeam from '../events/teams/view';
+import ViewTeam from '../events/teams';
 import CreateTeam from '../events/teams/create';
 import EditTeam from '../events/teams/edit';
 import Profile from '../profile';

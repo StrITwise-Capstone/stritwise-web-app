@@ -21,10 +21,12 @@ import DatePicker from '../../../components/UI/DatePicker/DatePicker';
 import Thumb from '../../../components/UI/Thumb/Thumbnail';
 import yup from '../../../instances/yup';
 
+// Convert time from UNIX_TimeStamp
 function timeConverter(UNIX_timestamp) {
   return moment(new Date(UNIX_timestamp.seconds * 1000)).format('YYYY-MM-DDTHH:mm');
 }
 
+// Supported Formats for the Images
 const SUPPORTED_FORMATS = [
   'image/jpg',
   'image/jpeg',
@@ -32,6 +34,7 @@ const SUPPORTED_FORMATS = [
   'image/png',
 ];
 
+// initialValues for Event Object
 const initialValues = (event) => {
   if (event != null) {
     return {
@@ -42,6 +45,7 @@ const initialValues = (event) => {
       min_student: `${event.min_student}`,
       max_student: `${event.max_student}`,
       image: '',
+      image_path: `${event.image_path}`,
     };
   }
   if (event == null) {
@@ -58,6 +62,7 @@ const initialValues = (event) => {
   return null;
 };
 
+// random UID generator
 const guid = () => {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -67,6 +72,7 @@ const guid = () => {
   return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 };
 
+// validationSchema for Event Object
 const validationSchema = yup.object({
   name: yup.string()
     .required('Required'),
@@ -91,34 +97,10 @@ const validationSchema = yup.object({
     .typeError('Invalid number format'),
 });
 
-const editEvent = (firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth) => {
-  firestore.collection('events').doc(eventId).update({
-    created_by: auth.uid,
-    name: values.name,
-    desc: values.description,
-    start_date: new Date(values.startdate),
-    end_date: new Date(values.enddate),
-    modified_at: new Date(Date.now()),
-    min_student: parseInt(values.min_student),
-    max_student: parseInt(values.max_student),
-  }).then(() => {
-    // console.log('Event created');
-    enqueueSnackbar('Event Updated', {
-      variant: 'success',
-    });
-    resetForm();
-    setSubmitting(false);
-    refreshState();
-  }).catch((err) => {
-    console.log(`Event not created: ${err}`);
-    enqueueSnackbar('Event Not Updated', {
-      variant: 'error',
-    });
-    setSubmitting(false);
-    resetForm();
-  });
-};
 
+/**
+ * Class representing the editEventForm component.
+ */
 const editEventForm = ({
   auth,
   firestore,
@@ -126,7 +108,7 @@ const editEventForm = ({
   event,
   eventId,
   firebase,
-  refreshState,
+  updatePage,
 }) => {
   return (
     <Formik
@@ -134,13 +116,43 @@ const editEventForm = ({
       initialValues={initialValues(event)}
       validationSchema={validationSchema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        // login user
         const { image } = values;
-        if (image === '') {
-          editEvent(firestore, eventId, values, enqueueSnackbar, resetForm, setSubmitting, refreshState, auth);
-        }
-        if (image !== '') {
-          const imageuid = guid();
+        const imageuid = guid();
+        /**
+         * Update the current event
+        */
+        const editEvent = (updateImage) => {
+          firestore.collection('events').doc(eventId).update({
+            created_by: auth.uid,
+            name: values.name,
+            desc: values.description,
+            start_date: new Date(values.startdate),
+            end_date: new Date(values.enddate),
+            modified_at: new Date(Date.now()),
+            image_path: updateImage ? `images/${imageuid}` : values.image_path,
+            min_student: parseInt(values.min_student),
+            max_student: parseInt(values.max_student),
+          }).then(() => {
+            enqueueSnackbar('Event Updated', {
+              variant: 'success',
+            });
+            resetForm();
+            setSubmitting(false);
+            updatePage();
+          }).catch((err) => {
+            console.log(`Event not created: ${err}`);
+            enqueueSnackbar('Event Not Updated', {
+              variant: 'error',
+            });
+            setSubmitting(false);
+            resetForm();
+          });
+        };
+
+        /**
+         * Upload new image for event
+        */
+        const uploadImage = () => {
           const uploadTask = firebase.storage().ref(`images/${imageuid}`).put(image);
           uploadTask.on('state_changed',
             (snapshot) => {
@@ -152,33 +164,17 @@ const editEventForm = ({
             },
             (error) => {
               console.log(error);
-            }, () => {
-              firestore.collection('events').doc(eventId).update({
-                created_by: auth.uid,
-                name: values.name,
-                desc: values.description,
-                start_date: new Date(values.startdate),
-                end_date: new Date(values.enddate),
-                image_path: `images/${imageuid}`,
-                modified_at: new Date(Date.now()),
-                min_student: parseInt(values.min_student),
-                max_student: parseInt(values.max_student),
-              }).then(() => {
-                enqueueSnackbar('Event Updated', {
-                  variant: 'success',
-                });
-                resetForm();
-                setSubmitting(false);
-                refreshState();
-              }).catch((err) => {
-                console.log(err);
-                enqueueSnackbar('Event Not Updated', {
-                  variant: 'error',
-                });
-                setSubmitting(false);
-                resetForm();
-              });
             });
+        };
+
+
+        if (image === '') {
+          editEvent(false);
+        }
+
+        if (image !== '') {
+          uploadImage();
+          editEvent(true);
         }
       }}
     >
@@ -251,9 +247,11 @@ const editEventForm = ({
                 )}
               />
               { values.image && !(SUPPORTED_FORMATS.includes(values.image.type)) && (
+                // Invalid file format error message
                 <div style={{ color: 'red' }}>Invalid file format</div>
               )}
               { values.image && SUPPORTED_FORMATS.includes(values.image.type) && (
+                // Show Image File
                 <div>
                   <Thumb file={values.image} />
                 </div>
@@ -282,7 +280,7 @@ const mapStateToProps = state => ({
 editEventForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   eventId: PropTypes.string.isRequired,
-  refreshState: PropTypes.func.isRequired,
+  updatePage: PropTypes.func.isRequired,
   /* eslint-disable react/forbid-prop-types */
   auth: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
@@ -300,4 +298,4 @@ export default compose(
   connect(mapStateToProps),
   firebaseConnect(),
   firestoreConnect(),
-)(editEvent);
+)(editEventForm);

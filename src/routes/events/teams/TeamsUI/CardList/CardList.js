@@ -19,11 +19,11 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { Formik, Form, Field } from 'formik';
 
 import * as Yup from 'yup';
-import * as util from '../../../../helper/util';
+import * as util from '../../../../../helper/util';
 import TablePaginationActions from './TablePaginationActions';
 import TeamCard from '../Card/TeamCard';
-import TextField from '../../TextField/TextField';
-import Select from '../../Select/Select';
+import TextField from '../../../../../components/UI/TextField/TextField';
+import Select from '../../../../../components/UI/Select/Select';
 
 const actionsStyles = theme => ({
   root: {

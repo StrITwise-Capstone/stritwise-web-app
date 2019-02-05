@@ -13,19 +13,47 @@ import { compose } from 'redux';
 import * as d3 from 'd3';
 import yup from '../../../../instances/yup';
 
-const schema = yup.object().shape({
+var validationSchema = yup.object().shape({
   'First Name': yup.string().required(),
   'Last Name': yup.string().required(),
   'Mobile Number': yup.string().required(),
-  Email: yup.string().email().required(),
-  Password: yup.string().required(),
+  'Email': yup.string().email().required(),
+  'Password': yup.string().required(),
   'Dietary Restrictions': yup.string().required(),
   'Student Number': yup.string().required(),
   'Type of Volunteer': yup.string().required(),
-  School: yup.string().required(),
+  'School': yup.string().required(),
 });
 
+const parseData = (unParsedContents) => {
+  const array = [];
+  return Papa.parse(unParsedContents, {
+    delimiter: "", // auto-detect
+    newline: "", // auto-detect
+    quoteChar: '"',
+    escapeChar: '"',
+    header: true,
+    preview: 0,
+    encoding: '',
+    worker: false,
+    comments: false,
+    skipEmptyLines: 'greedy',
+    complete: function getResults(results) {
+      return array;
+    },
+  });
+}
 class ImportButtonForm extends Component {
+
+  validateData = (volunteersData) => {
+    let isValid = true;
+    if (!validationSchema.isValidSync(volunteersData))
+    {
+      isValid = false;
+    }
+    return isValid;
+  }
+
   uploadTeams = (volunteerData) => {
     const { 
       enqueueSnackbar,
@@ -35,7 +63,7 @@ class ImportButtonForm extends Component {
       handleClose,
       auth,
     } = this.props;
-    // Query for school where school name matches
+    
     Object.keys(volunteerData).map((VolunteerIndex) => {
       const volunteer = volunteerData[VolunteerIndex].values[0];
       if (volunteer['Type of Volunteer'] === 'Group Leader') {
@@ -75,56 +103,33 @@ class ImportButtonForm extends Component {
     handleClose();
   }
 
+  
   handleSubmit = (values) => {
-    const setData = (result) => {
-      const {
-        enqueueSnackbar,
-      } = this.props;
-      const data = d3.nest()
-        .key(function(d) { return d['Student Number']; })
-        .entries(result);
-      let isValid = true;
-      console.log(data);
-      Object.keys(data).map((VolunteerIndex) => {
-        const volunteer = data[VolunteerIndex];
-        if (!schema.isValidSync(volunteer.values[0])) {
-          isValid = false;
-        }
-        return null;
-      });
-      if (isValid) {
-        this.uploadTeams(data);
-      }
-      if (!isValid) {
-        enqueueSnackbar('Error Adding Team...', {
-          variant: 'error',
-        });
-      }
-    };
+    const {
+      enqueueSnackbar,
+    } = this.props;
+
     const input = values.file;
     if (!input) {
       return;
     }
+
     const reader = new FileReader();
     reader.onload = function readFile(event) {
-      const contents = event.target.result;
-      let array = [];
-      const result = Papa.parse(contents, {
-        delimiter: "", // auto-detect
-        newline: "", // auto-detect
-        quoteChar: '"',
-        escapeChar: '"',
-        header: true,
-        preview: 0,
-        encoding: '',
-        worker: false,
-        comments: false,
-        skipEmptyLines: 'greedy',
-        complete: function getResults(results) {
-          return array;
-        },
-      });
-      setData(result.data);
+      const unParsedContents = event.target.result;
+      let volunteersData = parseData(unParsedContents);
+      volunteersData = d3.nest()
+        .key(function(d) { return d['Student Number']; })
+        .entries(volunteersData);
+
+      if (this.validateData(volunteersData)) {
+        this.uploadTeams(volunteersData);
+      }
+      if (!this.validateData(volunteersData)) {
+        enqueueSnackbar('Error Adding Team...', {
+          variant: 'error',
+        });
+      }
     };
     reader.readAsText(input);
   };

@@ -17,6 +17,9 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+/**
+ * Class representing the Profile component.
+ */
 class Profile extends Component {
   state = {
     userSchool: null,
@@ -55,7 +58,7 @@ class Profile extends Component {
   }
 
   render() {
-    const { isAuthenticated , user , auth } = this.props;
+    const { isAuthenticated, user, auth } = this.props;
     const { userSchool } = this.state;
     return (
       <AdminLayout

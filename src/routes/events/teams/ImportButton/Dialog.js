@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Button,
   Dialog,
@@ -8,9 +8,9 @@ import {
 import PropTypes from 'prop-types';
 
 import Form from './UploadTeamForm';
-import urlForDownloads from '../../../../../config/urlForDownloads';
+import urlForDownloads from '../../../../config/urlForDownloads';
 
-class FormDialog extends React.Component {
+class FormDialog extends Component {
   state = {
     open: false,
   };
