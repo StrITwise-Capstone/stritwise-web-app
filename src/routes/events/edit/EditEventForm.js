@@ -100,6 +100,9 @@ const validationSchema = yup.object({
 
 /**
  * Class representing the editEventForm component.
+ * @param {Object} event - A specific event document
+ * @param {String} eventId - A string of eventId
+ * @param {Function} updatePage - A function to update the page
  */
 const editEventForm = ({
   auth,
