@@ -29,6 +29,7 @@ class EditTeam extends Component {
     this.getTeam();
     this.getStudents();
     this.getEvent();
+    this.getTeams();
   }
 
   /**
@@ -122,6 +123,26 @@ class EditTeam extends Component {
   }
 
   /**
+   * Get all the teams
+   */
+  getTeams = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
+      const teams = [];
+      querySnapshot.forEach((doc) => {
+        teams.push(
+          doc.data().team_name,
+        );
+      });
+      this.setState({ teams, isLoading: false });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+
+  /**
   * Get the event to edit the team
   */
   getEvent = () => {
@@ -147,7 +168,7 @@ class EditTeam extends Component {
   }
 
   render() {
-    const { schools, studentsList, team, event, isLoading } = this.state;
+    const { schools, studentsList, team, event, isLoading, teams } = this.state;
     if (schools.length > 1 && team) {
       team.school_name = this.getSchoolName(schools, team.school_id);
     }
@@ -165,6 +186,8 @@ class EditTeam extends Component {
             minStudent={event.min_student ? event.min_student : 1}
             maxStudent={event.max_student ? event.max_student : 10}
             students={studentsList}
+            teams={teams}
+            teamName={team.team_name}
             updatePage={() => { this.updatePage(); }}
           />)
         }

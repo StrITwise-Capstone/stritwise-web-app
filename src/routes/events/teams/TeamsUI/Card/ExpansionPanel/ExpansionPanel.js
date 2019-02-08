@@ -61,6 +61,7 @@ class Student extends Component {
 
 Student.propTypes = {
   teamId: PropTypes.string.isRequired,
+  updatePage: PropTypes.func.isRequired,
   deleteValue: PropTypes.bool.isRequired,
   student: PropTypes.shape({}).isRequired,
   /* eslint-disable react/forbid-prop-types */

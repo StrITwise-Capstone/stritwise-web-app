@@ -23,11 +23,11 @@ const initialValues = {
 }
 
 // validationSchema for the form
-var validationSchema = yup.array().of(yup.object().shape({
+var validationSchema = teams => yup.array().of(yup.object().shape({
   key: yup.string().required().min(1),
   values: yup.array().of(
     yup.object().shape({
-    'Team Name': yup.string().required().min(2),
+    'Team Name': yup.string().required().min(2).test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
     'First Name': yup.string().required().min(2),
     'Last Name': yup.string().required().min(2),
     'Phone Number': yup.string().required().min(2),
@@ -65,13 +65,14 @@ const parseData = (unParsedContents) => {
   });
 }
 
-/**
-* Validate Data for Team objects
-*/
-const validateData = (teamsData) => {
+  /**
+  * Validate Data for Team objects
+  */
+const validateData = (teamsData, teams) => {
   let isValid = true;
-  if (!validationSchema.isValidSync(teamsData)) {
+  if (!validationSchema(teams).isValidSync(teamsData)) {
     isValid = false;
+    return isValid;
   }
   return isValid;
 }
@@ -85,6 +86,8 @@ const validateData = (teamsData) => {
  * @param {Function} handleClose - A function to close the dialog
  */
 class UploadTeamForm extends Component {
+
+
   handleSubmit = (values) => {
     const {
       firestore,
@@ -93,13 +96,13 @@ class UploadTeamForm extends Component {
       updatePage,
       teacherId,
       auth,
+      teams,
       enqueueSnackbar,
     } = this.props;
 
     const uploadTeams = (dataByTeamName, school_id) => {
       Object.keys(dataByTeamName).map((TeamIndex) => {
         const team = dataByTeamName[TeamIndex];
-        console.log(team);
 
         return firestore.collection('events').doc(eventId).collection('teams').add({
           team_name: team.key,
@@ -159,10 +162,10 @@ class UploadTeamForm extends Component {
         .key(function(d) { return d['Team Name']; })
         .entries(teamsData);
       
-      if (validateData(teamsData)) {
+      if (validateData(teamsData, teams)) {
         uploadTeams(teamsData, school_id);
       }
-      if (!validateData(teamsData)) {
+      if (!validateData(teamsData, teams)) {
         enqueueSnackbar('Error Adding Team...', {
           variant: 'error',
         });

@@ -13,28 +13,23 @@ import PropTypes from 'prop-types';
  * @param {object} classes - The styling for TablePaginationActions component
 */
 class TablePaginationActions extends Component {
-  handleFirstPageButtonClick = event => {
-    const { onChangePage } = this.props;
-    onChangePage(event, 0);
-  };
 
+  /**
+   * Change page to previous page
+   */
   handleBackButtonClick = event => {
     const { onChangePage, page } = this.props;
     onChangePage(event, page - 1);
   };
 
+  /**
+   * Change page to next page
+   */
   handleNextButtonClick = event => {
     const { onChangePage, page } = this.props;
     onChangePage(event, page + 1);
   };
 
-  handleLastPageButtonClick = event => {
-    const { onChangePage, rowsPerPage, count } = this.props;
-    onChangePage(
-      event,
-      Math.max(0, Math.ceil(count / rowsPerPage) - 1),
-    );
-  };
 
   render() {
     const { classes, count, page, rowsPerPage, theme } = this.props;

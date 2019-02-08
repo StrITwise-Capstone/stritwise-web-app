@@ -29,6 +29,7 @@ const styles = () => ({
 /**
  * Class representing the AddTeam component.
  * @param {Object} user - A specific user document
+ * @param {Object[]} teams - An array of string which are team names
  */
 class AddTeam extends Component {
   state = {
@@ -40,7 +41,28 @@ class AddTeam extends Component {
   componentDidMount() {
     this.getSchools();
     this.getEvent();
+    this.getTeams();
   }
+
+   /**
+   * Get all the teams
+   */
+  getTeams = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
+      const teams = [];
+      querySnapshot.forEach((doc) => {
+        teams.push(
+          doc.data().team_name,
+        );
+      });
+      this.setState({ teams, isLoading: false });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
 
   /**
    * Get all the schools
@@ -75,7 +97,7 @@ class AddTeam extends Component {
 
   render() {
     const { auth, user } = this.props;
-    const { schools, isLoading, event } = this.state;
+    const { schools, isLoading, event,teams } = this.state;
     let teacherId = '';
     let schoolId = '';
     if (user && user.type === 'teacher') {
@@ -98,6 +120,7 @@ class AddTeam extends Component {
             maxStudent={event.max_student ? event.max_student : 10}
             teacherId={teacherId}
             schoolId={schoolId}
+            teams={teams}
           />)
         }
       </AdminLayout>

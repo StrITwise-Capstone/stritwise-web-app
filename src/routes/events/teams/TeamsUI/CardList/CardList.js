@@ -51,6 +51,9 @@ class CardList extends Component {
     search: '',
   }
 
+  /**
+   * Get the next five teams sorted by team_name
+  */
   handleChangePage = (event, newPage) => {
     const { firestore, eventId } = this.props;
     const { lastVisible, firstVisible, search, page } = this.state;
@@ -105,6 +108,9 @@ class CardList extends Component {
     }
   }
 
+  /**
+   * Get the first five teams sorted by team_name
+   */
   getTeams = () => {
     const { firestore, eventId } = this.props;
     const { search } = this.state;
@@ -138,6 +144,10 @@ class CardList extends Component {
     })
   }
 
+  /**
+   * Add additional parameters to collection base on user type 
+   * @returns {Object} The collection
+  */
   handleCustomFilter = (collection, search) => {
     const { teacherId } = this.props;
     // check if Filter has been changed
@@ -157,6 +167,9 @@ class CardList extends Component {
     this.getSchools();
   }
   
+  /**
+   * Get all the schools
+   */
   getSchools = () => {
     const { firestore } = this.props;
     firestore.collection('schools').get().then((querySnapshot) => {

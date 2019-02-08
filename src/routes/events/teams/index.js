@@ -39,6 +39,9 @@ const styles = () => ({
   },
 });
 
+/**
+ * Class representing the ViewTeams component.
+*/
 class ViewTeams extends Component {
   state = {
     isLoading: true,
@@ -49,8 +52,12 @@ class ViewTeams extends Component {
   componentDidMount() {
     this.getSchools();
     this.getEvent();
+    this.getTeams();
   }
 
+  /**
+   * Get the current event
+   */
   getEvent = () => {
     const { firestore, match } = this.props;
     this.setState({ isLoading: true });
@@ -59,6 +66,28 @@ class ViewTeams extends Component {
     });
   }
 
+  /**
+ * Get all the teams
+ */
+  getTeams = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
+      const teams = [];
+      querySnapshot.forEach((doc) => {
+        teams.push(
+          doc.data().team_name,
+        );
+      });
+      this.setState({ teams , isLoading: false });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  /**
+   * Get all the schools
+   */
   getSchools = () => {
     const { firestore } = this.props;
     this.setState({ isLoading: true });
@@ -76,11 +105,17 @@ class ViewTeams extends Component {
     });
   }
 
+  /**
+   * Reroute to page to create team
+   */
   createTeam = () => {
     const { history, match } = this.props;
     history.push(`/events/${match.params.eventId}/teams/create`);
   }
 
+  /**
+   * Update the page
+   */
   updatePage = () => {
     this.setState({ isLoading: true });
     this.setState({ isLoading: false });
@@ -92,7 +127,7 @@ class ViewTeams extends Component {
       auth,
       match,
     } = this.props;
-    const { isLoading, schools, event } = this.state;
+    const { isLoading, schools, event, teams } = this.state;
     let teacherId = '';
     let schoolId = '';
     if (user && user.type === 'teacher') {
@@ -129,6 +164,7 @@ class ViewTeams extends Component {
                 eventId={match.params.eventId}
                 teacherId={teacherId}
                 schoolId={schoolId}
+                teams={teams}
               />
             </div>)}
         >

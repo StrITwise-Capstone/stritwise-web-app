@@ -37,6 +37,7 @@ class FormDialog extends Component {
       eventId,
       updatePage,
       teacherId,
+      teams,
     } = this.props;
 
     return (
@@ -65,6 +66,7 @@ class FormDialog extends Component {
               eventId={eventId}
               handleClose={this.handleClose}
               teacherId={teacherId}
+              teams={teams}
             />
           </DialogContent>
         </Dialog>

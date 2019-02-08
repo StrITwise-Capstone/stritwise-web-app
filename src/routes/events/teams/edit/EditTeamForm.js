@@ -40,10 +40,11 @@ const initialValues = (team, minStudent, students) => {
 };
 
 // validationSchema for team object
-const validationSchema = (minStudent) => {
+const validationSchema = (minStudent, teams, teamName) => {
   return yup.object({
     team_name: yup.string()
-      .required('Required'),
+      .required('Required')
+      .test('team name', 'There is an existing team name', value => value && ((value === teamName) || !(teams.indexOf(value) > -1))),
     students: yup.array()
       .of(
         yup.object().shape({
@@ -84,6 +85,7 @@ const validationSchema = (minStudent) => {
  * @param {Number} minStudent - A number of minimum students for the team
  * @param {Number} maxStudent - A number of maximum students for the team
  * @param {Function} updatePage - A function to refresh the page
+ * @param {Object[]} teams - An array of string which are team names
  */
 const EditTeamForm = ({
   firestore,
@@ -96,11 +98,13 @@ const EditTeamForm = ({
   updatePage,
   maxStudent,
   auth,
+  teams,
+  teamName,
 }) => (
   <Formik
     enableReinitialize={true}
     initialValues={initialValues(team, minStudent, students)}
-    validationSchema={validationSchema(minStudent)}
+    validationSchema={validationSchema(minStudent, teams, teamName)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
       const { eventId, teamId } = match.params;
       const { students, deleteArray } = values;

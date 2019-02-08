@@ -33,7 +33,7 @@ const styles = {
 
 /**
  * Class representing the TeamCard component.
- * @param {Object} student - A specific student document
+ * @param {Object} event - A specific event document
  * @param {teamId} teamId - A string of the team Id
  * @param {Function} updatePage - A function to update the page
  * @param {Boolean} deleteValue - A boolean whether can delete Student or not
@@ -89,7 +89,6 @@ class TeamCard extends Component {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
         const currentStudent = doc.data();
-        console.log(currentStudent);
         studentsList.push({
           key: doc.id,
           first_name: currentStudent.first_name,
@@ -142,6 +141,9 @@ class TeamCard extends Component {
     });
   }
 
+  /**
+   * Function to call delete team and delete student function
+   */
   deleteTeamAndStudent = () => {
     this.deleteTeam();
     this.deleteStudent();

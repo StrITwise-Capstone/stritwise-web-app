@@ -34,9 +34,11 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => { return {
 }};
 
 // validationSchema for team object
-const validationSchema = minStudent => yup.object({
+const validationSchema = (minStudent,teams) => yup.object({
   team_name: yup.string()
-    .required('Required'),
+    .required('Required')
+    .test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
+
   students: yup.array()
     .of(
       yup.object().shape({
@@ -82,6 +84,7 @@ const validationSchema = minStudent => yup.object({
  * @param {Number} maxStudent - A number of maximum students for the team
  * @param {String} teacherId - A string of the teacherId of the teacher who is adding the team
  * @param {String} schoolId - A string of the schoolId of the school of the teacher
+ * @param {Object[]} teams - An array of string which are team names
  */
 const AddTeamForm = ({
   firestore,
@@ -93,10 +96,11 @@ const AddTeamForm = ({
   teacherId,
   schoolId,
   auth,
+  teams,
 }) => (
   <Formik
     initialValues={initialValues(minStudent, schools, teacherId, schoolId)}
-    validationSchema={validationSchema(minStudent)}
+    validationSchema={validationSchema(minStudent, teams)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
       let schoolValue = '';
       if (schoolId !== '') {
