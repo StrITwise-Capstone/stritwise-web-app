@@ -18,9 +18,10 @@ import DeleteButton from './DeleteButton/DeleteButton';
 import yup from '../../../../../../../instances/yup';
 import TextField from '../../../../../../../components/UI/TextField/TextField';
 
+// initialValues for student object
 const initialValues = (
   student,
-  studentuid,
+  studentId,
   eventId,
   teamId,
   deleteValue,
@@ -33,7 +34,7 @@ const initialValues = (
     remarks: student.remarks,
     email: student.email,
     mobile: student.mobile,
-    studentuid,
+    studentId,
     eventId,
     teamId,
     deleteValue,
@@ -42,6 +43,7 @@ const initialValues = (
     emergency_contact_relation: student.emergency_contact_relation,
 }}
 
+// validationSchema for student object
 const validationSchema = yup.object({
   firstname: yup.string()
     .required('Required'),
@@ -51,11 +53,20 @@ const validationSchema = yup.object({
   email: yup.string().email('Email is not valid'),
 });
 
-const editStudent = ({
+/**
+ * Class representing the EditStudentForm component.
+ * @param {Object} student - A specific student document
+ * @param {string} studentId - A string of the student Id
+ * @param {string} eventId - A string of the event Id
+ * @param {teamId} teamId - A string of the team Id
+ * @param {Function} updatePage - A function to update the page
+ * @param {Boolean} deleteValue - A boolean whether can delete Student or not
+*/
+const EditStudentForm = ({
   firestore,
   enqueueSnackbar,
   student,
-  studentuid,
+  studentId,
   eventId,
   teamId,
   deleteValue,
@@ -64,11 +75,14 @@ const editStudent = ({
 }) => (
   <Formik
     enableReinitialize={true}
-    initialValues={initialValues(student, studentuid, eventId, teamId, deleteValue)}
-    validationSchema={validationSchema}    
+    initialValues={initialValues(student, studentId, eventId, teamId, deleteValue)}
+    validationSchema={validationSchema}
     onSubmit={(values, { setSubmitting }) => {
+      /**
+      * Update current student
+      */
       const updateStudent = () => {
-        return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentuid).update({
+        return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).update({
           first_name: values.firstname,
           last_name: values.lastname,
           badge_name: values.badgename,
@@ -79,8 +93,9 @@ const editStudent = ({
           modified_at: new Date(Date.now()),
         });
       };
+
       updateStudent().then(() => {
-        enqueueSnackbar('Student Updated',{
+        enqueueSnackbar('Student Updated', {
           variant: 'success',
         });
         setSubmitting(false);
@@ -103,7 +118,8 @@ const editStudent = ({
         content = (
           <Form
             onSubmit={handleSubmit}
-            style={{ width: '550px' }}>
+            style={{ width: '550px' }}
+          >
             <Field
               required
               name="firstname"
@@ -180,7 +196,7 @@ const editStudent = ({
               && (
                 <DeleteButton
                   teamId={initialValues.teamId}
-                  studentuid={initialValues.studentuid}
+                  studentId={initialValues.studentId}
                   updatePage={updatePage}
                 />)
               }
@@ -193,10 +209,10 @@ const editStudent = ({
   </Formik>
 );
 
-editStudent.propTypes = {
+EditStudentForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   eventId: PropTypes.string.isRequired,
-  studentuid: PropTypes.string.isRequired,
+  studentId: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired,
   deleteValue: PropTypes.bool.isRequired,
   /* eslint-disable react/forbid-prop-types */
@@ -206,7 +222,7 @@ editStudent.propTypes = {
   /* eslint-enable */
 };
 
-editStudent.defaultProps = {
+EditStudentForm.defaultProps = {
   student: null,
 };
 
@@ -214,4 +230,4 @@ export default compose(
   withSnackbar,
   firestoreConnect(),
   withRouter,
-)(editStudent);
+)(EditStudentForm);

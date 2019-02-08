@@ -16,11 +16,13 @@ import * as util from '../../../../helper/util';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+// initialValues for the form
 const initialValues = {
   file: '',
   school: '',
 }
 
+// validationSchema for the form
 var validationSchema = yup.array().of(yup.object().shape({
   key: yup.string().required().min(1),
   values: yup.array().of(
@@ -41,6 +43,9 @@ var validationSchema = yup.array().of(yup.object().shape({
   )
 }));
 
+/**
+* Convert data from string to objects
+*/
 const parseData = (unParsedContents) => {
   let array = [];
   return Papa.parse(unParsedContents, {
@@ -60,6 +65,9 @@ const parseData = (unParsedContents) => {
   });
 }
 
+/**
+* Validate Data for Team objects
+*/
 const validateData = (teamsData) => {
   let isValid = true;
   if (!validationSchema.isValidSync(teamsData)) {
@@ -68,26 +76,32 @@ const validateData = (teamsData) => {
   return isValid;
 }
 
+/**
+ * Class representing the UploadTeamForm component.
+ * @param {Object[]} schools - An array of objects containing school name and Id
+ * @param {string} teacherId - A string of the teacher Id
+ * @param {string} eventId - A string of event Id
+ * @param {Function} updatePage - A function to update the page
+ * @param {Function} handleClose - A function to close the dialog
+ */
 class UploadTeamForm extends Component {
   handleSubmit = (values) => {
     const {
+      firestore,
+      eventId,
+      handleClose,
+      updatePage,
+      teacherId,
+      auth,
       enqueueSnackbar,
     } = this.props;
-    
+
     const uploadTeams = (dataByTeamName, school_id) => {
       Object.keys(dataByTeamName).map((TeamIndex) => {
-        const {
-          firestore,
-          eventuid,
-          handleClose,
-          refreshState,
-          teacherId,
-          auth,
-        } = this.props;
         const team = dataByTeamName[TeamIndex];
         console.log(team);
-        // Do verification
-        return firestore.collection('events').doc(eventuid).collection('teams').add({
+
+        return firestore.collection('events').doc(eventId).collection('teams').add({
           team_name: team.key,
           credit: 0,
           teacher_id: teacherId ? teacherId : '',
@@ -118,7 +132,7 @@ class UploadTeamForm extends Component {
               modified_at: new Date(Date.now()),
             };
             data.password = team.values[i].Password;
-            data.eventId = eventuid;
+            data.eventId = eventId;
             const transaction = {
               user_id: auth.uid,
               transaction_type: 'ADD_STUDENT',
@@ -127,7 +141,7 @@ class UploadTeamForm extends Component {
             firestore.collection('transactions').add(transaction);
           }
           handleClose();
-          if (parseInt(TeamIndex) + 1 === dataByTeamName.length) refreshState();
+          if (parseInt(TeamIndex) + 1 === dataByTeamName.length) updatePage();
         });
       }
       );
@@ -197,8 +211,8 @@ class UploadTeamForm extends Component {
 }
 
 UploadTeamForm.propTypes = {
-  eventuid: PropTypes.string.isRequired,
-  refreshState: PropTypes.func.isRequired,
+  eventId: PropTypes.string.isRequired,
+  updatePage: PropTypes.func.isRequired,
   teacherId: PropTypes.string,
   enqueueSnackbar: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired,

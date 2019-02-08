@@ -4,6 +4,14 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import PropTypes from 'prop-types';
 
+/**
+ * Class representing the TablePaginationActions component.
+ * @param {number} count - A number that represents the total number of data
+ * @param {number} page - The current page
+ * @param {object} theme - The theme for styling
+ * @param {number} rowsPerPage - A number of the rows per page
+ * @param {object} classes - The styling for TablePaginationActions component
+*/
 class TablePaginationActions extends Component {
   handleFirstPageButtonClick = event => {
     const { onChangePage } = this.props;

@@ -25,6 +25,7 @@ import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+// initialValues for team object
 const initialValues = (team, minStudent, students) => {
   return {
     team_name: team.team_name,
@@ -38,6 +39,7 @@ const initialValues = (team, minStudent, students) => {
   };
 };
 
+// validationSchema for team object
 const validationSchema = (minStudent) => {
   return yup.object({
     team_name: yup.string()
@@ -64,7 +66,7 @@ const validationSchema = (minStudent) => {
           emergency_contact_name: yup.string(),
           emergency_contact_mobile: yup.number('Invalid Mobile Number')
             .typeError('Invalid Phone Number')
-            .max(99999999,'Phone number is too long')
+            .max(99999999, 'Phone number is too long')
             .min(9999999, 'Phone number is too short'),
           emergency_contact_relation: yup.string(),
         }),
@@ -74,13 +76,16 @@ const validationSchema = (minStudent) => {
   });
 };
 
-const deleteStudents = (deleteArray, firestore, match) => {
-  deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
-};
-
-
-
-const editTeam = ({
+/**
+ * Class representing the EditTeamForm component.
+ * @param {Object[]} schools - An array of objects containing school name and Id
+ * @param {Object} team - A team document
+ * @param {Object} students - An array of student object
+ * @param {Number} minStudent - A number of minimum students for the team
+ * @param {Number} maxStudent - A number of maximum students for the team
+ * @param {Function} updatePage - A function to refresh the page
+ */
+const EditTeamForm = ({
   firestore,
   enqueueSnackbar,
   match,
@@ -88,7 +93,7 @@ const editTeam = ({
   schools,
   team,
   students,
-  refreshState,
+  updatePage,
   maxStudent,
   auth,
 }) => (
@@ -97,11 +102,17 @@ const editTeam = ({
     initialValues={initialValues(team, minStudent, students)}
     validationSchema={validationSchema(minStudent)}
     onSubmit={(values, { resetForm, setSubmitting }) => {
-      console.log('here');
       const { eventId, teamId } = match.params;
       const { students, deleteArray } = values;
 
-      const updateTeam = (eventId, teamId, values) => {
+      const deleteStudents = () => {
+        deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
+      };
+
+      /**
+      * Update the current team
+      */
+      const updateTeam = () => {
         return firestore.collection('events').doc(eventId).collection('teams').doc(teamId).update({
           team_name: values.team_name,
           school_id: values.school_id.value,
@@ -109,6 +120,10 @@ const editTeam = ({
           modified_at: new Date(Date.now()),
         });
       };
+
+      /**
+      * Update all the students in the current team
+      */
       const updateStudents = (student, index) => {
         return firestore.collection('events').doc(eventId).collection('students').doc(student.key).update({
           first_name: student.first_name,
@@ -134,12 +149,15 @@ const editTeam = ({
             enqueueSnackbar('Team Updated Successfully', {
               variant: 'success',
             });
-            refreshState();
+            updatePage();
           }
-          refreshState();
+          updatePage();
         });
       };
 
+      /**
+      * Add all the new students in the current team
+      */
       const addNewStudent = (student) => {
         const data = {
           team_id: teamId,
@@ -158,7 +176,8 @@ const editTeam = ({
           },
           created_at: new Date(Date.now()),
           modified_at: new Date(Date.now()),
-        }
+        };
+
         data.eventId = eventId;
         const transaction = {
           user_id: auth.uid,
@@ -174,7 +193,7 @@ const editTeam = ({
         });
       }
 
-      deleteStudents(deleteArray);   
+      deleteStudents();   
       updateTeam(eventId, teamId, values).then((docRef) => {
         enqueueSnackbar('Updated Team...', {
           variant: 'info',
@@ -413,9 +432,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-editTeam.propTypes = {
+EditTeamForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
-  refreshState: PropTypes.func.isRequired,
+  updatePage: PropTypes.func.isRequired,
   minStudent: PropTypes.number.isRequired,
   maxStudent: PropTypes.number.isRequired,
   schools: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -428,7 +447,7 @@ editTeam.propTypes = {
   /* eslint-enable */
 };
 
-editTeam.defaultProps = {
+EditTeamForm.defaultProps = {
   team: null,
   students: null,
 }
@@ -440,4 +459,4 @@ export default compose(
   firebaseConnect(),
   firestoreConnect(),
   withRouter,
-)(editTeam);
+)(EditTeamForm);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Grid,
   CircularProgress,
@@ -37,263 +37,268 @@ const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: tru
   TablePaginationActions,
 );
 
-class cardList extends React.Component {
-    state = {
-      page: 0,
-      lastVisible: null,
-      firstVisible: null,
-      isLoading: true,
-      search: '',
-    }
+/**
+ * Class representing the CardList component.
+ * @param {Object} event - A specific event document
+ * @param {teamId} teacherId - A string of the teacher Id
+*/
+class CardList extends Component {
+  state = {
+    page: 0,
+    lastVisible: null,
+    firstVisible: null,
+    isLoading: true,
+    search: '',
+  }
 
-    handleChangePage = (event, newPage) => {
-      const { firestore, eventuid } = this.props;
-      const { lastVisible, firstVisible, search, page } = this.state;
-      this.setState({ isLoading: true });
-      const callback = (array, lastVisible, page, firstVisible) => {
-        this.setState({
-          teamsList: array,
-          lastVisible,
-          page,
-          firstVisible,
-          isLoading: false,
-        });
-      };
-      var array = [];
-      var first = null;
-      if (newPage > page) {
-        first = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search)
-          .orderBy('team_name', 'asc')
-          .limit(5)
-          .startAfter(lastVisible);
-        this.setState({ isLoading: true, teamsList: null });
-        first.get().then((documentSnapshots) => {
-        // Get the last visible document
-          const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-          const firstVisible = documentSnapshots.docs[0];
-          documentSnapshots.forEach((documentSnapshot) => {
-            array.push({
-              uid: documentSnapshot.id,
-              data: documentSnapshot.data(),
-            });
-          });
-          callback(array.reverse(), lastVisible, newPage, firstVisible);
-        });
-      }
-      if (newPage < page) {
-        first = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search)
-          .orderBy('team_name', 'desc')
-          .limit(5)
-          .startAfter(firstVisible);
-        this.setState({ isLoading: true, teamsList: null });
-        first.get().then((documentSnapshots) => {
-          var lastVisible = documentSnapshots.docs[0];
-          var firstVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
-          documentSnapshots.forEach((documentSnapshot) => {
-            array.push({
-              uid: documentSnapshot.id,
-              data: documentSnapshot.data(),
-            });
-          });
-          callback(array.reverse(), lastVisible, newPage, firstVisible);
-        });
-      }
-    }
-
-    getTeams = () => {
-      const { firestore, eventuid } = this.props;
-      const { search } = this.state;
-      const callback = (array, lastVisible) => {
-        this.setState({
-          teamsList: array,
-          lastVisible,
-          page: 0,
-          isLoading: false,
-        });
-      };
-      var ref = this.handleCustomFilter(firestore.collection('events').doc(eventuid).collection('teams'), search);
-      ref.get().then((documentSnapshots) => {
-        this.setState({ teamsListCount: documentSnapshots.docs.length });
+  handleChangePage = (event, newPage) => {
+    const { firestore, eventId } = this.props;
+    const { lastVisible, firstVisible, search, page } = this.state;
+    this.setState({ isLoading: true });
+    const callback = (array, lastVisible, page, firstVisible) => {
+      this.setState({
+        teamsList: array,
+        lastVisible,
+        page,
+        firstVisible,
+        isLoading: false,
       });
-      var array = [];
-      var first = ref.orderBy('team_name').limit(5);
+    };
+    var array = [];
+    var first = null;
+    if (newPage > page) {
+      first = this.handleCustomFilter(firestore.collection('events').doc(eventId).collection('teams'), search)
+        .orderBy('team_name', 'asc')
+        .limit(5)
+        .startAfter(lastVisible);
       this.setState({ isLoading: true, teamsList: null });
       first.get().then((documentSnapshots) => {
-        var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+      // Get the last visible document
+        const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+        const firstVisible = documentSnapshots.docs[0];
         documentSnapshots.forEach((documentSnapshot) => {
           array.push({
             uid: documentSnapshot.id,
             data: documentSnapshot.data(),
           });
         });
-        callback(array, lastVisible);
-      }).catch((error) => {
-        this.setState({ isLoading: false });
-        console.log(error);
-      })
-    }
-
-    handleCustomFilter = (collection, search) => {
-      const { teacherId } = this.props;
-      // check if Filter has been changed
-      if (teacherId === '') {
-        if (search === '') {
-          return collection;
-        } 
-        collection = collection.where('school_id', '==', search);
-        return collection;
-      }
-      collection = collection.where('teacher_id', '==', teacherId);
-      return collection;
-    }
-
-    componentDidMount = () => {
-      this.getTeams();
-      this.getSchools();
-    }
-    
-    getSchools = () => {
-      const { firestore } = this.props;
-      firestore.collection('schools').get().then((querySnapshot) => {
-        const schools = [{ label: '', value: '' }];
-        querySnapshot.forEach((doc) => {
-          schools.push({
-            label: doc.data().name,
-            value: doc.id,
-          });
-        });
-        this.setState({ schools });
-      }).catch((error) => {
-        console.log(error);
+        callback(array.reverse(), lastVisible, newPage, firstVisible);
       });
     }
+    if (newPage < page) {
+      first = this.handleCustomFilter(firestore.collection('events').doc(eventId).collection('teams'), search)
+        .orderBy('team_name', 'desc')
+        .limit(5)
+        .startAfter(firstVisible);
+      this.setState({ isLoading: true, teamsList: null });
+      first.get().then((documentSnapshots) => {
+        var lastVisible = documentSnapshots.docs[0];
+        var firstVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+        documentSnapshots.forEach((documentSnapshot) => {
+          array.push({
+            uid: documentSnapshot.id,
+            data: documentSnapshot.data(),
+          });
+        });
+        callback(array.reverse(), lastVisible, newPage, firstVisible);
+      });
+    }
+  }
 
-    render() {
-      const {
-        teamsList, isLoading, page, schools, teamsListCount,
-      } = this.state;
-      const {
-        event, teacherId,
-      } = this.props;
-      const defaultOptions =  [{ label : '' , value : ''}];
-      return (
-        <React.Fragment>
-          <Table>
-            <TableBody>
-              <TableRow>
-                { teacherId === '' &&
-                (
-                <TableCell style={{ float: 'left', fontWeight: 'normal !important'}}>
-                  <Formik
-                    enableReinitialize
-                    initialValues={{ search: '', filter: 'all' }}
-                    validationSchema={Yup.object({
-                      search: Yup.string()
-                        .required('Required'),
-                    })}
-                    onSubmit={(values, { setSubmitting }) => {
-                      this.setState({ search: values.search.value });
-                      this.getTeams();
-                      setSubmitting(false);
-                    }}
-                  >
-                    {({
-                      errors,
-                      touched,
-                      handleSubmit,
-                      values,
-                    }) => (
-                      <Form onSubmit={handleSubmit}>
-                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '6px'}}>
+  getTeams = () => {
+    const { firestore, eventId } = this.props;
+    const { search } = this.state;
+    const callback = (array, lastVisible) => {
+      this.setState({
+        teamsList: array,
+        lastVisible,
+        page: 0,
+        isLoading: false,
+      });
+    };
+    var ref = this.handleCustomFilter(firestore.collection('events').doc(eventId).collection('teams'), search);
+    ref.get().then((documentSnapshots) => {
+      this.setState({ teamsListCount: documentSnapshots.docs.length });
+    });
+    var array = [];
+    var first = ref.orderBy('team_name').limit(5);
+    this.setState({ isLoading: true, teamsList: null });
+    first.get().then((documentSnapshots) => {
+      var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+      documentSnapshots.forEach((documentSnapshot) => {
+        array.push({
+          uid: documentSnapshot.id,
+          data: documentSnapshot.data(),
+        });
+      });
+      callback(array, lastVisible);
+    }).catch((error) => {
+      this.setState({ isLoading: false });
+      console.log(error);
+    })
+  }
+
+  handleCustomFilter = (collection, search) => {
+    const { teacherId } = this.props;
+    // check if Filter has been changed
+    if (teacherId === '') {
+      if (search === '') {
+        return collection;
+      } 
+      collection = collection.where('school_id', '==', search);
+      return collection;
+    }
+    collection = collection.where('teacher_id', '==', teacherId);
+    return collection;
+  }
+
+  componentDidMount = () => {
+    this.getTeams();
+    this.getSchools();
+  }
+  
+  getSchools = () => {
+    const { firestore } = this.props;
+    firestore.collection('schools').get().then((querySnapshot) => {
+      const schools = [{ label: '', value: '' }];
+      querySnapshot.forEach((doc) => {
+        schools.push({
+          label: doc.data().name,
+          value: doc.id,
+        });
+      });
+      this.setState({ schools });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  render() {
+    const {
+      teamsList, isLoading, page, schools, teamsListCount,
+    } = this.state;
+    const {
+      event, teacherId,
+    } = this.props;
+    const defaultOptions =  [{ label : '' , value : ''}];
+    return (
+      <Fragment>
+        <Table>
+          <TableBody>
+            <TableRow>
+              { teacherId === '' &&
+              (
+              <TableCell style={{ float: 'left', fontWeight: 'normal !important'}}>
+                <Formik
+                  enableReinitialize
+                  initialValues={{ search: '', filter: 'all' }}
+                  validationSchema={Yup.object({
+                    search: Yup.string()
+                      .required('Required'),
+                  })}
+                  onSubmit={(values, { setSubmitting }) => {
+                    this.setState({ search: values.search.value });
+                    this.getTeams();
+                    setSubmitting(false);
+                  }}
+                >
+                  {({
+                    errors,
+                    touched,
+                    handleSubmit,
+                    values,
+                  }) => (
+                    <Form onSubmit={handleSubmit}>
+                      <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '6px'}}>
+                        <Field
+                          name="search"
+                          label="School"
+                          options={schools ? schools : defaultOptions}
+                          component={Select}
+                        />
+                      </div>
+                      {values.filter !== 'all' ? (
+                        <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
                           <Field
+                            required
                             name="search"
-                            label="School"
-                            options={schools ? schools : defaultOptions}
-                            component={Select}
+                            label="Search"
+                            type="text"
+                            component={TextField}
                           />
                         </div>
-                        {values.filter !== 'all' ? (
-                          <div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
-                            <Field
-                              required
-                              name="search"
-                              label="Search"
-                              type="text"
-                              component={TextField}
-                            />
-                          </div>
-                        ) : (
-                          null
-                        )}
+                      ) : (
+                        null
+                      )}
 
-                        <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
-                          <Button
-                            type="submit"
-                            variant="outlined"
-                            color="primary"
-                            disabled={util.isFormValid(errors, touched)}
-                          >
-                            Filter
-                          </Button>
-                        </div>
-                      </Form>
-                    )}
-                  </Formik>
-                </TableCell>
-                )}
-                <TablePagination
-                  colSpan={3}
-                  rowsPerPageOptions={[5]}
-                  count={teamsListCount ? teamsListCount : 0}
-                  page={page}
-                  SelectProps={{
-                    native: true,
-                  }}
-                  rowsPerPage={5}
-                  onChangePage={this.handleChangePage}
-                  ActionsComponent={TablePaginationActionsWrapped}
-                  style={{ float: 'right' }}
-                />
-              </TableRow>
-            </TableBody>
-          </Table>
-          <div style={{ margin: '0 auto' }} />
-          
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="flex-start"
-            spacing={8}
-          >
-            { isLoading && (
-              <CircularProgress />)
-            }
-            { !isLoading && isEmpty(teamsList) && (
-              <Grid item>
-                <Typography component="p">There is no data at the moment.</Typography>
-              </Grid>
-            )
-            }
-            {teamsList && !isLoading
-                  && Object.keys(teamsList).map( teamuid => (
-                    <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
-                      <TeamCard
-                        teamId={teamsList[teamuid].uid}
-                        event={event}
-                        updatePage={() => { this.getTeams(); }}
-                      />
-                    </Grid>
-                  ))
-            }
-          </Grid>
-        </React.Fragment>
-      );
-    }
+                      <div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                        <Button
+                          type="submit"
+                          variant="outlined"
+                          color="primary"
+                          disabled={util.isFormValid(errors, touched)}
+                        >
+                          Filter
+                        </Button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
+              </TableCell>
+              )}
+              <TablePagination
+                colSpan={3}
+                rowsPerPageOptions={[5]}
+                count={teamsListCount ? teamsListCount : 0}
+                page={page}
+                SelectProps={{
+                  native: true,
+                }}
+                rowsPerPage={5}
+                onChangePage={this.handleChangePage}
+                ActionsComponent={TablePaginationActionsWrapped}
+                style={{ float: 'right' }}
+              />
+            </TableRow>
+          </TableBody>
+        </Table>
+        <div style={{ margin: '0 auto' }} />
+        
+        <Grid
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="flex-start"
+          spacing={8}
+        >
+          { isLoading && (
+            <CircularProgress />)
+          }
+          { !isLoading && isEmpty(teamsList) && (
+            <Grid item>
+              <Typography component="p">There is no data at the moment.</Typography>
+            </Grid>
+          )
+          }
+          {teamsList && !isLoading
+                && Object.keys(teamsList).map( teamuid => (
+                  <Grid item xs={6} key={teamuid} style={{ height: '100%' }}>
+                    <TeamCard
+                      teamId={teamsList[teamuid].uid}
+                      event={event}
+                      updatePage={() => { this.getTeams(); }}
+                    />
+                  </Grid>
+                ))
+          }
+        </Grid>
+      </Fragment>
+    );
+  }
 }
 
-cardList.propTypes = {
-  eventuid: PropTypes.string,
+CardList.propTypes = {
+  eventId: PropTypes.string,
   event: PropTypes.shape({}),
   team: PropTypes.shape({}),
   teacherId: PropTypes.string,
@@ -302,10 +307,10 @@ cardList.propTypes = {
   /* eslint-enable */
 };
 
-cardList.defaultProps = {
+CardList.defaultProps = {
   team: null,
   event: null,
-  eventuid: null,
+  eventId: null,
   teacherId: null,
 };
 const mapStateToProps = (state) => {
@@ -314,4 +319,4 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default compose(withRouter, connect(mapStateToProps), firestoreConnect())(cardList);
+export default compose(withRouter, connect(mapStateToProps), firestoreConnect())(CardList);

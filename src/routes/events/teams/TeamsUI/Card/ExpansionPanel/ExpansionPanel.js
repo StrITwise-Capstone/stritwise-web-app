@@ -9,7 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import Form from './Form/Form';
+import Form from './Form/EditStudentForm';
 
 const styles = theme => ({
   root: {
@@ -23,9 +23,22 @@ const styles = theme => ({
   },
 });
 
+/**
+ * Class representing the Student component.
+ * @param {Object} student - A specific student document
+ * @param {teamId} teamId - A string of the team Id
+ * @param {Function} updatePage - A function to update the page
+ * @param {Boolean} deleteValue - A boolean whether can delete Student or not
+*/
 class Student extends Component {
   render() {
-    const { classes, student, teamId, deleteValue, updatePage } = this.props;
+    const {
+      classes,
+      student,
+      teamId,
+      deleteValue,
+      updatePage,
+    } = this.props;
     return (
       <div className={classes.root}>
         {student && (
@@ -36,7 +49,7 @@ class Student extends Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Form student={student} studentuid={student.key} teamId={teamId} deleteValue={deleteValue} updatePage={updatePage} />
+            <Form student={student} studentId={student.key} teamId={teamId} deleteValue={deleteValue} updatePage={updatePage} />
           </ExpansionPanelDetails>
         </ExpansionPanel>)
         }

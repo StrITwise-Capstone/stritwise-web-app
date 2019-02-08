@@ -81,7 +81,7 @@ class ViewTeams extends Component {
     history.push(`/events/${match.params.eventId}/teams/create`);
   }
 
-  refreshState = () => {
+  updatePage = () => {
     this.setState({ isLoading: true });
     this.setState({ isLoading: false });
   }
@@ -124,9 +124,9 @@ class ViewTeams extends Component {
               Download Template
               </Button>
               <Dialog
-                refreshState={() => { this.refreshState(); }}
+                updatePage={() => { this.updatePage(); }}
                 schools={schools}
-                eventuid={match.params.eventId}
+                eventId={match.params.eventId}
                 teacherId={teacherId}
                 schoolId={schoolId}
               />
@@ -139,7 +139,7 @@ class ViewTeams extends Component {
             && (
             <CardList
               schools={schools}
-              eventuid={match.params.eventId}
+              eventId={match.params.eventId}
               event={event}
               teacherId={teacherId}
             />)}

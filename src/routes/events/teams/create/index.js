@@ -15,7 +15,7 @@ import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
 const styles = () => ({
   root: {
-    paddingTop:'10px',
+    paddingTop: '10px',
   },
   title: {
     textAlign: 'center',
@@ -26,17 +26,28 @@ const styles = () => ({
   },
 });
 
-class createTeam extends Component {
+/**
+ * Class representing the AddTeam component.
+ * @param {Object} user - A specific user document
+ */
+class AddTeam extends Component {
   state = {
     schools: [],
+    event: null,
+    isLoading: true,
   }
 
   componentDidMount() {
     this.getSchools();
+    this.getEvent();
   }
 
+  /**
+   * Get all the schools
+   */
   getSchools = () => {
     const { firestore } = this.props;
+    this.setState({ isLoading: true });
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
@@ -45,15 +56,26 @@ class createTeam extends Component {
           value: doc.id,
         });
       });
-      this.setState({ schools });
+      this.setState({ schools, isLoading: false });
     }).catch((error) => {
       console.log(error);
     });
   }
 
+  /**
+   * Get the event to add the team to
+   */
+  getEvent = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).get().then((docRef) => {
+      this.setState({ event: docRef.data(), isLoading: false });
+    });
+  }
+
   render() {
-    const { currentevent, auth, user } = this.props;
-    const { schools } = this.state;
+    const { auth, user } = this.props;
+    const { schools, isLoading, event } = this.state;
     let teacherId = '';
     let schoolId = '';
     if (user && user.type === 'teacher') {
@@ -64,16 +86,16 @@ class createTeam extends Component {
       <AdminLayout
         title="Register Team"
       >
-        {currentevent == null
+        {isLoading
           && (
           <CircularProgress />
           )}
-        {currentevent
+        {!isLoading && event
           && (
           <Form
             schools={schools ? schools : null}
-            minStudent={currentevent.min_student ? currentevent.min_student : 1}
-            maxStudent={currentevent.max_student ? currentevent.max_student : 10}
+            minStudent={event.min_student ? event.min_student : 1}
+            maxStudent={event.max_student ? event.max_student : 10}
             teacherId={teacherId}
             schoolId={schoolId}
           />)
@@ -83,37 +105,27 @@ class createTeam extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
     auth: state.firebase.auth,
   }
 };
 
-createTeam.propTypes = {
+AddTeam.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   user: PropTypes.any.isRequired,
   auth: PropTypes.any.isRequired,
-  currentevent: PropTypes.any,
+  match: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
-createTeam.defaultProps = {
-  currentevent: null,
-};
 export default compose(
   connect(mapStateToProps),
   withStyles(styles),
-  firestoreConnect(props => [
-    {
-      collection: 'events',
-      doc: `${props.match.params.eventId}`,
-      storeAs: `currentevent${props.match.params.eventId}`,
-    },
-  ]),
+  firestoreConnect(),
   withSnackbar,
   withRouter,
-)(createTeam);
+)(AddTeam);

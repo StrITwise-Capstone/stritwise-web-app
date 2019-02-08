@@ -23,6 +23,7 @@ import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+// initialValues for team Object
 const initialValues = (minStudent, schools, teacherId, schoolId) => { return {
   team_name: '',
   students: Array.apply(null, Array(minStudent)).map(function () {return null;}),
@@ -32,6 +33,7 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => { return {
   schoolId: schoolId ? schoolId : '',
 }};
 
+// validationSchema for team object
 const validationSchema = minStudent => yup.object({
   team_name: yup.string()
     .required('Required'),
@@ -73,59 +75,15 @@ const validationSchema = minStudent => yup.object({
     .min(minStudent, `Minimum of ${minStudent} member`),
 });
 
-const createTeam = (eventId, values, firestore, schoolValue, teacherId) => {
-  return firestore.collection('events').doc(eventId).collection('teams').add({
-    team_name: values.team_name,
-    school_id: schoolValue,
-    credit: 0,
-    created_at: new Date(Date.now()),
-    modified_at: new Date(Date.now()),
-    teacher_id: teacherId,
-  });
-};
-
-const addStudents = (students, docRef, eventId, auth, firestore, enqueueSnackbar, setSubmitting, resetForm) => {
-  students.map((student, index) => {
-    const data = {
-      team_id: docRef.id,
-      first_name: students[index].first_name,
-      last_name: students[index].last_name,
-      mobile: students[index].mobilenumber,
-      email: students[index].email,
-      badge_name: students[index].badgename ? students[index].badgename : '',
-      dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
-      remarks: students[index].remarks ? students[index].remarks : '',
-      emergency_contacts: {
-        name: students[index].emergency_contact_name,
-        mobile: students[index].emergency_contact_mobile,
-        relation: students[index].emergency_contact_relation,
-      },
-      created_at: new Date(Date.now()),
-      modified_at: new Date(Date.now()),
-    };
-    data.password = students[index].password;
-    data.eventId = eventId;
-    const transaction = {
-      user_id: auth.uid,
-      transaction_type: 'ADD_STUDENT',
-      data,
-    };
-    return firestore.collection('transactions').add(transaction).then((docRef) => {
-      enqueueSnackbar('Added 1 student...', {
-        variant: 'info',
-      });
-      resetForm();
-      setSubmitting(false);
-      if (index === students.length) {
-        enqueueSnackbar('Team Created Successfully', {
-          variant: 'success',
-        });
-      }
-    });
-  });
-};
-
-const createTeamForm = ({
+/**
+ * Class representing the AddTeamForm component.
+ * @param {Object[]} schools - An array of objects containing school name and Id
+ * @param {Number} minStudent - A number of minimum students for the team
+ * @param {Number} maxStudent - A number of maximum students for the team
+ * @param {String} teacherId - A string of the teacherId of the teacher who is adding the team
+ * @param {String} schoolId - A string of the schoolId of the school of the teacher
+ */
+const AddTeamForm = ({
   firestore,
   enqueueSnackbar,
   match,
@@ -148,11 +106,70 @@ const createTeamForm = ({
       }
       const { eventId } = match.params;
       const { students } = values;
-      createTeam(eventId, values, firestore, schoolValue, teacherId).then((docRef) => {
+
+      /**
+       * Add a new team
+       */
+      const addTeam = () => {
+        return firestore.collection('events').doc(eventId).collection('teams').add({
+          team_name: values.team_name,
+          school_id: schoolValue,
+          credit: 0,
+          created_at: new Date(Date.now()),
+          modified_at: new Date(Date.now()),
+          teacher_id: teacherId,
+        });
+      };
+
+      /**
+       * Add the students
+      */
+      const addStudents = (docRef) => {
+        students.map((student, index) => {
+          const data = {
+            team_id: docRef.id,
+            first_name: students[index].first_name,
+            last_name: students[index].last_name,
+            mobile: students[index].mobilenumber,
+            email: students[index].email,
+            badge_name: students[index].badgename ? students[index].badgename : '',
+            dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
+            remarks: students[index].remarks ? students[index].remarks : '',
+            emergency_contacts: {
+              name: students[index].emergency_contact_name,
+              mobile: students[index].emergency_contact_mobile,
+              relation: students[index].emergency_contact_relation,
+            },
+            created_at: new Date(Date.now()),
+            modified_at: new Date(Date.now()),
+          };
+          data.password = students[index].password;
+          data.eventId = eventId;
+          const transaction = {
+            user_id: auth.uid,
+            transaction_type: 'ADD_STUDENT',
+            data,
+          };
+          return firestore.collection('transactions').add(transaction).then((docRef) => {
+            enqueueSnackbar('Added 1 student...', {
+              variant: 'info',
+            });
+            resetForm();
+            setSubmitting(false);
+            if (index === students.length) {
+              enqueueSnackbar('Team Created Successfully', {
+                variant: 'success',
+              });
+            }
+          });
+        });
+      };
+
+      addTeam().then((docRef) => {
         enqueueSnackbar('Added Team...', {
           variant: 'info',
         });
-        addStudents(students, docRef, eventId, auth, firestore, enqueueSnackbar, setSubmitting, resetForm);
+        addStudents(docRef);
       });
     }
   }
@@ -384,7 +401,7 @@ const mapStateToProps = (state) => {
   }
 };
 
-createTeamForm.propTypes = {
+AddTeamForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   minStudent: PropTypes.number.isRequired,
   maxStudent: PropTypes.number.isRequired,
@@ -392,12 +409,13 @@ createTeamForm.propTypes = {
   schoolId: PropTypes.string,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
+  auth: PropTypes.any.isRequired,
   match: PropTypes.any.isRequired,
   schools: PropTypes.any,
   /* eslint-enable */
 };
 
-createTeamForm.defaultProps = {
+AddTeamForm.defaultProps = {
   teacherId: '',
   schoolId: '',
   schools: null,
@@ -408,4 +426,4 @@ export default compose(
   withSnackbar,
   firestoreConnect(),
   withRouter,
-)(createTeamForm);
+)(AddTeamForm);

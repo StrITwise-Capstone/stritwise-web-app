@@ -42,6 +42,10 @@ const styles = () => ({
   },
 });
 
+/**
+ * Class representing the Overview component.
+ * @param {Object} user - A specific user document
+ */
 class Overview extends Component {
   state = {
     isLoading: true,
@@ -53,6 +57,10 @@ class Overview extends Component {
     this.getImage();
   }
 
+  /**
+   * Get Image for the event
+  */
+ 
   getImage = () => {
     const { firebase, firestore, match } = this.props;
     const { imageFileURL } = this.state;
@@ -74,11 +82,9 @@ class Overview extends Component {
     }
   }
 
-  createTeam = () => {
-    const { history, match } = this.props;
-    history.push(`/events/${match.params.eventId}/teams/create`)
-  }
-
+  /**
+   * Get Action Buttons for the page
+  */
   getActionButtons = () => {
     const { isAuthenticated, user, match } = this.props;
     if (isAuthenticated && (user.type === 'admin' || user.type === 'orion member')) {
@@ -105,6 +111,10 @@ class Overview extends Component {
     }
     return null;
   }
+
+  /**
+   * Delete the current event
+  */
 
   deleteEvent = () => {
     const {

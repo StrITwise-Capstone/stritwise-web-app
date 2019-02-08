@@ -19,7 +19,6 @@ import ExpansionPanel from './ExpansionPanel/ExpansionPanel';
 
 const styles = {
   media: {
-    // ⚠️ object-fit is not supported by IE 11.
     objectFit: 'cover',
   },
   progress: {
@@ -32,7 +31,14 @@ const styles = {
   },
 };
 
-class teamCard extends Component {
+/**
+ * Class representing the TeamCard component.
+ * @param {Object} student - A specific student document
+ * @param {teamId} teamId - A string of the team Id
+ * @param {Function} updatePage - A function to update the page
+ * @param {Boolean} deleteValue - A boolean whether can delete Student or not
+*/
+class TeamCard extends Component {
   state = {
     studentsList: null,
     isLoading: true,
@@ -40,6 +46,9 @@ class teamCard extends Component {
     schoolsList: null,
   }
 
+  /**
+  * Delete the current student
+  */
   deleteStudent = () => {
     const {
       firestore,
@@ -58,6 +67,9 @@ class teamCard extends Component {
     }));
   }
 
+  /**
+  * Get the current team
+  */
   getTeam = () => {
     const { firestore, match, teamId } = this.props;
     this.setState({ isLoading: true });
@@ -66,6 +78,9 @@ class teamCard extends Component {
     });
   }
 
+  /**
+  * Get the students of the current team
+  */
   getStudents = () => {
     const { firestore, match, teamId } = this.props;
     this.setState({ isLoading: true });
@@ -93,6 +108,9 @@ class teamCard extends Component {
     });
   }
 
+  /**
+  * Get all the schools
+  */
   getSchools = () => {
     const { firestore } = this.props;
     const schoolsList = [];
@@ -105,6 +123,9 @@ class teamCard extends Component {
     });
   }
 
+  /**
+  * Delete the current team
+  */
   deleteTeam = () => {
     const {
       firestore,
@@ -201,7 +222,7 @@ class teamCard extends Component {
 }
 
 
-teamCard.propTypes = {
+TeamCard.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   updatePage: PropTypes.func.isRequired,
   event: PropTypes.shape({}),
@@ -216,7 +237,7 @@ teamCard.propTypes = {
   /* eslint-enable */
 };
 
-teamCard.defaultProps = {
+TeamCard.defaultProps = {
   team: null,
   event: null,
   student: null,
@@ -228,4 +249,4 @@ export default compose(
   firestoreConnect(),
   withStyles(styles),
   withSnackbar,
-)(teamCard);
+)(TeamCard);

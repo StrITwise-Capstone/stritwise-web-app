@@ -10,6 +10,14 @@ import PropTypes from 'prop-types';
 import Form from './UploadTeamForm';
 import urlForDownloads from '../../../../config/urlForDownloads';
 
+
+/**
+ * Class representing the FormDialog component.
+ * @param {Object[]} schools - An array of objects containing school name and Id
+ * @param {string} teacherId - A string of the teacher Id
+ * @param {string} eventId - A string of event Id
+ * @param {Function} updatePage - A function to update the page
+ */
 class FormDialog extends Component {
   state = {
     open: false,
@@ -26,8 +34,8 @@ class FormDialog extends Component {
   render() {
     const {
       schools,
-      eventuid,
-      refreshState,
+      eventId,
+      updatePage,
       teacherId,
     } = this.props;
 
@@ -52,9 +60,9 @@ class FormDialog extends Component {
           <DialogContent>
             <a href={urlForDownloads.teamsTemplate}>Download Template</a>
             <Form
-              refreshState={refreshState}
+              updatePage={updatePage}
               schools={schools}
-              eventuid={eventuid}
+              eventId={eventId}
               handleClose={this.handleClose}
               teacherId={teacherId}
             />
@@ -66,8 +74,8 @@ class FormDialog extends Component {
 }
 
 FormDialog.propTypes = {
-  eventuid: PropTypes.string.isRequired,
-  refreshState: PropTypes.func.isRequired,
+  eventId: PropTypes.string.isRequired,
+  updatePage: PropTypes.func.isRequired,
   teacherId: PropTypes.string,
   /* eslint-disable react/forbid-prop-types */
   schools: PropTypes.any,
@@ -76,7 +84,7 @@ FormDialog.propTypes = {
 
 FormDialog.defaultProps = {
   teacherId: '',
-  schools:null,
+  schools: null,
 };
 
 export default FormDialog;

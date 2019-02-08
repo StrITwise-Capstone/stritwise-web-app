@@ -32,6 +32,7 @@ const validationSchema = yup.object({
  * Class representing the EditCrewForm component.
  * @param {Object} teamRef -  Document referenece of specific team.
  */
+
 const EditTeamPtsForm = ({
   auth, enqueueSnackbar, teamRef, match,
 }) => (

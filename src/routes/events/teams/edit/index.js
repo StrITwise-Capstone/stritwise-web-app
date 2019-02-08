@@ -12,20 +12,31 @@ import PropTypes from 'prop-types';
 import Form from './EditTeamForm';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
-class editTeam extends Component {
+/**
+ * Class representing the EditTeam component.
+ * @param {Object} user - A specific user document
+ */
+class EditTeam extends Component {
   state = {
     schools: [],
     studentsList: [],
+    isLoading: true,
+    event: null,
   }
 
   componentDidMount() {
     this.getSchools();
     this.getTeam();
     this.getStudents();
+    this.getEvent();
   }
 
+  /**
+  * Get all the schools
+  */
   getSchools = () => {
     const { firestore } = this.props;
+    this.setState({ isLoading: true });
     firestore.collection('schools').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
@@ -34,69 +45,96 @@ class editTeam extends Component {
           value: doc.id,
         });
       });
-      this.setState({ schools });
+      this.setState({ schools, isLoading: false });
     }).catch((error) => {
       console.log(error);
     });
   }
 
+
+  /**
+  * Get the team that is edited
+  */
   getTeam = () => {
     const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
     firestore.collection('events').doc(match.params.eventId).collection('teams').doc(match.params.teamId).get().then((doc) => {
-      this.setState({ team: doc.data() });
+      this.setState({ team: doc.data(), isLoading: false });
     });
   }
 
+  /**
+  * Get all the existing students of the team
+  */
   getStudents = () => {
     const { firestore, match } = this.props;
+    this.setState({ isLoading: false });
     const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`);
     query.get().then((querySnapshot) => {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
-        const currentstudent = doc.data();
+        const student = doc.data();
         studentsList.push({
           key: doc.id,
-          first_name: currentstudent.first_name,
-          last_name: currentstudent.last_name,
-          mobile: currentstudent.mobile,
-          email: currentstudent.email,
-          badge_name: currentstudent.badge_name,
-          dietary_restriction: currentstudent.dietary_restriction,
-          remarks: currentstudent.remarks,
-          emergency_contact_name: currentstudent.emergency_contacts.name,
-          emergency_contact_mobile: currentstudent.emergency_contacts.mobile,
-          emergency_contact_relation: currentstudent.emergency_contacts.relation,
+          first_name: student.first_name,
+          last_name: student.last_name,
+          mobile: student.mobile,
+          email: student.email,
+          badge_name: student.badge_name,
+          dietary_restriction: student.dietary_restriction,
+          remarks: student.remarks,
+          emergency_contact_name: student.emergency_contacts.name,
+          emergency_contact_mobile: student.emergency_contacts.mobile,
+          emergency_contact_relation: student.emergency_contacts.relation,
         });
       });
-      this.setState({ studentsList });
+      this.setState({ studentsList, isLoading: false });
     });
   }
 
-  refreshState = () => {
+  /**
+  * Update page
+  */
+  updatePage = () => {
     const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
     const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`)
     query.get().then((querySnapshot) => {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
-        const currentstudent = doc.data();
+        const student = doc.data();
         studentsList.push({
           key: doc.id,
-          first_name: currentstudent.first_name,
-          last_name: currentstudent.last_name,
-          mobile: currentstudent.mobile,
-          email: currentstudent.email,
-          badge_name: currentstudent.badge_name,
-          dietary_restriction: currentstudent.dietary_restriction,
-          remarks: currentstudent.remarks,
-          emergency_contact_name: currentstudent.emergency_contacts.name,
-          emergency_contact_mobile: currentstudent.emergency_contacts.mobile,
-          emergency_contact_relation: currentstudent.emergency_contacts.relation,
+          first_name: student.first_name,
+          last_name: student.last_name,
+          mobile: student.mobile,
+          email: student.email,
+          badge_name: student.badge_name,
+          dietary_restriction: student.dietary_restriction,
+          remarks: student.remarks,
+          emergency_contact_name: student.emergency_contacts.name,
+          emergency_contact_mobile: student.emergency_contacts.mobile,
+          emergency_contact_relation: student.emergency_contacts.relation,
         });
       });
-      this.setState({ studentsList });
+      this.setState({ studentsList, isLoading: false });
     });
   }
 
+  /**
+  * Get the event to edit the team
+  */
+  getEvent = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).get().then((docRef) => {
+      this.setState({ event: docRef.data(), isLoading: false });
+    });
+  }
+
+  /**
+  * Get the school name from the ID
+  */
   getSchoolName = (schools, userSchoolId) => {
     if (schools !== null && userSchoolId !== null) {
       const currentSchool = schools.find(schoolElement => (schoolElement.value === userSchoolId));
@@ -109,8 +147,7 @@ class editTeam extends Component {
   }
 
   render() {
-    const { currentevent } = this.props;
-    const { schools, studentsList, team } = this.state;
+    const { schools, studentsList, team, event, isLoading } = this.state;
     if (schools.length > 1 && team) {
       team.school_name = this.getSchoolName(schools, team.school_id);
     }
@@ -118,17 +155,17 @@ class editTeam extends Component {
       <AdminLayout
         title="Edit Team"
       >
-        {currentevent == null && team == null && schools.length < 0 && studentsList.length < 0 && (
+        { isLoading && event == null && team == null && schools.length < 0 && studentsList.length < 0 && (
           <CircularProgress />)
         }
-        {team && schools.length > 0 && studentsList.length > 0 && (
+        { !isLoading && event && team && schools.length > 0 && studentsList.length > 0 && (
           <Form
             team={team}
             schools={schools}
-            minStudent={currentevent.min_student ? currentevent.min_student : 1}
-            maxStudent={currentevent.max_student ? currentevent.max_student : 10}
+            minStudent={event.min_student ? event.min_student : 1}
+            maxStudent={event.max_student ? event.max_student : 10}
             students={studentsList}
-            refreshState={() => { this.refreshState(); }}
+            updatePage={() => { this.updatePage(); }}
           />)
         }
       </AdminLayout>
@@ -136,16 +173,14 @@ class editTeam extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
-    currentevent: state.firestore.data[`currentevent${ownProps.match.params.eventId}`],
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
   }
 };
 
-editTeam.propTypes = {
-  currentevent: PropTypes.string.isRequired,
+EditTeam.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   match: PropTypes.any.isRequired,
@@ -154,13 +189,7 @@ editTeam.propTypes = {
 
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect(props => [
-    {
-      collection: 'events',
-      doc: `${props.match.params.eventId}`,
-      storeAs: `currentevent${props.match.params.eventId}`,
-    },
-  ]),
+  firestoreConnect(),
   withSnackbar,
   withRouter,
-)(editTeam);
+)(EditTeam);
