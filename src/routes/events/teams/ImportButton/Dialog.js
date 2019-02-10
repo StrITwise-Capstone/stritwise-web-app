@@ -40,6 +40,10 @@ class FormDialog extends Component {
       teams,
     } = this.props;
 
+    const {
+      open,
+    } = this.state;
+
     return (
       <div>
         <Button
@@ -50,7 +54,7 @@ class FormDialog extends Component {
           Upload CSV
         </Button>
         <Dialog
-          open={this.state.open}
+          open={open}
           onClose={this.handleClose}
           aria-labelledby="form-dialog-title"
           schools={schools}
@@ -79,6 +83,7 @@ FormDialog.propTypes = {
   eventId: PropTypes.string.isRequired,
   updatePage: PropTypes.func.isRequired,
   teacherId: PropTypes.string,
+  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
   /* eslint-disable react/forbid-prop-types */
   schools: PropTypes.any,
   /* eslint-enable */

@@ -20,27 +20,27 @@ import yup from '../../../../instances/yup';
 const initialValues = {
   file: '',
   school: '',
-}
+};
 
 // validationSchema for the form
-var validationSchema = teams => yup.array().of(yup.object().shape({
+const validationSchema = teams => yup.array().of(yup.object().shape({
   key: yup.string().required().min(1),
   values: yup.array().of(
     yup.object().shape({
-    'Team Name': yup.string().required().min(2).test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
-    'First Name': yup.string().required().min(2),
-    'Last Name': yup.string().required().min(2),
-    'Phone Number': yup.string().required().min(2),
-    'Email': yup.string().email().required().min(2),
-    'Password': yup.string().required().min(2),
-    'Emergency Contact Name': yup.string().required().min(2),
-    'Emergency Contact Mobile': yup.string().required().min(2),
-    'Relation to Participant': yup.string().required().min(2),
-    'Badge Name': yup.string().required(),
-    'Dietary Restrictions': yup.string().required(),
-    'Remarks': yup.string().required(),
-    })
-  )
+      'Team Name': yup.string().required().min(2).test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
+      'First Name': yup.string().required().min(2),
+      'Last Name': yup.string().required().min(2),
+      'Phone Number': yup.string().required().min(2),
+      Email: yup.string().email().required().min(2),
+      Password: yup.string().required().min(2),
+      'Emergency Contact Name': yup.string().required().min(2),
+      'Emergency Contact Mobile': yup.string().required().min(2),
+      'Relation to Participant': yup.string().required().min(2),
+      'Badge Name': yup.string().required(),
+      'Dietary Restrictions': yup.string().required(),
+      Remarks: yup.string().required(),
+    }),
+  ),
 }));
 
 /**
@@ -63,11 +63,11 @@ const parseData = (unParsedContents) => {
       return array;
     },
   });
-}
+};
 
-  /**
-  * Validate Data for Team objects
-  */
+/**
+* Validate Data for Team objects
+*/
 const validateData = (teamsData, teams) => {
   let isValid = true;
   if (!validationSchema(teams).isValidSync(teamsData)) {
@@ -75,7 +75,7 @@ const validateData = (teamsData, teams) => {
     return isValid;
   }
   return isValid;
-}
+};
 
 /**
  * Class representing the UploadTeamForm component.
@@ -86,8 +86,6 @@ const validateData = (teamsData, teams) => {
  * @param {Function} handleClose - A function to close the dialog
  */
 class UploadTeamForm extends Component {
-
-
   handleSubmit = (values) => {
     const {
       firestore,
@@ -107,7 +105,7 @@ class UploadTeamForm extends Component {
         return firestore.collection('events').doc(eventId).collection('teams').add({
           team_name: team.key,
           credit: 0,
-          teacher_id: teacherId ? teacherId : '',
+          teacher_id: teacherId || '',
           created_at: new Date(Date.now()),
           modified_at: new Date(Date.now()),
           school_id,
@@ -146,9 +144,8 @@ class UploadTeamForm extends Component {
           handleClose();
           if (parseInt(TeamIndex) + 1 === dataByTeamName.length) updatePage();
         });
-      }
-      );
-    }
+      });
+    };
     const input = values.file;
     if (!input) {
       return;
@@ -161,7 +158,7 @@ class UploadTeamForm extends Component {
       teamsData = d3.nest()
         .key(function(d) { return d['Team Name']; })
         .entries(teamsData);
-      
+
       if (validateData(teamsData, teams)) {
         uploadTeams(teamsData, school_id);
       }
@@ -175,6 +172,7 @@ class UploadTeamForm extends Component {
   };
 
   render() {
+    const { schools } = this.props;
     return (
       <Formik
         initialValues={initialValues}
@@ -184,7 +182,7 @@ class UploadTeamForm extends Component {
             <Field
               name="school"
               label="School"
-              options={this.props.schools}
+              options={schools}
               component={Select}
             />
             <Field
@@ -219,8 +217,11 @@ UploadTeamForm.propTypes = {
   teacherId: PropTypes.string,
   enqueueSnackbar: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired,
+  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
   /* eslint-disable react/forbid-prop-types */
   schools: PropTypes.any.isRequired,
+  firestore: PropTypes.any.isRequired,
+  auth: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
@@ -228,10 +229,8 @@ UploadTeamForm.defaultProps = {
   teacherId: '',
 };
 
-const mapStateToProps = (state) => {
-  return {
-    auth: state.firebase.auth,
-  };
-};
+const mapStateToProps = state => ({
+  auth: state.firebase.auth,
+});
 
 export default compose(withSnackbar, firestoreConnect(), connect(mapStateToProps))(UploadTeamForm);

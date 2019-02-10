@@ -99,7 +99,7 @@ class EditTeam extends Component {
   updatePage = () => {
     const { firestore, match } = this.props;
     this.setState({ isLoading: true });
-    const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`)
+    const query = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${match.params.teamId}`);
     query.get().then((querySnapshot) => {
       const studentsList = [];
       querySnapshot.forEach((doc) => {
@@ -168,7 +168,14 @@ class EditTeam extends Component {
   }
 
   render() {
-    const { schools, studentsList, team, event, isLoading, teams } = this.state;
+    const {
+      schools,
+      studentsList,
+      team,
+      event,
+      isLoading,
+      teams,
+    } = this.state;
     if (schools.length > 1 && team) {
       team.school_name = this.getSchoolName(schools, team.school_id);
     }
@@ -176,7 +183,8 @@ class EditTeam extends Component {
       <AdminLayout
         title="Edit Team"
       >
-        { isLoading && event == null && team == null && schools.length < 0 && studentsList.length < 0 && (
+        { isLoading && event == null
+          && team == null && schools.length < 0 && studentsList.length < 0 && (
           <CircularProgress />)
         }
         { !isLoading && event && team && schools.length > 0 && studentsList.length > 0 && (
@@ -196,12 +204,10 @@ class EditTeam extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    isAuthenticated: state.auth.isAuthenticated,
-    user: state.firestore.data.user,
-  }
-};
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
+  user: state.firestore.data.user,
+});
 
 EditTeam.propTypes = {
   /* eslint-disable react/forbid-prop-types */

@@ -17,7 +17,7 @@ class TablePaginationActions extends Component {
   /**
    * Change page to previous page
    */
-  handleBackButtonClick = event => {
+  handleBackButtonClick = (event) => {
     const { onChangePage, page } = this.props;
     onChangePage(event, page - 1);
   };
@@ -25,7 +25,7 @@ class TablePaginationActions extends Component {
   /**
    * Change page to next page
    */
-  handleNextButtonClick = event => {
+  handleNextButtonClick = (event) => {
     const { onChangePage, page } = this.props;
     onChangePage(event, page + 1);
   };
@@ -60,6 +60,7 @@ TablePaginationActions.propTypes = {
   count: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
   theme: PropTypes.shape({}).isRequired,
+  page: PropTypes.number.isRequired,
 };
 
 export default TablePaginationActions;

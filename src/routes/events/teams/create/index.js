@@ -29,7 +29,6 @@ const styles = () => ({
 /**
  * Class representing the AddTeam component.
  * @param {Object} user - A specific user document
- * @param {Object[]} teams - An array of string which are team names
  */
 class AddTeam extends Component {
   state = {
@@ -44,7 +43,7 @@ class AddTeam extends Component {
     this.getTeams();
   }
 
-   /**
+  /**
    * Get all the teams
    */
   getTeams = () => {
@@ -97,7 +96,12 @@ class AddTeam extends Component {
 
   render() {
     const { auth, user } = this.props;
-    const { schools, isLoading, event,teams } = this.state;
+    const {
+      schools,
+      isLoading,
+      event,
+      teams,
+    } = this.state;
     let teacherId = '';
     let schoolId = '';
     if (user && user.type === 'teacher') {
@@ -115,7 +119,7 @@ class AddTeam extends Component {
         {!isLoading && event
           && (
           <Form
-            schools={schools ? schools : null}
+            schools={schools || null}
             minStudent={event.min_student ? event.min_student : 1}
             maxStudent={event.max_student ? event.max_student : 10}
             teacherId={teacherId}
@@ -133,7 +137,7 @@ const mapStateToProps = (state) => {
     isAuthenticated: state.auth.isAuthenticated,
     user: state.firestore.data.user,
     auth: state.firebase.auth,
-  }
+  };
 };
 
 AddTeam.propTypes = {

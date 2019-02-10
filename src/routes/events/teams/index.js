@@ -79,7 +79,7 @@ class ViewTeams extends Component {
           doc.data().team_name,
         );
       });
-      this.setState({ teams , isLoading: false });
+      this.setState({ teams, isLoading: false });
     }).catch((error) => {
       console.log(error);
     });
@@ -127,7 +127,12 @@ class ViewTeams extends Component {
       auth,
       match,
     } = this.props;
-    const { isLoading, schools, event, teams } = this.state;
+    const {
+      isLoading,
+      schools,
+      event,
+      teams,
+    } = this.state;
     let teacherId = '';
     let schoolId = '';
     if (user && user.type === 'teacher') {

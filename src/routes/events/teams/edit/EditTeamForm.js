@@ -55,7 +55,7 @@ const validationSchema = (minStudent, teams, teamName) => {
             .required('Last Name Required'),
           mobile: yup.number('Invalid Mobile Number')
             .required('Mobile Number Required')
-            .max(99999999,'Phone number is too long')
+            .max(99999999, 'Phone number is too long')
             .min(9999999, 'Phone number is too short')
             .typeError('Invalid Phone Number'),
           email: yup.string()
@@ -128,36 +128,34 @@ const EditTeamForm = ({
       /**
       * Update all the students in the current team
       */
-      const updateStudents = (student, index) => {
-        return firestore.collection('events').doc(eventId).collection('students').doc(student.key).update({
-          first_name: student.first_name,
-          last_name: student.last_name,
-          mobile: student.mobile,
-          email: student.email,
-          badge_name: student.badge_name ? student.badge_name : '',
-          dietary_restriction: student.dietary_restriction ? student.dietary_restriction : '',
-          remarks: student.remarks ? student.remarks : '',
-          emergency_contacts: {
-            name: student.emergency_contact_name,
-            mobile: student.emergency_contact_mobile,
-            relation: student.emergency_contact_relation,
-          },
-          modified_at: new Date(Date.now()),
-        }).then(() => {
-          enqueueSnackbar('Updated 1 student...', {
-            variant: 'info',
-          });
-          resetForm();
-          setSubmitting(false);
-          if (index === students.length) {
-            enqueueSnackbar('Team Updated Successfully', {
-              variant: 'success',
-            });
-            updatePage();
-          }
-          updatePage();
+      const updateStudents = (student, index) => firestore.collection('events').doc(eventId).collection('students').doc(student.key).update({
+        first_name: student.first_name,
+        last_name: student.last_name,
+        mobile: student.mobile,
+        email: student.email,
+        badge_name: student.badge_name ? student.badge_name : '',
+        dietary_restriction: student.dietary_restriction ? student.dietary_restriction : '',
+        remarks: student.remarks ? student.remarks : '',
+        emergency_contacts: {
+          name: student.emergency_contact_name,
+          mobile: student.emergency_contact_mobile,
+          relation: student.emergency_contact_relation,
+        },
+        modified_at: new Date(Date.now()),
+      }).then(() => {
+        enqueueSnackbar('Updated 1 student...', {
+          variant: 'info',
         });
-      };
+        resetForm();
+        setSubmitting(false);
+        if (index === students.length) {
+          enqueueSnackbar('Team Updated Successfully', {
+            variant: 'success',
+          });
+          updatePage();
+        }
+        updatePage();
+      });
 
       /**
       * Add all the new students in the current team
@@ -195,9 +193,9 @@ const EditTeamForm = ({
           resetForm();
           setSubmitting(false);
         });
-      }
+      };
 
-      deleteStudents();   
+      deleteStudents();
       updateTeam(eventId, teamId, values).then((docRef) => {
         enqueueSnackbar('Updated Team...', {
           variant: 'info',
@@ -240,7 +238,7 @@ const EditTeamForm = ({
               style={{ width: '500px' }}
               index={-1}
             />
-            {typeof (team.school_id) !== undefined
+            {typeof (team.school_id) !== 'undefined'
             && (
             <Field
               name="school_id"
@@ -255,7 +253,7 @@ const EditTeamForm = ({
                 <div>
                   {values.students.map((student, index) => (
                     <div
-                      key={index}
+                      key={student}
                       style={{
                         background: '#E6E6FA',
                         marginBottom: '10px',
@@ -265,12 +263,12 @@ const EditTeamForm = ({
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <p>
-                          Student # 
+                          Student #
                           {index + 1}
                         </p>
-                        { index + 1 > minStudent &&
-                          (
-                          <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); if(students[index] && students[index].key) {values.deleteArray.push(students[index].key);} values.lengthStudents = values.lengthStudents -1; }}>
+                        { index + 1 > minStudent
+                          && (
+                          <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); if (students[index] && students[index].key) { values.deleteArray.push(students[index].key); } values.lengthStudents -= 1; }}>
                             Delete
                           </Button>
                           )
@@ -336,7 +334,7 @@ const EditTeamForm = ({
                           type="text"
                           label="Badge Name"
                           component={TextField}
-                          style={{ marginRight: '50px' , width: '200px' }}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].dietary_restriction`}
@@ -353,7 +351,7 @@ const EditTeamForm = ({
                           required
                           label="Emergency Contact Name"
                           component={TextField}
-                          style={{ marginRight: '50px' , width: '200px'}}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_mobile`}
@@ -401,8 +399,8 @@ const EditTeamForm = ({
                   <Button
                     type="button"
                     onClick={() => {
-                      arrayHelpers.push({ key: '' }); 
-                      values.lengthStudents = values.lengthStudents + 1;
+                      arrayHelpers.push({ key: '' });
+                      values.lengthStudents += 1;
                     }}
                     size="small"
                     color="primary"
@@ -424,7 +422,7 @@ const EditTeamForm = ({
       return content;
     }}
   </Formik>
-)
+);
 
 const mapStateToProps = (state) => {
   return {
@@ -442,6 +440,8 @@ EditTeamForm.propTypes = {
   minStudent: PropTypes.number.isRequired,
   maxStudent: PropTypes.number.isRequired,
   schools: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teamName: PropTypes.string.isRequired,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   match: PropTypes.any.isRequired,
@@ -454,7 +454,7 @@ EditTeamForm.propTypes = {
 EditTeamForm.defaultProps = {
   team: null,
   students: null,
-}
+};
 
 
 export default compose(

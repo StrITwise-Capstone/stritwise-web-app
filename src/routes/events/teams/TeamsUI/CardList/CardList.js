@@ -56,7 +56,12 @@ class CardList extends Component {
   */
   handleChangePage = (event, newPage) => {
     const { firestore, eventId } = this.props;
-    const { lastVisible, firstVisible, search, page } = this.state;
+    const {
+      lastVisible,
+      firstVisible,
+      search,
+      page,
+    } = this.state;
     this.setState({ isLoading: true });
     const callback = (array, lastVisible, page, firstVisible) => {
       this.setState({
@@ -326,10 +331,8 @@ CardList.defaultProps = {
   eventId: null,
   teacherId: null,
 };
-const mapStateToProps = (state) => {
-  return {
-    teamsListCount: state.firestore.data.teamsListCount,
-  }
-};
+const mapStateToProps = state => ({
+  teamsListCount: state.firestore.data.teamsListCount,
+});
 
 export default compose(withRouter, connect(mapStateToProps), firestoreConnect())(CardList);

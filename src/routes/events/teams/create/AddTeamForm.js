@@ -24,17 +24,19 @@ import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
 // initialValues for team Object
-const initialValues = (minStudent, schools, teacherId, schoolId) => { return {
-  team_name: '',
-  students: Array.apply(null, Array(minStudent)).map(function () {return null;}),
-  schools,
-  teacherId: teacherId ? teacherId : 'null',
-  lengthStudents: minStudent,
-  schoolId: schoolId ? schoolId : '',
-}};
+const initialValues = (minStudent, schools, teacherId, schoolId) => {
+  return {
+    team_name: '',
+    students: Array.apply(null, Array(minStudent)).map(function returnNull() { return null; }),
+    schools,
+    teacherId: teacherId ? teacherId : 'null',
+    lengthStudents: minStudent,
+    schoolId: schoolId ? schoolId : '',
+  };
+};
 
 // validationSchema for team object
-const validationSchema = (minStudent,teams) => yup.object({
+const validationSchema = (minStudent, teams) => yup.object({
   team_name: yup.string()
     .required('Required')
     .test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
@@ -114,16 +116,14 @@ const AddTeamForm = ({
       /**
        * Add a new team
        */
-      const addTeam = () => {
-        return firestore.collection('events').doc(eventId).collection('teams').add({
-          team_name: values.team_name,
-          school_id: schoolValue,
-          credit: 0,
-          created_at: new Date(Date.now()),
-          modified_at: new Date(Date.now()),
-          teacher_id: teacherId,
-        });
-      };
+      const addTeam = () => firestore.collection('events').doc(eventId).collection('teams').add({
+        team_name: values.team_name,
+        school_id: schoolValue,
+        credit: 0,
+        created_at: new Date(Date.now()),
+        modified_at: new Date(Date.now()),
+        teacher_id: teacherId,
+      });
 
       /**
        * Add the students
@@ -213,7 +213,7 @@ const AddTeamForm = ({
                 <div>
                   {values.students.map((student, index) => (
                     <div
-                      key={index}
+                      key={student}
                       style={{
                         background: '#E6E6FA',
                         marginBottom: '10px',
@@ -232,7 +232,7 @@ const AddTeamForm = ({
                         </p>
                         { values.lengthStudents > minStudent
                         && (
-                        <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => {arrayHelpers.remove(index); values.lengthStudents = values.lengthStudents -1; }}>
+                        <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); values.lengthStudents -= 1; }}>
                           Delete
                         </Button>)
                         }
@@ -245,7 +245,7 @@ const AddTeamForm = ({
                           label="First Name"
                           placeholder="Guang Yao"
                           component={TextField}
-                          style={{ marginRight: '50px', width: '200px'}}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].last_name`}
@@ -264,7 +264,7 @@ const AddTeamForm = ({
                           label="Email"
                           placeholder="guangyao@gmail.com"
                           component={TextField}
-                          style={{ marginRight: '50px', width: '200px'}}
+                          style={{ marginRight: '50px', width: '200px' }}
                           required
                         />
                         <Field
@@ -284,7 +284,7 @@ const AddTeamForm = ({
                           label="Password"
                           placeholder="Test1234"
                           component={TextField}
-                          style={{ marginRight: '50px', width: '200px'}}
+                          style={{ marginRight: '50px', width: '200px' }}
                           required
                         />
                         <Field
@@ -293,7 +293,7 @@ const AddTeamForm = ({
                           label="Confirm Password"
                           placeholder="Test1234"
                           component={TextField}
-                          style={{ width: '200px'}}
+                          style={{ width: '200px' }}
                           required
                         />
                       </div>
@@ -304,7 +304,7 @@ const AddTeamForm = ({
                           label="Badge Name"
                           placeholder="GuangYao"
                           component={TextField}
-                          style={{ marginRight: '50px', width: '200px'}}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].dietaryrestriction`}
@@ -323,7 +323,7 @@ const AddTeamForm = ({
                           label="Emergency Contact Name"
                           placeholder="Zhang Melvin"
                           component={TextField}
-                          style={{ marginRight: '50px', width: '200px'}}
+                          style={{ marginRight: '50px', width: '200px' }}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_mobile`}
@@ -332,7 +332,7 @@ const AddTeamForm = ({
                           label="Mobile"
                           placeholder="98745123"
                           component={TextField}
-                          style={{ width: '200px', marginRight: '50px'}}
+                          style={{ width: '200px', marginRight: '50px' }}
                         />
                         <Field
                           name={`students[${index}].emergency_contact_relation`}
@@ -371,9 +371,10 @@ const AddTeamForm = ({
                       </div>
                     </div>
                   ))}
-                  { values.lengthStudents < maxStudent && (<Button
+                  { values.lengthStudents < maxStudent && (
+                  <Button
                     type="button"
-                    onClick={() => { arrayHelpers.push({ first_name: '' }); values.lengthStudents = values.lengthStudents + 1;}}
+                    onClick={() => { arrayHelpers.push({ first_name: '' }); values.lengthStudents += 1; }}
                     size="small"
                     color="primary"
                   >
@@ -402,7 +403,7 @@ const mapStateToProps = (state) => {
     firestore: state.firestore,
     firebase: state.firebase,
     schoolsList: state.firestore.schoolsList,
-  }
+  };
 };
 
 AddTeamForm.propTypes = {
@@ -411,6 +412,7 @@ AddTeamForm.propTypes = {
   maxStudent: PropTypes.number.isRequired,
   teacherId: PropTypes.string,
   schoolId: PropTypes.string,
+  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   auth: PropTypes.any.isRequired,

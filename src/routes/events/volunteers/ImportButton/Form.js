@@ -13,6 +13,7 @@ import { compose } from 'redux';
 import * as d3 from 'd3';
 import yup from '../../../../instances/yup';
 
+// validationSchema for volunteers
 var validationSchema = yup.object().shape({
   'First Name': yup.string().required(),
   'Last Name': yup.string().required(),

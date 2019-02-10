@@ -118,7 +118,7 @@ class TeamCard extends Component {
       querySnapshot.forEach((doc) => {
         schoolsList[doc.id] = doc.data();
       });
-      this.setState({ schoolsList , isLoading: false });
+      this.setState({ schoolsList, isLoading: false });
     });
   }
 
@@ -198,7 +198,8 @@ class TeamCard extends Component {
                         <ExpansionPanel
                           student={studentsList[student]}
                           teamId={teamId}
-                          deleteValue={event.min_student ? Object.keys(studentsList).length > event.min_student : true}
+                          deleteValue={event.min_student
+                            ? Object.keys(studentsList).length > event.min_student : true}
                           updatePage={updatePage}
                         />
                       </React.Fragment>
