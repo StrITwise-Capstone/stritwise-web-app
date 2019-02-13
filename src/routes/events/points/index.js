@@ -71,7 +71,7 @@ class Points extends Component {
       collection = collection.where('team_name', '==', search);
     } else if (filter === 'school') {
       const { schools } = this.props;
-      const school = schools.find(schElement => (schElement.name === search));
+      const school = schools.find(schElement => (schElement.name === search.toUpperCase()));
       if (school !== undefined) {
         collection = collection.where('school_id', '==', school.id);
       } else {

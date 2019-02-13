@@ -98,10 +98,16 @@ class UploadTeamForm extends Component {
       enqueueSnackbar,
     } = this.props;
 
+    
+    const snackbarMessage = (message) => {
+      enqueueSnackbar(message, {
+        variant: 'error',
+      });
+    };
+
     const uploadTeams = (dataByTeamName, school_id) => {
       Object.keys(dataByTeamName).map((TeamIndex) => {
         const team = dataByTeamName[TeamIndex];
-
         return firestore.collection('events').doc(eventId).collection('teams').add({
           team_name: team.key,
           credit: 0,
@@ -166,6 +172,9 @@ class UploadTeamForm extends Component {
         enqueueSnackbar('Error Adding Team...', {
           variant: 'error',
         });
+        validationSchema(teams).validate(teamsData).catch((value) => {
+          snackbarMessage(value.errors);
+        });
       }
     };
     reader.readAsText(input);
@@ -217,12 +226,16 @@ UploadTeamForm.propTypes = {
   teacherId: PropTypes.string,
   enqueueSnackbar: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired,
-  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teams: PropTypes.arrayOf(PropTypes.string),
   /* eslint-disable react/forbid-prop-types */
   schools: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
   auth: PropTypes.any.isRequired,
   /* eslint-enable */
+};
+
+UploadTeamForm.defaultProps = {
+  teams: null,
 };
 
 UploadTeamForm.defaultProps = {

@@ -440,7 +440,7 @@ EditTeamForm.propTypes = {
   minStudent: PropTypes.number.isRequired,
   maxStudent: PropTypes.number.isRequired,
   schools: PropTypes.arrayOf(PropTypes.string).isRequired,
-  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teams: PropTypes.arrayOf(PropTypes.string),
   teamName: PropTypes.string.isRequired,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
@@ -454,6 +454,7 @@ EditTeamForm.propTypes = {
 EditTeamForm.defaultProps = {
   team: null,
   students: null,
+  teams: null,
 };
 
 

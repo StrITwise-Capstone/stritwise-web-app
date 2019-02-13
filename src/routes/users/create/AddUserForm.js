@@ -25,6 +25,7 @@ const initialValues = {
   type: '',
   email: '',
   password: '',
+  confirmPassword: '',
   school: {},
 };
 
@@ -39,8 +40,12 @@ const validationSchema = Yup.object({
     .email('Email not valid')
     .required('Required'),
   password: Yup.string()
-    .min(8, 'Password must be 8 characters or longer')
-    .required('Required'),
+    .required('Password Required')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+  confirmPassword: Yup.string()
+    .required('Confirm Password Required')
+    .oneOf([Yup.ref('password')], 'Passwords do not match')
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
   school: Yup.mixed(),
 });
 
@@ -186,6 +191,13 @@ class AddUserForm extends Component {
               required
               name="password"
               label="Password"
+              type="password"
+              component={TextField}
+            />
+            <Field
+              required
+              name="confirmPassword"
+              label="Confirm Password"
               type="password"
               component={TextField}
             />

@@ -211,7 +211,7 @@ const EditStudentForm = ({
 
 EditStudentForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
-  eventId: PropTypes.string.isRequired,
+  eventId: PropTypes.string,
   studentId: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired,
   deleteValue: PropTypes.bool.isRequired,
@@ -224,6 +224,7 @@ EditStudentForm.propTypes = {
 
 EditStudentForm.defaultProps = {
   student: null,
+  eventId: null,
 };
 
 export default compose(

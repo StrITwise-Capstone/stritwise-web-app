@@ -83,7 +83,7 @@ FormDialog.propTypes = {
   eventId: PropTypes.string.isRequired,
   updatePage: PropTypes.func.isRequired,
   teacherId: PropTypes.string,
-  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teams: PropTypes.arrayOf(PropTypes.string),
   /* eslint-disable react/forbid-prop-types */
   schools: PropTypes.any,
   /* eslint-enable */
@@ -92,6 +92,7 @@ FormDialog.propTypes = {
 FormDialog.defaultProps = {
   teacherId: '',
   schools: null,
+  teams: null,
 };
 
 export default FormDialog;

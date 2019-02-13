@@ -83,10 +83,10 @@ class Users extends Component {
    */
   handleCustomFilter = (collection, filter, search) => {
     if (filter === 'type') {
-      collection = collection.where(filter, '==', search.toLowerCase());
+      collection = collection.where(filter, '==', search.toUpperCase());
     } else if (filter === 'school') {
       const { schools } = this.props;
-      const school = schools.find(schElement => (schElement.name === search));
+      const school = schools.find(schElement => (schElement.name === search.toUpperCase()));
       if (school !== undefined) {
         collection = collection.where('school_id', '==', school.id);
       } else {

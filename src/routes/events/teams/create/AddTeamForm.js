@@ -412,7 +412,7 @@ AddTeamForm.propTypes = {
   maxStudent: PropTypes.number.isRequired,
   teacherId: PropTypes.string,
   schoolId: PropTypes.string,
-  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teams: PropTypes.arrayOf(PropTypes.string),
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   auth: PropTypes.any.isRequired,
@@ -425,6 +425,7 @@ AddTeamForm.defaultProps = {
   teacherId: '',
   schoolId: '',
   schools: null,
+  teams: null,
 };
 
 export default compose(
