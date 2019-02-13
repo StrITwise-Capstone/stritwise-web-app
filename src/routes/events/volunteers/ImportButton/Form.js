@@ -14,17 +14,23 @@ import * as d3 from 'd3';
 import yup from '../../../../instances/yup';
 
 // validationSchema for volunteers
-var validationSchema = yup.object().shape({
-  'First Name': yup.string().required(),
-  'Last Name': yup.string().required(),
-  'Mobile Number': yup.string().required(),
-  'Email': yup.string().email().required(),
-  'Password': yup.string().required(),
-  'Dietary Restrictions': yup.string().required(),
-  'Student Number': yup.string().required(),
-  'Type of Volunteer': yup.string().required(),
-  'School': yup.string().required(),
-});
+var validationSchema = yup.array().of(yup.object().shape({
+  key: yup.string().required(),
+  values: yup.array().of(
+    yup.object().shape({
+    'First Name': yup.string().required(),
+    'Last Name': yup.string().required(),
+    'Mobile Number': yup.string().required(),
+    'Email': yup.string().email().required(),
+    'Password': yup.string().required(),
+    'Dietary Restrictions': yup.string().required(),
+    'Student Number': yup.string().required(),
+    'Type of Volunteer': yup.string().required(),
+    'School': yup.string().required(),
+  }),
+  ),
+}
+));
 
 const parseData = (unParsedContents) => {
   const array = [];
@@ -44,72 +50,75 @@ const parseData = (unParsedContents) => {
     },
   });
 }
+
+const validateData = (volunteersData) => {
+  let isValid = true;
+  if (!validationSchema.isValidSync(volunteersData))
+  {
+    isValid = false;
+  }
+  return isValid;
+}
+
 class ImportButtonForm extends Component {
 
-  validateData = (volunteersData) => {
-    let isValid = true;
-    if (!validationSchema.isValidSync(volunteersData))
-    {
-      isValid = false;
-    }
-    return isValid;
-  }
 
-  uploadTeams = (volunteerData) => {
-    const { 
-      enqueueSnackbar,
-      firestore,
-      eventuid,
-      refreshState,
-      handleClose,
-      auth,
-    } = this.props;
-    
-    Object.keys(volunteerData).map((VolunteerIndex) => {
-      const volunteer = volunteerData[VolunteerIndex].values[0];
-      if (volunteer['Type of Volunteer'] === 'Group Leader') {
-        volunteer['Type of Volunteer'] = 'GL';
-      }
-      if (volunteer['Type of Volunteer'] === 'Game Master') {
-        volunteer['Type of Volunteer'] = 'GM';
-      }
-      const data = {
-        first_name: volunteer['First Name'],
-        last_name: volunteer['Last Name'],
-        mobile: volunteer['Mobile Number'],
-        school: volunteer.School,
-        email: volunteer.Email,
-        dietary_restrictions: volunteer['Dietary Restrictions'],
-        initials: volunteer['First Name'][0] + volunteer['Last Name'][0],
-        student_no: volunteer['Student Number'],
-        type: volunteer['Type of Volunteer'],
-        created_at: new Date(Date.now()),
-        modified_at: new Date(Date.now()),
-      };
-      data.password = volunteer.Password;
-      data.eventId = eventuid;
-      const transaction = {
-        user_id: auth.uid,
-        transaction_type: 'ADD_VOLUNTEER',
-        data,
-      };
-      if ( parseInt(VolunteerIndex) === volunteerData.length - 1) {
-        enqueueSnackbar(`Added ${volunteerData.length} volunteers...`, {
-          variant: 'info',
-        });
-        refreshState();
-      }
-      return firestore.collection('transactions').add(transaction);
-    });
-    handleClose();
-  }
-
+  
   
   handleSubmit = (values) => {
     const {
       enqueueSnackbar,
     } = this.props;
 
+    const uploadTeams = (volunteerData) => {
+      const { 
+        enqueueSnackbar,
+        firestore,
+        eventuid,
+        refreshState,
+        handleClose,
+        auth,
+      } = this.props;
+      
+      Object.keys(volunteerData).map((VolunteerIndex) => {
+        const volunteer = volunteerData[VolunteerIndex].values[0];
+        if (volunteer['Type of Volunteer'] === 'Group Leader') {
+          volunteer['Type of Volunteer'] = 'GL';
+        }
+        if (volunteer['Type of Volunteer'] === 'Game Master') {
+          volunteer['Type of Volunteer'] = 'GM';
+        }
+        const data = {
+          first_name: volunteer['First Name'],
+          last_name: volunteer['Last Name'],
+          mobile: volunteer['Mobile Number'],
+          school: volunteer.School,
+          email: volunteer.Email,
+          dietary_restrictions: volunteer['Dietary Restrictions'],
+          initials: volunteer['First Name'][0] + volunteer['Last Name'][0],
+          student_no: volunteer['Student Number'],
+          type: volunteer['Type of Volunteer'],
+          created_at: new Date(Date.now()),
+          modified_at: new Date(Date.now()),
+        };
+        data.password = volunteer.Password;
+        data.eventId = eventuid;
+        const transaction = {
+          user_id: auth.uid,
+          transaction_type: 'ADD_VOLUNTEER',
+          data,
+        };
+        if ( parseInt(VolunteerIndex) === volunteerData.length - 1) {
+          enqueueSnackbar(`Added ${volunteerData.length} volunteers...`, {
+            variant: 'info',
+          });
+          refreshState();
+        }
+        return firestore.collection('transactions').add(transaction);
+      });
+      handleClose();
+    }
+  
     const input = values.file;
     if (!input) {
       return;
@@ -118,15 +127,15 @@ class ImportButtonForm extends Component {
     const reader = new FileReader();
     reader.onload = function readFile(event) {
       const unParsedContents = event.target.result;
-      let volunteersData = parseData(unParsedContents);
+      let volunteersData = parseData(unParsedContents).data;
       volunteersData = d3.nest()
         .key(function(d) { return d['Student Number']; })
         .entries(volunteersData);
-
-      if (this.validateData(volunteersData)) {
-        this.uploadTeams(volunteersData);
+      console.log(volunteersData);
+      if (validateData(volunteersData)) {
+        uploadTeams(volunteersData);
       }
-      if (!this.validateData(volunteersData)) {
+      if (!validateData(volunteersData)) {
         enqueueSnackbar('Error Adding Team...', {
           variant: 'error',
         });
