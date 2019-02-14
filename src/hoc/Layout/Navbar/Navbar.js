@@ -49,13 +49,21 @@ class Navbar extends Component {
   };
 
   componentDidMount() {
-    const { retrieveUser, auth } = this.props;
+    const { retrieveUser, auth, isAuthenticated, location, history } = this.props;
     retrieveUser(auth.uid);
+    // Rerouting logic
+    if (isAuthenticated === true && location.pathname === '/') {
+      history.push('/events');
+    }
   }
 
   componentDidUpdate() {
-    const { retrieveUser, auth } = this.props;
+    const { retrieveUser, auth, isAuthenticated, location, history } = this.props;
     retrieveUser(auth.uid);
+    // Rerouting logic
+    if (isAuthenticated === true && location.pathname === '/') {
+      history.push('/events');
+    }
   }
 
   handleMenu = (event) => {
@@ -76,7 +84,7 @@ class Navbar extends Component {
     } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-
+    
     return (
       <div className={classes.root}>
         <CssBaseline />
@@ -120,7 +128,7 @@ class Navbar extends Component {
                     onClose={this.handleClose}
                   >
                     <MenuItem onClick={() => { history.push('/profile'); }}>Profile</MenuItem>
-                    <MenuItem onClick={() => { logOut(); history.push('/'); this.setState({ anchorEl: null }); }}>Log Out</MenuItem>
+                    <MenuItem onClick={() => { logOut(); history.push('/auth/login'); this.setState({ anchorEl: null }); }}>Log Out</MenuItem>
                   </Menu>
                 </div>
               )
