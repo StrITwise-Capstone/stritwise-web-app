@@ -27,18 +27,17 @@ const validationSchema = teams => yup.array().of(yup.object().shape({
   key: yup.string().required().min(1),
   values: yup.array().of(
     yup.object().shape({
-      'Team Name': yup.string().required().min(2).test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
-      'First Name': yup.string().required().min(2),
-      'Last Name': yup.string().required().min(2),
-      'Phone Number': yup.string().required().min(2),
-      Email: yup.string().email().required().min(2),
-      Password: yup.string().required().min(2),
-      'Emergency Contact Name': yup.string().required().min(2),
-      'Emergency Contact Mobile': yup.string().required().min(2),
-      'Relation to Participant': yup.string().required().min(2),
-      'Badge Name': yup.string().required(),
-      'Dietary Restrictions': yup.string().required(),
-      Remarks: yup.string().required(),
+      'Team Name': yup.string().required('Team Name is required').min(2).test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
+      'First Name': yup.string().required('First Name is required').min(2),
+      'Last Name': yup.string().required('Last Name is required').min(2),
+      Email: yup.string().email('Email is invalid').required().min(2),
+      Password: yup.string().required('Password is required').min(2),
+      'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2),
+      'Emergency Contact Mobile': yup.string().required('Emergency Contact Mobile is required').min(2),
+      'Relation to Participant': yup.string().required('Relation to Participant is required').min(2),
+      'Badge Name': yup.string().required('Badge Name is required'),
+      'Dietary Restrictions': yup.string().required('Dietary Restrictions is required'),
+      Remarks: yup.string().required('Remarks is required (You can put nil)'),
     }),
   ),
 }));
@@ -125,7 +124,6 @@ class UploadTeamForm extends Component {
               school_id,
               first_name: team.values[i]['First Name'],
               last_name: team.values[i]['Last Name'],
-              mobile: team.values[i]['Phone Number'],
               email: team.values[i].Email,
               badge_name: team.values[i]['Badge Name'],
               dietary_restriction: team.values[i]['Dietary Restrictions'],
@@ -173,6 +171,7 @@ class UploadTeamForm extends Component {
           variant: 'error',
         });
         validationSchema(teams).validate(teamsData).catch((value) => {
+          console.log(value.errors);
           snackbarMessage(value.errors);
         });
       }

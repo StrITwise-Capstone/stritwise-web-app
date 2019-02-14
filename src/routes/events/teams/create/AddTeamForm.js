@@ -49,11 +49,6 @@ const validationSchema = (minStudent, teams) => yup.object({
           .required('First Name Required'),
         last_name: yup.string()
           .required('Last Name Required'),
-        mobilenumber: yup.number('Invalid Mobile Number')
-          .required('Mobile Number Required')
-          .typeError('Invalid Phone Number')
-          .max(99999999, 'Phone number is too long')
-          .min(9999999, 'Phone number is too short'),
         email: yup.string()
           .email('Invalid email')
           .required('Email Required'),
@@ -134,7 +129,6 @@ const AddTeamForm = ({
             team_id: docRef.id,
             first_name: students[index].first_name,
             last_name: students[index].last_name,
-            mobile: students[index].mobilenumber,
             email: students[index].email,
             badge_name: students[index].badgename ? students[index].badgename : '',
             dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
@@ -213,7 +207,7 @@ const AddTeamForm = ({
                 <div>
                   {values.students.map((student, index) => (
                     <div
-                      key={student}
+                      key={index}
                       style={{
                         background: '#E6E6FA',
                         marginBottom: '10px',
@@ -266,15 +260,6 @@ const AddTeamForm = ({
                           component={TextField}
                           style={{ marginRight: '50px', width: '200px' }}
                           required
-                        />
-                        <Field
-                          name={`students[${index}].mobilenumber`}
-                          type="text"
-                          label="Mobile Number"
-                          placeholder="98745123"
-                          component={TextField}
-                          required
-                          style={{ width: '200px' }}
                         />
                       </div>
                       <div>
@@ -358,7 +343,6 @@ const AddTeamForm = ({
                       <div>
                         <ErrorMessage name={`students[${index}].first_name`} />
                         <ErrorMessage name={`students[${index}].last_name`} />
-                        <ErrorMessage name={`students[${index}].mobilenumber`} />
                         <ErrorMessage name={`students[${index}].email`} />
                         <ErrorMessage name={`students[${index}].password`} />
                         <ErrorMessage name={`students[${index}].confirmPassword`} />

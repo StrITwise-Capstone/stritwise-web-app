@@ -33,7 +33,6 @@ const initialValues = (
     dietary_restriction: student.dietary_restriction,
     remarks: student.remarks,
     email: student.email,
-    mobile: student.mobile,
     studentId,
     eventId,
     teamId,
@@ -86,7 +85,6 @@ const EditStudentForm = ({
           first_name: values.firstname,
           last_name: values.lastname,
           badge_name: values.badgename,
-          mobile: values.mobile,
           dietary_restriction: values.dietary_restriction,
           remarks: values.remarks,
           email: values.email,
@@ -139,13 +137,6 @@ const EditStudentForm = ({
               disabled
               name="email"
               label="Email"
-              type="text"
-              component={TextField}
-            />
-            <Field
-              required
-              name="mobile"
-              label="Phone Number"
               type="text"
               component={TextField}
             />

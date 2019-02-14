@@ -71,7 +71,7 @@ class Users extends Component {
         Name: `${user.data.firstName} ${user.data.lastName}`,
         Mobile: user.data.mobile,
         Type: user.data.type,
-        School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
+        School: schoolsMap[user.data.school] ? schoolsMap[user.data.school] : 'N.A.',
         Email: user.data.email,
       }
     ));
@@ -83,7 +83,7 @@ class Users extends Component {
    */
   handleCustomFilter = (collection, filter, search) => {
     if (filter === 'type') {
-      collection = collection.where(filter, '==', search.toUpperCase());
+      collection = collection.where(filter, '==', search);
     } else if (filter === 'school') {
       const { schools } = this.props;
       const school = schools.find(schElement => (schElement.name === search.toUpperCase()));
