@@ -38,7 +38,7 @@ class EditTeam extends Component {
   getSchools = () => {
     const { firestore } = this.props;
     this.setState({ isLoading: true });
-    firestore.collection('schools').get().then((querySnapshot) => {
+    firestore.collection('schools').orderBy('name', 'asc').get().then((querySnapshot) => {
       const schools = [];
       querySnapshot.forEach((doc) => {
         schools.push({

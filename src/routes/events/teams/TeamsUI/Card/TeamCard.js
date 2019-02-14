@@ -114,7 +114,7 @@ class TeamCard extends Component {
     const { firestore } = this.props;
     const schoolsList = [];
     this.setState({ isLoading: true });
-    firestore.collection('schools').get().then((querySnapshot) => {
+    firestore.collection('schools').orderBy('name', 'asc').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         schoolsList[doc.id] = doc.data();
       });

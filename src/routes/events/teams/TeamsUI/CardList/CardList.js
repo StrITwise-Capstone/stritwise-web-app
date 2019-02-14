@@ -177,7 +177,7 @@ class CardList extends Component {
    */
   getSchools = () => {
     const { firestore } = this.props;
-    firestore.collection('schools').get().then((querySnapshot) => {
+    firestore.collection('schools').orderBy('name', 'asc').get().then((querySnapshot) => {
       const schools = [{ label: '', value: '' }];
       querySnapshot.forEach((doc) => {
         schools.push({
