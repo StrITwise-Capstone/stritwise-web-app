@@ -19,7 +19,7 @@ class Unknown extends React.Component {
     const { history } = this.props;
     this.timeoutHandle = setTimeout(() => {
       history.push('/404');
-    }, 3000);
+    }, 10000);
   }
 
   componentWillUnmount() {

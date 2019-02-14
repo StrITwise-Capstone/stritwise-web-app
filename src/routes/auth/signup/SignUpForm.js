@@ -42,7 +42,7 @@ const validationSchema = yup.object({
     .singleSelectRequired('Required'),
   email: yup.string()
     .email('Email not valid')
-    .matches(/.*\.edu\.sg$/, 'Only .edu.sg emails may be used')
+    // .matches(/.*\.edu\.sg$/, 'Only .edu.sg emails may be used')
     .required('Required'),
   password: yup.string()
     .min(8, 'Password must be 8 characters or longer')
