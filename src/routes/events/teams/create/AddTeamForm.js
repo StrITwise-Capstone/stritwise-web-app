@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Formik,
   Form,
@@ -83,303 +83,323 @@ const validationSchema = (minStudent, teams) => yup.object({
  * @param {String} schoolId - A string of the schoolId of the school of the teacher
  * @param {Object[]} teams - An array of string which are team names
  */
-const AddTeamForm = ({
-  firestore,
-  enqueueSnackbar,
-  match,
-  minStudent,
-  maxStudent,
-  schools,
-  teacherId,
-  schoolId,
-  auth,
-  teams,
-}) => (
-  <Formik
-    initialValues={initialValues(minStudent, schools, teacherId, schoolId)}
-    validationSchema={validationSchema(minStudent, teams)}
-    onSubmit={(values, { resetForm, setSubmitting }) => {
-      let schoolValue = '';
-      if (schoolId !== '') {
-        schoolValue = schoolId;
-      } else {
-        schoolValue = values.school_id.value;
-      }
-      const { eventId } = match.params;
-      const { students } = values;
+class AddTeamForm extends Component {
+  state = {
+    loadOnce: true,
+  }
 
-      /**
-       * Add a new team
-       */
-      const addTeam = () => firestore.collection('events').doc(eventId).collection('teams').add({
-        team_name: values.team_name,
-        school_id: schoolValue,
-        credit: 0,
-        created_at: new Date(Date.now()),
-        modified_at: new Date(Date.now()),
-        teacher_id: teacherId,
-      });
+  render() {
+    const {
+      firestore,
+      enqueueSnackbar,
+      match,
+      minStudent,
+      maxStudent,
+      schools,
+      teacherId,
+      schoolId,
+      auth,
+      teams,
+    } = this.props;
+    return (
+      <Formik
+        initialValues={initialValues(minStudent, schools, teacherId, schoolId)}
+        validationSchema={validationSchema(minStudent, teams)}
+        onSubmit={(values, { resetForm, setSubmitting }) => {
+          let schoolValue = '';
+          if (schoolId !== '') {
+            schoolValue = schoolId;
+          } else {
+            schoolValue = values.school_id.value;
+          }
+          const { eventId } = match.params;
+          const { students } = values;
 
-      /**
-       * Add the students
-      */
-      const addStudents = (docRef) => {
-        students.map((student, index) => {
-          const data = {
-            team_id: docRef.id,
-            first_name: students[index].first_name,
-            last_name: students[index].last_name,
-            email: students[index].email,
-            badge_name: students[index].badgename ? students[index].badgename : '',
-            dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
-            remarks: students[index].remarks ? students[index].remarks : '',
-            emergency_contacts: {
-              name: students[index].emergency_contact_name,
-              mobile: students[index].emergency_contact_mobile,
-              relation: students[index].emergency_contact_relation,
-            },
+          /**
+           * Add a new team
+           */
+          const addTeam = () => firestore.collection('events').doc(eventId).collection('teams').add({
+            team_name: values.team_name,
+            school_id: schoolValue,
+            credit: 0,
             created_at: new Date(Date.now()),
             modified_at: new Date(Date.now()),
+            teacher_id: teacherId,
+          });
+
+          /**
+           * Add the students
+          */
+          const addStudents = (docRef) => {
+            students.map((student, index) => {
+              const data = {
+                team_id: docRef.id,
+                first_name: students[index].first_name,
+                last_name: students[index].last_name,
+                email: students[index].email,
+                badge_name: students[index].badgename ? students[index].badgename : '',
+                dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
+                remarks: students[index].remarks ? students[index].remarks : '',
+                emergency_contacts: {
+                  name: students[index].emergency_contact_name,
+                  mobile: students[index].emergency_contact_mobile,
+                  relation: students[index].emergency_contact_relation,
+                },
+                created_at: new Date(Date.now()),
+                modified_at: new Date(Date.now()),
+              };
+              data.password = students[index].password;
+              data.eventId = eventId;
+              const transaction = {
+                user_id: auth.uid,
+                transaction_type: 'ADD_STUDENT',
+                data,
+              };
+              return firestore.collection('transactions').add(transaction).then((docRef) => {
+                enqueueSnackbar('Added 1 student...', {
+                  variant: 'info',
+                });
+                resetForm();
+                setSubmitting(false);
+                if (index === students.length) {
+                  enqueueSnackbar('Team Created Successfully', {
+                    variant: 'success',
+                  });
+                }
+              });
+            });
           };
-          data.password = students[index].password;
-          data.eventId = eventId;
-          const transaction = {
-            user_id: auth.uid,
-            transaction_type: 'ADD_STUDENT',
-            data,
-          };
-          return firestore.collection('transactions').add(transaction).then((docRef) => {
-            enqueueSnackbar('Added 1 student...', {
+
+          addTeam().then((docRef) => {
+            enqueueSnackbar('Added Team...', {
               variant: 'info',
             });
-            resetForm();
-            setSubmitting(false);
-            if (index === students.length) {
-              enqueueSnackbar('Team Created Successfully', {
-                variant: 'success',
-              });
-            }
+            addStudents(docRef);
           });
-        });
-      };
-
-      addTeam().then((docRef) => {
-        enqueueSnackbar('Added Team...', {
-          variant: 'info',
-        });
-        addStudents(docRef);
-      });
-    }
-  }
-  >
-    {({
-      values,
-      handleSubmit,
-      isSubmitting,
-    }) => {
-      let content = <CircularProgress />;
-      if (!isSubmitting) {
-        content = (
-          <Form onSubmit={handleSubmit}>
-            <p>
-              {`Minimum of ${minStudent} students`}
-            </p>
-            <Field
-              required
-              name="team_name"
-              label="Name of team"
-              type="text"
-              component={TextField}
-              style={{ width: '500px' }}
-              index={-1}
-            />
-            {schoolId === '' && (
-            <Field
-              name="school_id"
-              label="School"
-              options={schools}
-              component={Select}
-            />)
-            }
-            <FieldArray
-              name="students"
-              render={arrayHelpers => (
-                <div>
-                  {values.students.map((student, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        background: '#E6E6FA',
-                        marginBottom: '10px',
-                        padding: '10px',
-                        paddingLeft: '15px',
-                      }}
-                    >
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                      }}
-                      >
-                        <p>
-                          Student #
-                          {index + 1}
-                        </p>
-                        { values.lengthStudents > minStudent
-                        && (
-                        <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); values.lengthStudents -= 1; }}>
-                          Delete
-                        </Button>)
-                        }
-                      </div>
-                      <div>
-                        <Field
-                          name={`students[${index}].first_name`}
-                          required
-                          type="text"
-                          label="First Name"
-                          placeholder="Guang Yao"
-                          component={TextField}
-                          style={{ marginRight: '50px', width: '200px' }}
-                        />
-                        <Field
-                          name={`students[${index}].last_name`}
-                          required
-                          type="text"
-                          placeholder="Zeng"
-                          label="Last Name"
-                          component={TextField}
-                          style={{ width: '200px' }}
-                        />
-                      </div>
-                      <div>
-                        <Field
-                          name={`students[${index}].email`}
-                          type="text"
-                          label="Email"
-                          placeholder="guangyao@gmail.com"
-                          component={TextField}
-                          style={{ marginRight: '50px', width: '200px' }}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Field
-                          name={`students[${index}].password`}
-                          type="password"
-                          label="Password"
-                          placeholder="Test1234"
-                          component={TextField}
-                          style={{ marginRight: '50px', width: '200px' }}
-                          required
-                        />
-                        <Field
-                          name={`students[${index}].confirmPassword`}
-                          type="password"
-                          label="Confirm Password"
-                          placeholder="Test1234"
-                          component={TextField}
-                          style={{ width: '200px' }}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Field
-                          name={`students[${index}].badgename`}
-                          type="text"
-                          label="Badge Name"
-                          placeholder="GuangYao"
-                          component={TextField}
-                          style={{ marginRight: '50px', width: '200px' }}
-                        />
-                        <Field
-                          name={`students[${index}].dietaryrestriction`}
-                          type="text"
-                          label="Dietary Restriction"
-                          placeholder="Nil / Halal / Vegetarian"
-                          component={TextField}
-                          style={{ width: '200px' }}
-                        />
-                      </div>
-                      <div>
-                        <Field
-                          name={`students[${index}].emergency_contact_name`}
-                          type="text"
-                          required
-                          label="Emergency Contact Name"
-                          placeholder="Zhang Melvin"
-                          component={TextField}
-                          style={{ marginRight: '50px', width: '200px' }}
-                        />
-                        <Field
-                          name={`students[${index}].emergency_contact_mobile`}
-                          type="text"
-                          required
-                          label="Mobile"
-                          placeholder="98745123"
-                          component={TextField}
-                          style={{ width: '200px', marginRight: '50px' }}
-                        />
-                        <Field
-                          name={`students[${index}].emergency_contact_relation`}
-                          type="text"
-                          placeholder="Father"
-                          required
-                          label="Relation"
-                          component={TextField}
-                          style={{ width: '200px' }}
-                        />
-                      </div>
-                      <div>
-                        <Field
-                          name={`students[${index}].remarks`}
-                          type="text"
-                          label="Remarks"
-                          placeholder="Nil"
-                          component={TextField}
-                          index={index}
-                          style={{ width: '200px' }}
-                        />
-                      </div>
-                      <div>
-                        <ErrorMessage name={`students[${index}].first_name`} />
-                        <ErrorMessage name={`students[${index}].last_name`} />
-                        <ErrorMessage name={`students[${index}].email`} />
-                        <ErrorMessage name={`students[${index}].password`} />
-                        <ErrorMessage name={`students[${index}].confirmPassword`} />
-                        <ErrorMessage name={`students[${index}].badgename`} />
-                        <ErrorMessage name={`students[${index}].dietaryrestriction`} />
-                        <ErrorMessage name={`students[${index}].remarks`} />
-                        <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
-                        <ErrorMessage name={`students[${index}].emergency_contact_name`} />
-                        <ErrorMessage name={`students[${index}].emergency_contact_relation`} />
-                      </div>
-                    </div>
-                  ))}
-                  { values.lengthStudents < maxStudent && (
-                  <Button
-                    type="button"
-                    onClick={() => { arrayHelpers.push({ first_name: '' }); values.lengthStudents += 1; }}
-                    size="small"
-                    color="primary"
-                  >
-                    Add Student
-                  </Button>)
-                  }
-                </div>
-              )}
-            />
-            <div className="align-right">
-              <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-                CREATE TEAM
-              </Button>
-            </div>
-          </Form>
-        );
+        }
       }
-      return content;
-    }}
-  </Formik>
-);
+      >
+        {({
+          values,
+          handleSubmit,
+          isSubmitting,
+        }) => {
+          let content = <CircularProgress />;
+          if (!isSubmitting) {
+            content = (
+              <Form onSubmit={handleSubmit}>
+                <p>
+                  {`Minimum of ${minStudent} students`}
+                </p>
+                <Field
+                  required
+                  name="team_name"
+                  label="Name of team"
+                  type="text"
+                  component={TextField}
+                  style={{ width: '500px' }}
+                  index={-1}
+                />
+                {schoolId === '' && (
+                <Field
+                  name="school_id"
+                  label="School"
+                  options={schools}
+                  component={Select}
+                />)
+                }
+                <FieldArray
+                  name="students"
+                  render={arrayHelpers => (
+                    <div>
+                      {values.students.map((student, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            background: '#E6E6FA',
+                            marginBottom: '10px',
+                            padding: '10px',
+                            paddingLeft: '15px',
+                          }}
+                        >
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                          }}
+                          >
+                            <p>
+                              Student #
+                              {index + 1}
+                            </p>
+                            { values.lengthStudents > minStudent
+                            && (
+                            <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); this.setState({ loadOnce: true}); values.lengthStudents -= 1;}}>
+                              Delete
+                            </Button>)
+                            }
+                          </div>
+                          <div>
+                            <Field
+                              name={`students[${index}].first_name`}
+                              required
+                              type="text"
+                              label="First Name"
+                              placeholder="Guang Yao"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                            />
+                            <Field
+                              name={`students[${index}].last_name`}
+                              required
+                              type="text"
+                              placeholder="Zeng"
+                              label="Last Name"
+                              component={TextField}
+                              style={{ width: '200px' }}
+                            />
+                          </div>
+                          <div>
+                            <Field
+                              name={`students[${index}].email`}
+                              type="text"
+                              label="Email"
+                              placeholder="guangyao@gmail.com"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Field
+                              name={`students[${index}].password`}
+                              type="password"
+                              label="Password"
+                              placeholder="Test1234"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                              required
+                            />
+                            <Field
+                              name={`students[${index}].confirmPassword`}
+                              type="password"
+                              label="Confirm Password"
+                              placeholder="Test1234"
+                              component={TextField}
+                              style={{ width: '200px' }}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Field
+                              name={`students[${index}].badgename`}
+                              type="text"
+                              label="Badge Name"
+                              placeholder="GuangYao"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                            />
+                            <Field
+                              name={`students[${index}].dietaryrestriction`}
+                              type="text"
+                              label="Dietary Restriction"
+                              placeholder="Nil / Halal / Vegetarian"
+                              component={TextField}
+                              style={{ width: '200px' }}
+                            />
+                          </div>
+                          <div>
+                            <Field
+                              name={`students[${index}].emergency_contact_name`}
+                              type="text"
+                              required
+                              label="Emergency Contact Name"
+                              placeholder="Zhang Melvin"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                            />
+                            <Field
+                              name={`students[${index}].emergency_contact_mobile`}
+                              type="text"
+                              required
+                              label="Mobile"
+                              placeholder="98745123"
+                              component={TextField}
+                              style={{ width: '200px', marginRight: '50px' }}
+                            />
+                            <Field
+                              name={`students[${index}].emergency_contact_relation`}
+                              type="text"
+                              placeholder="Father"
+                              required
+                              label="Relation"
+                              component={TextField}
+                              style={{ width: '200px' }}
+                            />
+                          </div>
+                          <div>
+                            <Field
+                              name={`students[${index}].remarks`}
+                              type="text"
+                              label="Remarks"
+                              placeholder="Nil"
+                              component={TextField}
+                              index={index}
+                              style={{ width: '200px' }}
+                            />
+                          </div>
+                          <div>
+                            <ErrorMessage name={`students[${index}].first_name`} />
+                            <ErrorMessage name={`students[${index}].last_name`} />
+                            <ErrorMessage name={`students[${index}].email`} />
+                            <ErrorMessage name={`students[${index}].password`} />
+                            <ErrorMessage name={`students[${index}].confirmPassword`} />
+                            <ErrorMessage name={`students[${index}].badgename`} />
+                            <ErrorMessage name={`students[${index}].dietaryrestriction`} />
+                            <ErrorMessage name={`students[${index}].remarks`} />
+                            <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
+                            <ErrorMessage name={`students[${index}].emergency_contact_name`} />
+                            <ErrorMessage name={`students[${index}].emergency_contact_relation`} />
+                          </div>
+                        </div>
+                      ))}
+                      { values.lengthStudents < maxStudent && (
+                      <Button
+                        type="button"
+                        onClick={() => { arrayHelpers.push({ 
+                          first_name: '',
+                          last_name: '',
+                          password: '',
+                          confirmPassword: '',
+                          dietaryrestriction: '',
+                          remarks: '',
+                          emergency_contact_mobile: '',
+                          emergency_contact_name: '',
+                          emergency_contact_relation: '',
+                          badge_name: '',
+                        }); values.lengthStudents += 1; console.log(values.students)}}
+                        size="small"
+                        color="primary"
+                      >
+                        Add Student
+                      </Button>)
+                      }
+                    </div>
+                  )}
+                />
+                <div className="align-right">
+                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+                    CREATE TEAM
+                  </Button>
+                </div>
+              </Form>
+            );
+          }
+          return content;
+        }}
+      </Formik>
+    );
+  }
+}
 
 const mapStateToProps = (state) => {
   return {

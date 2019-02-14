@@ -224,7 +224,6 @@ class EditTeamForm extends Component {
               <Form onSubmit={handleSubmit}>
                 <p>
                   {`Minimum of ${minStudent} students`}
-                  {`Minimum of ${maxStudent} students`}
                 </p>
                 <Field
                   required
@@ -289,6 +288,7 @@ class EditTeamForm extends Component {
                               required
                               type="text"
                               label="First Name"
+                              placeholder="Guang Yao"
                               component={TextField}
                               style={{ marginRight: '50px', width: '200px' }}
                             />
@@ -297,6 +297,7 @@ class EditTeamForm extends Component {
                               required
                               type="text"
                               label="Last Name"
+                              placeholder="Zhang"
                               component={TextField}
                               style={{ width: '200px' }}
                             />
@@ -318,6 +319,7 @@ class EditTeamForm extends Component {
                               name={`students[${index}].email`}
                               type="text"
                               label="Email"
+                              placeholder="guangyao@gmail.com"
                               component={TextField}
                               style={{ marginRight: '50px', width: '200px' }}
                               required
@@ -330,6 +332,7 @@ class EditTeamForm extends Component {
                               type="text"
                               label="Badge Name"
                               component={TextField}
+                              placeholder="GuangYao"
                               style={{ marginRight: '50px', width: '200px' }}
                             />
                             <Field
@@ -337,6 +340,7 @@ class EditTeamForm extends Component {
                               type="text"
                               label="Dietary Restriction"
                               component={TextField}
+                              placeholder="Nil / Halal / Vegetarian"
                               style={{ width: '200px' }}
                             />
                           </div>
@@ -347,6 +351,7 @@ class EditTeamForm extends Component {
                               required
                               label="Emergency Contact Name"
                               component={TextField}
+                              placeholder="Zhang Watt"
                               style={{ marginRight: '50px', width: '200px' }}
                             />
                             <Field
@@ -355,12 +360,14 @@ class EditTeamForm extends Component {
                               label="Mobile"
                               required
                               component={TextField}
+                              placeholder="92130832"
                               style={{ marginRight: '50px', width: '200px' }}
                             />
                             <Field
                               name={`students[${index}].emergency_contact_relation`}
                               type="text"
                               label="Relation"
+                              placeholder="Mother"
                               required
                               component={TextField}
                               style={{ width: '200px' }}
@@ -373,6 +380,7 @@ class EditTeamForm extends Component {
                               label="Remarks"
                               component={TextField}
                               index={index}
+                              placeholder="nil"
                               style={{ width: '200px' }}
                             />
                           </div>

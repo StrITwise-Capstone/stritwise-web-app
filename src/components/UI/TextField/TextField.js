@@ -62,6 +62,9 @@ const textField = ({
           rows={rows}
           rowsMax={rowsMax}
           style={style}
+          InputLabelProps={{
+            shrink: true,
+          }}
           placeholder={placeholder ? placeholder : ''}
       />)
       }
