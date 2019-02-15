@@ -56,7 +56,6 @@ const validationSchema = (minStudent, teams, teamName) => {
           email: yup.string()
             .email('Invalid email')
             .required('Email Required'),
-          badgename: yup.string(),
           dietaryrestriction: yup.string(),
           remarks: yup.string(),
           emergency_contact_name: yup.string(),
@@ -130,7 +129,6 @@ class EditTeamForm extends Component {
             first_name: student.first_name,
             last_name: student.last_name,
             email: student.email,
-            badge_name: student.badge_name ? student.badge_name : '',
             dietary_restriction: student.dietary_restriction ? student.dietary_restriction : '',
             remarks: student.remarks ? student.remarks : '',
             emergency_contacts: {
@@ -164,7 +162,6 @@ class EditTeamForm extends Component {
               last_name: student.last_name,
               email: student.email,
               password: 'Test1234',
-              badge_name: student.badgename ? student.badgename : '',
               dietary_restriction: student.dietaryrestriction ? student.dietaryrestriction : '',
               remarks: student.remarks ? student.remarks : '',
               emergency_contacts: {
@@ -328,14 +325,6 @@ class EditTeamForm extends Component {
                           </div>
                           <div>
                             <Field
-                              name={`students[${index}].badge_name`}
-                              type="text"
-                              label="Badge Name"
-                              component={TextField}
-                              placeholder="GuangYao"
-                              style={{ marginRight: '50px', width: '200px' }}
-                            />
-                            <Field
                               name={`students[${index}].dietary_restriction`}
                               type="text"
                               label="Dietary Restriction"
@@ -388,7 +377,6 @@ class EditTeamForm extends Component {
                             <ErrorMessage name={`students[${index}].first_name`} />
                             <ErrorMessage name={`students[${index}].last_name`} />
                             <ErrorMessage name={`students[${index}].email`} />
-                            <ErrorMessage name={`students[${index}].badge_name`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].remarks`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
@@ -406,7 +394,6 @@ class EditTeamForm extends Component {
                             first_name: '',
                             last_name: '',
                             email: '',
-                            badge_name: '',
                             dietary_restriction: '',
                             remarks: '',
                             emergency_contact_name: '',

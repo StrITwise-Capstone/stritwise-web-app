@@ -29,7 +29,6 @@ const initialValues = (
   return {
     firstname: student.first_name,
     lastname: student.last_name,
-    badgename: student.badge_name,
     dietary_restriction: student.dietary_restriction,
     remarks: student.remarks,
     email: student.email,
@@ -48,7 +47,6 @@ const validationSchema = yup.object({
     .required('Required'),
   lastname: yup.string()
     .required('Required'),
-  badge_name: yup.string(),
   email: yup.string().email('Email is not valid'),
 });
 
@@ -84,7 +82,6 @@ const EditStudentForm = ({
         return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).update({
           first_name: values.firstname,
           last_name: values.lastname,
-          badge_name: values.badgename,
           dietary_restriction: values.dietary_restriction,
           remarks: values.remarks,
           email: values.email,
@@ -137,12 +134,6 @@ const EditStudentForm = ({
               disabled
               name="email"
               label="Email"
-              type="text"
-              component={TextField}
-            />
-            <Field
-              name="badgename"
-              label="Badge Name"
               type="text"
               component={TextField}
             />

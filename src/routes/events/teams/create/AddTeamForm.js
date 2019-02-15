@@ -27,7 +27,20 @@ import yup from '../../../../instances/yup';
 const initialValues = (minStudent, schools, teacherId, schoolId) => {
   return {
     team_name: '',
-    students: Array.apply(null, Array(minStudent)).map(function returnNull() { return null; }),
+    students: Array.apply(null, Array(minStudent)).map(
+      function returnNull() { 
+        return { 
+          first_name: '',
+          last_name: '',
+          password: '',
+          confirmPassword: '',
+          dietaryrestriction: '',
+          remarks: '',
+          emergency_contact_mobile: '',
+          emergency_contact_name: '',
+          emergency_contact_relation: '',
+        }
+      }),
     schools,
     teacherId: teacherId ? teacherId : 'null',
     lengthStudents: minStudent,
@@ -59,7 +72,6 @@ const validationSchema = (minStudent, teams) => yup.object({
           .required('Confirm Password Required')
           .oneOf([yup.ref('password')], 'Passwords do not match')
           .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
-        badgename: yup.string(),
         dietaryrestriction: yup.string(),
         remarks: yup.string(),
         emergency_contact_name: yup.string(),
@@ -137,7 +149,6 @@ class AddTeamForm extends Component {
                 first_name: students[index].first_name,
                 last_name: students[index].last_name,
                 email: students[index].email,
-                badge_name: students[index].badgename ? students[index].badgename : '',
                 dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
                 remarks: students[index].remarks ? students[index].remarks : '',
                 emergency_contacts: {
@@ -291,14 +302,6 @@ class AddTeamForm extends Component {
                           </div>
                           <div>
                             <Field
-                              name={`students[${index}].badgename`}
-                              type="text"
-                              label="Badge Name"
-                              placeholder="GuangYao"
-                              component={TextField}
-                              style={{ marginRight: '50px', width: '200px' }}
-                            />
-                            <Field
                               name={`students[${index}].dietaryrestriction`}
                               type="text"
                               label="Dietary Restriction"
@@ -353,7 +356,6 @@ class AddTeamForm extends Component {
                             <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].password`} />
                             <ErrorMessage name={`students[${index}].confirmPassword`} />
-                            <ErrorMessage name={`students[${index}].badgename`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].remarks`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
@@ -375,7 +377,6 @@ class AddTeamForm extends Component {
                           emergency_contact_mobile: '',
                           emergency_contact_name: '',
                           emergency_contact_relation: '',
-                          badge_name: '',
                         }); values.lengthStudents += 1; console.log(values.students)}}
                         size="small"
                         color="primary"

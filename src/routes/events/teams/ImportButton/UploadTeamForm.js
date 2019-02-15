@@ -35,7 +35,6 @@ const validationSchema = teams => yup.array().of(yup.object().shape({
       'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2),
       'Emergency Contact Mobile': yup.string().required('Emergency Contact Mobile is required').min(2),
       'Relation to Participant': yup.string().required('Relation to Participant is required').min(2),
-      'Badge Name': yup.string().required('Badge Name is required'),
       'Dietary Restrictions': yup.string().required('Dietary Restrictions is required'),
       Remarks: yup.string().required('Remarks is required (You can put nil)'),
     }),
@@ -125,7 +124,6 @@ class UploadTeamForm extends Component {
               first_name: team.values[i]['First Name'],
               last_name: team.values[i]['Last Name'],
               email: team.values[i].Email,
-              badge_name: team.values[i]['Badge Name'],
               dietary_restriction: team.values[i]['Dietary Restrictions'],
               remarks: team.values[i].Remarks,
               emergency_contacts: {

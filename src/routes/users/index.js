@@ -71,7 +71,7 @@ class Users extends Component {
         Name: `${user.data.firstName} ${user.data.lastName}`,
         Mobile: user.data.mobile,
         Type: user.data.type,
-        School: schoolsMap[user.data.school] ? schoolsMap[user.data.school] : 'N.A.',
+        School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
         Email: user.data.email,
       }
     ));
