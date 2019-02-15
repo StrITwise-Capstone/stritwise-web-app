@@ -40,11 +40,11 @@ const initialValues = (team, minStudent, students) => {
 };
 
 // validationSchema for team object
-const validationSchema = (minStudent, teams, teamName) => {
+const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
   return yup.object({
     team_name: yup.string()
       .required('Required')
-      .test('team name', 'There is an existing team name', value => value && ((value === teamName) || !(teams.indexOf(value) > -1))),
+      .test('team name', 'There is an existing team name', value => value && ((value === teamName) || !teams.indexOf(value) > -1)),
     students: yup.array()
       .of(
         yup.object().shape({
@@ -55,7 +55,15 @@ const validationSchema = (minStudent, teams, teamName) => {
             .required('Last Name Required'),
           email: yup.string()
             .email('Invalid email')
-            .required('Email Required'),
+            .required('Email Required')
+            .test('Existing Email name', 'There is an existing email', 
+              function validateEmail(value) {
+                if (this.parent.key === '') {
+                  return !(studentsEmail.indexOf(value) > -1);
+                }
+                return true;
+              },
+            ),
           dietaryrestriction: yup.string(),
           remarks: yup.string(),
           emergency_contact_name: yup.string(),
@@ -71,6 +79,21 @@ const validationSchema = (minStudent, teams, teamName) => {
       .min(minStudent, `Minimum of ${minStudent} member`),
   });
 };
+
+// checkDuplicates
+// return true if there's duplicates
+function hasDuplicates(array) {
+  var valuesSoFar = Object.create(null);
+  for (var i = 0; i < array.length; ++i) {
+      var value = array[i];
+      if (value in valuesSoFar) {
+          return true;
+      }
+      valuesSoFar[value] = true;
+  }
+  return false;
+}
+
 
 /**
  * Class representing the EditTeamForm component.
@@ -98,12 +121,13 @@ class EditTeamForm extends Component {
       auth,
       teams,
       teamName,
+      studentsEmail,
     } = this.props;
     return (
       <Formik
         enableReinitialize={true}
         initialValues={initialValues(team, minStudent, students)}
-        validationSchema={validationSchema(minStudent, teams, teamName)}
+        validationSchema={validationSchema(minStudent, teams, teamName, studentsEmail)}
         onSubmit={(values, { resetForm, setSubmitting }) => {
           const { eventId, teamId } = match.params;
           const {
@@ -115,6 +139,7 @@ class EditTeamForm extends Component {
             deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
           };
 
+          
           /**
           * Update the current team
           */
@@ -193,26 +218,57 @@ class EditTeamForm extends Component {
             });
           };
 
-          deleteStudents();
-          updateTeam(eventId, teamId, values).then((docRef) => {
-            enqueueSnackbar('Updated Team...', {
-              variant: 'info',
-            });
-            if (students) {
-              students.map((key, index) => {
-                const student = students[index];
-                if (student !== undefined && student !== null) {
-                  if (student.key !== '') {
-                    updateStudents(student, index);
-                  }
-                  if (student.key === '') {
-                    addNewStudent(student);
-                  }
+          /**
+           * Call back Action
+           */
+          const callbackAction = (value) => { 
+            if (value === true) {
+              enqueueSnackbar('There are users with same email', {
+                variant: 'error',
+              });
+              setSubmitting(false);
+            }
+
+            if (value === false) {
+              deleteStudents();
+              updateTeam(eventId, teamId, values).then((docRef) => {
+                enqueueSnackbar('Updated Team...', {
+                  variant: 'info',
+                });
+                if (students) {
+                  students.map((key, index) => {
+                    const student = students[index];
+                    if (student !== undefined && student !== null) {
+                      if (student.key !== '') {
+                        updateStudents(student, index);
+                      }
+                      if (student.key === '') {
+                        addNewStudent(student);
+                      }
+                    }
+                    return null;
+                  });
                 }
-                return null;
               });
             }
-          });
+          };
+
+          /**
+           * Validate email
+           */
+          const validateEmail = () => {
+            const array = [];
+            values.students.map((student, index) => {
+              array.push(values.students[index].email);
+              if (values.students.length === index + 1) {
+                const right = hasDuplicates(array);
+                callbackAction(right);
+              }
+              return null;
+            });
+          };
+
+          validateEmail();
         }}
       >
         {({
@@ -269,7 +325,7 @@ class EditTeamForm extends Component {
                               && (
                               <Button style={{ float: 'right' }} type="button" size="small" color="primary" 
                                 onClick={() => {
-                                  if (values.students[index] && values.students[index].key !== undefined ) 
+                                  if (values.students[index] && values.students[index].key !== '' ) 
                                   { values.deleteArray.push(values.students[index].key); }
                                   arrayHelpers.remove(index);
                                   values.lengthStudents -= 1;

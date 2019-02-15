@@ -53,6 +53,7 @@ class ViewTeams extends Component {
     this.getSchools();
     this.getEvent();
     this.getTeams();
+    this.getStudentsEmail();
   }
 
   /**
@@ -106,6 +107,25 @@ class ViewTeams extends Component {
   }
 
   /**
+   * Get all student emails
+   */
+  getStudentsEmail = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
+      const studentsEmail = [];
+      querySnapshot.forEach((doc) => {
+        studentsEmail.push(
+          doc.data().email,
+        );
+      });
+      this.setState({ studentsEmail, isLoading: false });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  /**
    * Reroute to page to create team
    */
   createTeam = () => {
@@ -132,6 +152,7 @@ class ViewTeams extends Component {
       schools,
       event,
       teams,
+      studentsEmail,
     } = this.state;
     let teacherId = '';
     let schoolId = '';
@@ -170,6 +191,7 @@ class ViewTeams extends Component {
                 teacherId={teacherId}
                 schoolId={schoolId}
                 teams={teams}
+                studentsEmail={studentsEmail}
               />
             </div>)}
         >

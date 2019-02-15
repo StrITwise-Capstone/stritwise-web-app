@@ -38,6 +38,7 @@ class FormDialog extends Component {
       updatePage,
       teacherId,
       teams,
+      studentsEmail,
     } = this.props;
 
     const {
@@ -71,6 +72,7 @@ class FormDialog extends Component {
               handleClose={this.handleClose}
               teacherId={teacherId}
               teams={teams}
+              studentsEmail={studentsEmail}
             />
           </DialogContent>
         </Dialog>

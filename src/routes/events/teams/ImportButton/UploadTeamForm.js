@@ -19,22 +19,6 @@ import yup from '../../../../instances/yup';
 // regExpression
 const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
 
-// function to access to object
-const retrieveObject = (o, s) => {
-  s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-  s = s.replace(/^\./, '');           // strip a leading dot
-  var a = s.split('.');
-  for (var i = 0, n = a.length; i < n; ++i) {
-      var k = a[i];
-      if (k in o) {
-          o = o[k];
-      } else {
-          return;
-      }
-  }
-  return o;
-}
-
 // initialValues for the form
 const initialValues = {
   file: '',
@@ -42,14 +26,15 @@ const initialValues = {
 };
 
 // validationSchema for the form
-const validationSchema = (teams, minStudent, maxStudent) => yup.array().of(yup.object().shape({
+const validationSchema = (teams, minStudent, maxStudent, studentsEmail) => yup.array().of(yup.object().shape({
   key: yup.string().required('Team Name is required').min(1, 'Team Name is too short'),
   values: yup.array().of(
     yup.object().shape({
       'Team Name': yup.string().required('Team Name is required').min(2, 'Team name is too short').test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
       'First Name': yup.string().required('First Name is required').min(2, 'First name is too short'),
       'Last Name': yup.string().required('Last Name is required').min(2, 'Last name is too short'),
-      Email: yup.string().email('Email is invalid').required().min(2, 'Email is too short'),
+      Email: yup.string().email('Email is invalid').required().min(2, 'Email is too short')
+        .test('Existing Email name', 'There is an existing email', value => value && !(studentsEmail.indexOf(value) > -1)),
       Password: yup.string().required('Password is required').min(2).test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
       'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2, 'Emergency contact name is too short'),
       'Emergency Contact Mobile': yup.number()
@@ -89,14 +74,28 @@ const parseData = (unParsedContents) => {
 /**
 * Validate Data for Team objects
 */
-const validateData = (teamsData, teams, minStudent, maxStudent) => {
+const validateData = (teamsData, teams, minStudent, maxStudent, studentsEmail) => {
   let isValid = true;
-  if (!validationSchema(teams, minStudent, maxStudent).isValidSync(teamsData)) {
+  if (!validationSchema(teams, minStudent, maxStudent, studentsEmail).isValidSync(teamsData)) {
     isValid = false;
     return isValid;
   }
   return isValid;
 };
+
+
+// checkDuplicates
+function hasDuplicates(array) {
+  const valuesSoFar = Object.create(null);
+  for (let i = 0; i < array.length; ++i) {
+    const value = array[i];
+    if (value in valuesSoFar) {
+      return true;
+    }
+    valuesSoFar[value] = true;
+  }
+  return false;
+}
 
 /**
  * Class representing the UploadTeamForm component.
@@ -111,6 +110,7 @@ class UploadTeamForm extends Component {
     minStudent: 0,
     maxStudent: 0,
   }
+
   componentDidMount() {
     this.getMinStudent();
   }
@@ -132,12 +132,14 @@ class UploadTeamForm extends Component {
       auth,
       teams,
       enqueueSnackbar,
+      studentsEmail,
     } = this.props;
+
     const {
       minStudent,
       maxStudent,
     } = this.state;
-    
+
     values.minStudent = minStudent;
     values.maxStudent = maxStudent;
 
@@ -204,18 +206,49 @@ class UploadTeamForm extends Component {
       teamsData = d3.nest()
         .key(function(d) { return d['Team Name']; })
         .entries(teamsData);
-      if (validateData(teamsData, teams, values.minStudent, values.maxStudent)) {
-        uploadTeams(teamsData, school_id);
+
+      /**
+       * Call back Action
+       */
+      const callbackAction = (value) => { 
+        if (value === true) {
+          enqueueSnackbar('There are users with same email', {
+            variant: 'error',
+          });
+        }
+
+        if (value === false) {
+          if (validateData(teamsData, teams, values.minStudent, values.maxStudent, studentsEmail)) {
+            uploadTeams(teamsData, school_id);
+          }
+          if (!validateData(teamsData, teams, values.minStudent, values.maxStudent, studentsEmail)) {
+            enqueueSnackbar('Error Adding Team...', {
+              variant: 'error',
+            });
+            validationSchema(teams, values.minStudent, values.maxStudent, studentsEmail).validate(teamsData).catch((values) => {
+              const row = values.path.split('.')[0][1];
+              snackbarMessage(`${values.errors} in ${values.value[row].key} team`);
+            });
+          }
+        };
       }
-      if (!validateData(teamsData, teams, values.minStudent, values.maxStudent)) {
-        enqueueSnackbar('Error Adding Team...', {
-          variant: 'error',
+
+      /**
+       * Validate email
+       */
+      const validateEmail = () => {
+        const array = [];
+        Object.keys(teamsData).map((team, index) => {
+          teamsData[index].values.map((student, index2) => {
+            array.push(teamsData[index].values[index2].Email);
+            if ((teamsData[index].values.length === index2 + 1) && (teamsData.length === index + 1)) {
+              const right = hasDuplicates(array);
+              callbackAction(right);
+            }
+          });
         });
-        validationSchema(teams, values.minStudent, values.maxStudent).validate(teamsData).catch((values) => {
-          const row = values.path.split('.')[0][1];
-          snackbarMessage(`${values.errors} in ${values.value[row].key} team`);
-        });
-      }
+      };
+      validateEmail();
     };
     reader.readAsText(input);
   };
@@ -268,6 +301,7 @@ UploadTeamForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired,
   teams: PropTypes.arrayOf(PropTypes.string),
+  studentsEmail: PropTypes.arrayOf(PropTypes.string),
   /* eslint-disable react/forbid-prop-types */
   schools: PropTypes.any.isRequired,
   firestore: PropTypes.any.isRequired,
@@ -277,6 +311,7 @@ UploadTeamForm.propTypes = {
 
 UploadTeamForm.defaultProps = {
   teams: null,
+  studentsEmail: null,
 };
 
 UploadTeamForm.defaultProps = {

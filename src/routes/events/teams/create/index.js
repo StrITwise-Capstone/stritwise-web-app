@@ -40,29 +40,48 @@ class AddTeam extends Component {
   componentDidMount() {
     this.getSchools();
     this.getEvent();
-    this.getTeams();
+    this.getTeamsName();
+    this.getStudentsEmail();
   }
 
   /**
    * Get all the teams
    */
-  getTeams = () => {
+  getTeamsName = () => {
     const { firestore, match } = this.props;
     this.setState({ isLoading: true });
     firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
-      const teams = [];
+      const teamsName = [];
       querySnapshot.forEach((doc) => {
-        teams.push(
+        teamsName.push(
           doc.data().team_name,
         );
       });
-      this.setState({ teams, isLoading: false });
+      this.setState({ teamsName, isLoading: false });
     }).catch((error) => {
       console.log(error);
     });
   }
 
-
+  /**
+   * Get all student emails
+   */
+  getStudentsEmail = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
+      const studentsEmail = [];
+      querySnapshot.forEach((doc) => {
+        studentsEmail.push(
+          doc.data().email,
+        );
+      });
+      this.setState({ studentsEmail, isLoading: false });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+  
   /**
    * Get all the schools
    */
@@ -100,7 +119,8 @@ class AddTeam extends Component {
       schools,
       isLoading,
       event,
-      teams,
+      teamsName,
+      studentsEmail,
     } = this.state;
     let teacherId = '';
     let schoolId = '';
@@ -124,7 +144,8 @@ class AddTeam extends Component {
             maxStudent={event.max_student ? event.max_student : 10}
             teacherId={teacherId}
             schoolId={schoolId}
-            teams={teams}
+            teamsName={teamsName}
+            studentsEmail={studentsEmail}
           />)
         }
       </AdminLayout>

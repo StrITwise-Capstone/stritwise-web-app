@@ -30,6 +30,7 @@ class EditTeam extends Component {
     this.getStudents();
     this.getEvent();
     this.getTeams();
+    this.getStudentsEmail();
   }
 
   /**
@@ -163,6 +164,25 @@ class EditTeam extends Component {
     return 'ErrorLoading';
   }
 
+  /**
+   * Get all student emails
+   */
+  getStudentsEmail = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
+      const studentsEmail = [];
+      querySnapshot.forEach((doc) => {
+        studentsEmail.push(
+          doc.data().email,
+        );
+      });
+      this.setState({ studentsEmail, isLoading: false });
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
   render() {
     const {
       schools,
@@ -171,6 +191,7 @@ class EditTeam extends Component {
       event,
       isLoading,
       teams,
+      studentsEmail,
     } = this.state;
     if (schools.length > 1 && team) {
       team.school_name = this.getSchoolName(schools, team.school_id);
@@ -193,6 +214,7 @@ class EditTeam extends Component {
             teams={teams}
             teamName={team.team_name}
             updatePage={() => { this.updatePage(); }}
+            studentsEmail={studentsEmail}
           />)
         }
       </AdminLayout>

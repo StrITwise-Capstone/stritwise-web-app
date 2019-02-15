@@ -52,12 +52,25 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => {
   };
 };
 
+// checkDuplicates
+// return true if there's duplicates
+function hasDuplicates(array) {
+  var valuesSoFar = Object.create(null);
+  for (var i = 0; i < array.length; ++i) {
+      var value = array[i];
+      if (value in valuesSoFar) {
+          return true;
+      }
+      valuesSoFar[value] = true;
+  }
+  return false;
+}
+
 // validationSchema for team object
-const validationSchema = (minStudent, teams) => yup.object({
+const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
   team_name: yup.string()
     .required('Required')
-    .test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
-
+    .test('team name', 'There is an existing team name', value => value && !(teamsName.indexOf(value) > -1)),
   students: yup.array()
     .of(
       yup.object().shape({
@@ -68,7 +81,8 @@ const validationSchema = (minStudent, teams) => yup.object({
           .required('Last Name Required'),
         email: yup.string()
           .email('Invalid email')
-          .required('Email Required'),
+          .required('Email Required')
+          .test('Existing Email name', 'There is an existing email', value => value && !(studentsEmail.indexOf(value) > -1)),
         password: yup.string()
           .required('Password Required')
           .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
@@ -98,7 +112,7 @@ const validationSchema = (minStudent, teams) => yup.object({
  * @param {Number} maxStudent - A number of maximum students for the team
  * @param {String} teacherId - A string of the teacherId of the teacher who is adding the team
  * @param {String} schoolId - A string of the schoolId of the school of the teacher
- * @param {Object[]} teams - An array of string which are team names
+ * @param {Object[]} teamsName - An array of string which are team names
  */
 class AddTeamForm extends Component {
   render() {
@@ -112,12 +126,13 @@ class AddTeamForm extends Component {
       teacherId,
       schoolId,
       auth,
-      teams,
+      teamsName,
+      studentsEmail,
     } = this.props;
     return (
       <Formik
         initialValues={initialValues(minStudent, schools, teacherId, schoolId)}
-        validationSchema={validationSchema(minStudent, teams)}
+        validationSchema={validationSchema(minStudent, teamsName, studentsEmail)}
         onSubmit={(values, { resetForm, setSubmitting }) => {
           let schoolValue = '';
           if (schoolId !== '') {
@@ -184,12 +199,43 @@ class AddTeamForm extends Component {
             });
           };
 
-          addTeam().then((docRef) => {
-            enqueueSnackbar('Added Team...', {
-              variant: 'info',
+          /**
+           * Call back Action
+           */
+          const callbackAction = (value) => { 
+            if (value === true) {
+              enqueueSnackbar('There are users with same email', {
+                variant: 'error',
+              });
+              setSubmitting(false);
+            }
+
+            if (value === false) {
+              console.log('create');
+              addTeam().then((docRef) => {
+                enqueueSnackbar('Added Team...', {
+                  variant: 'info',
+                });
+                addStudents(docRef);
+              });
+            }
+          };
+
+          /**
+           * Validate email
+           */
+          const validateEmail = () => {
+            const array = [];
+            students.map((student, index) => {
+              array.push(students[index].email);
+              if (students.length === index + 1) {
+                const right = hasDuplicates(array);
+                callbackAction(right);
+              }
+              return null;
             });
-            addStudents(docRef);
-          });
+          };
+          validateEmail();
         }
       }
       >
@@ -422,7 +468,8 @@ AddTeamForm.propTypes = {
   maxStudent: PropTypes.number.isRequired,
   teacherId: PropTypes.string,
   schoolId: PropTypes.string,
-  teams: PropTypes.arrayOf(PropTypes.string),
+  teamsName: PropTypes.arrayOf(PropTypes.string),
+  studentsEmail: PropTypes.arrayOf(PropTypes.string),
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   auth: PropTypes.any.isRequired,
@@ -435,7 +482,8 @@ AddTeamForm.defaultProps = {
   teacherId: '',
   schoolId: '',
   schools: null,
-  teams: null,
+  teamsName: null,
+  studentsEmail: null,
 };
 
 export default compose(
