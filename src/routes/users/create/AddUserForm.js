@@ -17,6 +17,8 @@ import TextField from '../../../components/UI/TextField/TextField';
 import Dropdown from '../../../components/UI/Dropdown/Dropdown';
 import Select from '../../../components/UI/Select/Select';
 
+// RegexExpression
+const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
 
 const initialValues = {
   firstName: '',
@@ -41,11 +43,11 @@ const validationSchema = Yup.object({
     .required('Required'),
   password: Yup.string()
     .required('Password Required')
-    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
   confirmPassword: Yup.string()
     .required('Confirm Password Required')
     .oneOf([Yup.ref('password')], 'Passwords do not match')
-    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+    .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
   school: Yup.mixed(),
 });
 

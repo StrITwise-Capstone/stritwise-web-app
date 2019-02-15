@@ -84,7 +84,8 @@ const validationSchema = (minStudent, teams, teamName) => {
 class EditTeamForm extends Component {
 
   render() {
-    const { firestore,
+    const {
+      firestore,
       enqueueSnackbar,
       match,
       minStudent,
@@ -96,7 +97,7 @@ class EditTeamForm extends Component {
       auth,
       teams,
       teamName,
-  } = this.props;
+    } = this.props;
     return (
       <Formik
         enableReinitialize={true}
@@ -104,8 +105,11 @@ class EditTeamForm extends Component {
         validationSchema={validationSchema(minStudent, teams, teamName)}
         onSubmit={(values, { resetForm, setSubmitting }) => {
           const { eventId, teamId } = match.params;
-          const { students, deleteArray } = values;
-
+          const {
+            students,
+            deleteArray,
+          } = values;
+          
           const deleteStudents = () => {
             deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
           };
@@ -234,6 +238,7 @@ class EditTeamForm extends Component {
                 {typeof (team.school_id) !== 'undefined'
                 && (
                 <Field
+                  required
                   name="school_id"
                   label="School"
                   options={schools}

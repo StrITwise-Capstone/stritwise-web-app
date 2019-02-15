@@ -16,6 +16,9 @@ import * as util from '../../../../helper/util';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+// regExpression
+const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
+
 // initialValues for the form
 const initialValues = {
   file: '',
@@ -23,22 +26,22 @@ const initialValues = {
 };
 
 // validationSchema for the form
-const validationSchema = teams => yup.array().of(yup.object().shape({
-  key: yup.string().required().min(1),
+const validationSchema = (teams, minStudent, maxStudent) => yup.array().of(yup.object().shape({
+  key: yup.string().required('Team Name is required').min(1, 'Team Name is too short'),
   values: yup.array().of(
     yup.object().shape({
-      'Team Name': yup.string().required('Team Name is required').min(2).test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
-      'First Name': yup.string().required('First Name is required').min(2),
-      'Last Name': yup.string().required('Last Name is required').min(2),
-      Email: yup.string().email('Email is invalid').required().min(2),
-      Password: yup.string().required('Password is required').min(2),
-      'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2),
-      'Emergency Contact Mobile': yup.string().required('Emergency Contact Mobile is required').min(2),
-      'Relation to Participant': yup.string().required('Relation to Participant is required').min(2),
+      'Team Name': yup.string().required('Team Name is required').min(2, 'Team name is too short').test('team name', 'There is an existing team name', value => value && !(teams.indexOf(value) > -1)),
+      'First Name': yup.string().required('First Name is required').min(2, 'First name is too short'),
+      'Last Name': yup.string().required('Last Name is required').min(2, 'Last name is too short'),
+      Email: yup.string().email('Email is invalid').required().min(2, 'Email is too short'),
+      Password: yup.string().required('Password is required').min(2).test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
+      'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2, 'Emergency contact name is too short'),
+      'Emergency Contact Mobile': yup.string().required('Emergency Contact Mobile is required').min(2, 'Emergency contact mobile is too short'),
+      'Relation to Participant': yup.string().required('Relation to Participant is required').min(2, 'Relation to participant is too short'),
       'Dietary Restrictions': yup.string().required('Dietary Restrictions is required'),
       Remarks: yup.string().required('Remarks is required (You can put nil)'),
     }),
-  ),
+  ).min(minStudent, 'Not enough students in a team').max(maxStudent, 'Too many students in a team'),
 }));
 
 /**
@@ -66,9 +69,9 @@ const parseData = (unParsedContents) => {
 /**
 * Validate Data for Team objects
 */
-const validateData = (teamsData, teams) => {
+const validateData = (teamsData, teams, minStudent, maxStudent) => {
   let isValid = true;
-  if (!validationSchema(teams).isValidSync(teamsData)) {
+  if (!validationSchema(teams, minStudent, maxStudent).isValidSync(teamsData)) {
     isValid = false;
     return isValid;
   }
@@ -84,6 +87,21 @@ const validateData = (teamsData, teams) => {
  * @param {Function} handleClose - A function to close the dialog
  */
 class UploadTeamForm extends Component {
+  state = {
+    minStudent: 0,
+    maxStudent: 0,
+  }
+  componentDidMount() {
+    this.getMinStudent();
+  }
+
+  getMinStudent = () => {
+    const { firestore, eventId } = this.props;
+    firestore.collection('events').doc(`${eventId}`).get().then((docRef) => {
+      this.setState({ minStudent:  docRef.data().min_student, maxStudent: docRef.data().max_student });
+    });
+  }
+
   handleSubmit = (values) => {
     const {
       firestore,
@@ -95,8 +113,14 @@ class UploadTeamForm extends Component {
       teams,
       enqueueSnackbar,
     } = this.props;
-
+    const {
+      minStudent,
+      maxStudent,
+    } = this.state;
     
+    values.minStudent = minStudent;
+    values.maxStudent = maxStudent;
+
     const snackbarMessage = (message) => {
       enqueueSnackbar(message, {
         variant: 'error',
@@ -160,16 +184,14 @@ class UploadTeamForm extends Component {
       teamsData = d3.nest()
         .key(function(d) { return d['Team Name']; })
         .entries(teamsData);
-
-      if (validateData(teamsData, teams)) {
+      if (validateData(teamsData, teams, values.minStudent, values.maxStudent)) {
         uploadTeams(teamsData, school_id);
       }
-      if (!validateData(teamsData, teams)) {
+      if (!validateData(teamsData, teams, values.minStudent, values.maxStudent)) {
         enqueueSnackbar('Error Adding Team...', {
           variant: 'error',
         });
-        validationSchema(teams).validate(teamsData).catch((value) => {
-          console.log(value.errors);
+        validationSchema(teams, values.minStudent, values.maxStudent).validate(teamsData).catch((value) => {
           snackbarMessage(value.errors);
         });
       }
@@ -186,6 +208,7 @@ class UploadTeamForm extends Component {
         render={props => (
           <Form>
             <Field
+              required
               name="school"
               label="School"
               options={schools}

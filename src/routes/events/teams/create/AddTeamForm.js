@@ -23,12 +23,15 @@ import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
+// regExpression
+const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
+
 // initialValues for team Object
 const initialValues = (minStudent, schools, teacherId, schoolId) => {
   return {
     team_name: '',
     students: Array.apply(null, Array(minStudent)).map(
-      function returnNull() { 
+      (student) => { 
         return { 
           first_name: '',
           last_name: '',
@@ -39,6 +42,7 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => {
           emergency_contact_mobile: '',
           emergency_contact_name: '',
           emergency_contact_relation: '',
+          email: '',
         }
       }),
     schools,
@@ -67,11 +71,11 @@ const validationSchema = (minStudent, teams) => yup.object({
           .required('Email Required'),
         password: yup.string()
           .required('Password Required')
-          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
         confirmPassword: yup.string()
           .required('Confirm Password Required')
           .oneOf([yup.ref('password')], 'Passwords do not match')
-          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value)),
+          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
         dietaryrestriction: yup.string(),
         remarks: yup.string(),
         emergency_contact_name: yup.string(),
@@ -96,10 +100,6 @@ const validationSchema = (minStudent, teams) => yup.object({
  * @param {Object[]} teams - An array of string which are team names
  */
 class AddTeamForm extends Component {
-  state = {
-    loadOnce: true,
-  }
-
   render() {
     const {
       firestore,
@@ -177,6 +177,8 @@ class AddTeamForm extends Component {
                     variant: 'success',
                   });
                 }
+              }).catch((err)=>{
+                console.log(err);
               });
             });
           };
@@ -213,6 +215,7 @@ class AddTeamForm extends Component {
                 />
                 {schoolId === '' && (
                 <Field
+                  required
                   name="school_id"
                   label="School"
                   options={schools}
@@ -244,7 +247,7 @@ class AddTeamForm extends Component {
                             </p>
                             { values.lengthStudents > minStudent
                             && (
-                            <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); this.setState({ loadOnce: true}); values.lengthStudents -= 1;}}>
+                            <Button style={{ float: 'right' }} type="button" size="small" color="primary" onClick={() => { arrayHelpers.remove(index); values.lengthStudents -= 1;}}>
                               Delete
                             </Button>)
                             }
@@ -377,6 +380,7 @@ class AddTeamForm extends Component {
                           emergency_contact_mobile: '',
                           emergency_contact_name: '',
                           emergency_contact_relation: '',
+                          email:'',
                         }); values.lengthStudents += 1; console.log(values.students)}}
                         size="small"
                         color="primary"
