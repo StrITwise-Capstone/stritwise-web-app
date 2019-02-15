@@ -59,10 +59,11 @@ const validationSchema = (minStudent, teams, teamName) => {
           dietaryrestriction: yup.string(),
           remarks: yup.string(),
           emergency_contact_name: yup.string(),
-          emergency_contact_mobile: yup.number('Invalid Mobile Number')
-            .typeError('Invalid Phone Number')
-            .max(99999999, 'Phone number is too long')
-            .min(9999999, 'Phone number is too short'),
+          emergency_contact_mobile: yup.number()
+            .moreThan(60000000, 'Enter a valid phone number')
+            .lessThan(100000000, 'Enter a valid phone number')
+            .required('Required')
+            .typeError('Invalid Phone Number'),
           emergency_contact_relation: yup.string(),
         }),
       )

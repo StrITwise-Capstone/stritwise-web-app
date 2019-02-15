@@ -19,6 +19,22 @@ import yup from '../../../../instances/yup';
 // regExpression
 const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
 
+// function to access to object
+const retrieveObject = (o, s) => {
+  s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+  s = s.replace(/^\./, '');           // strip a leading dot
+  var a = s.split('.');
+  for (var i = 0, n = a.length; i < n; ++i) {
+      var k = a[i];
+      if (k in o) {
+          o = o[k];
+      } else {
+          return;
+      }
+  }
+  return o;
+}
+
 // initialValues for the form
 const initialValues = {
   file: '',
@@ -36,7 +52,11 @@ const validationSchema = (teams, minStudent, maxStudent) => yup.array().of(yup.o
       Email: yup.string().email('Email is invalid').required().min(2, 'Email is too short'),
       Password: yup.string().required('Password is required').min(2).test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
       'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2, 'Emergency contact name is too short'),
-      'Emergency Contact Mobile': yup.string().required('Emergency Contact Mobile is required').min(2, 'Emergency contact mobile is too short'),
+      'Emergency Contact Mobile': yup.number()
+        .moreThan(60000000, 'Enter a valid phone number')
+        .lessThan(100000000, 'Enter a valid phone number')
+        .required('Required')
+        .typeError('Invalid Phone Number'),
       'Relation to Participant': yup.string().required('Relation to Participant is required').min(2, 'Relation to participant is too short'),
       'Dietary Restrictions': yup.string().required('Dietary Restrictions is required'),
       Remarks: yup.string().required('Remarks is required (You can put nil)'),
@@ -191,8 +211,9 @@ class UploadTeamForm extends Component {
         enqueueSnackbar('Error Adding Team...', {
           variant: 'error',
         });
-        validationSchema(teams, values.minStudent, values.maxStudent).validate(teamsData).catch((value) => {
-          snackbarMessage(value.errors);
+        validationSchema(teams, values.minStudent, values.maxStudent).validate(teamsData).catch((values) => {
+          const row = values.path.split('.')[0][1];
+          snackbarMessage(`${values.errors} in ${values.value[row].key} team`);
         });
       }
     };

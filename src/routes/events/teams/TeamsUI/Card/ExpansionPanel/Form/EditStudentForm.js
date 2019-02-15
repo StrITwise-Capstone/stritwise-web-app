@@ -153,7 +153,7 @@ const EditStudentForm = ({
             <Field
               required
               name="emergency_contact_mobile"
-              label="Emergency Contact Mobile Number"
+              label="Emergency Contact Mobile"
               type="text"
               component={TextField}
             />
