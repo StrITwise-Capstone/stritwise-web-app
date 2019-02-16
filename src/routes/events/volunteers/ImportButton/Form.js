@@ -18,15 +18,19 @@ var validationSchema = yup.array().of(yup.object().shape({
   key: yup.string().required(),
   values: yup.array().of(
     yup.object().shape({
-    'First Name': yup.string().required(),
-    'Last Name': yup.string().required(),
-    'Mobile Number': yup.string().required(),
-    'Email': yup.string().email().required(),
-    'Password': yup.string().required(),
-    'Dietary Restrictions': yup.string().required(),
-    'Student Number': yup.string().required(),
-    'Type of Volunteer': yup.string().required(),
-    'School': yup.string().required(),
+    'First Name': yup.string().required('First name is required'),
+    'Last Name': yup.string().required('Last name is required'),
+    'Mobile Number': yup.number()
+        .moreThan(60000000, 'Enter a valid phone number')
+        .lessThan(100000000, 'Enter a valid phone number')
+        .required('Mobile number is required')
+        .typeError('Invalid Phone Number'),
+    'Email': yup.string().email('Email is required').required(),
+    'Password': yup.string().required('Password is required'),
+    'Dietary Restrictions': yup.string().required('Dietary Restriction is required'),
+    'Student Number': yup.string().required('Student Number is required'),
+    'Type of Volunteer': yup.string().required('Volunteer Type is required'),
+    'School': yup.string().required('School is required'),
   }),
   ),
 }
@@ -60,11 +64,22 @@ const validateData = (volunteersData) => {
   return isValid;
 }
 
+// checkDuplicates
+// return true if there's duplicates
+function hasDuplicates(array) {
+  var valuesSoFar = Object.create(null);
+  for (var i = 0; i < array.length; ++i) {
+      var value = array[i];
+      if (value in valuesSoFar) {
+          return true;
+      }
+      valuesSoFar[value] = true;
+  }
+  return false;
+}
+
 class ImportButtonForm extends Component {
 
-
-  
-  
   handleSubmit = (values) => {
     const {
       enqueueSnackbar,
@@ -129,20 +144,66 @@ class ImportButtonForm extends Component {
       const unParsedContents = event.target.result;
       let volunteersData = parseData(unParsedContents).data;
       volunteersData = d3.nest()
-        .key(function(d) { return d['Student Number']; })
+        .key(function(d) { return d['Email']; })
         .entries(volunteersData);
-      console.log(volunteersData);
-      if (validateData(volunteersData)) {
-        uploadTeams(volunteersData);
-      }
-      if (!validateData(volunteersData)) {
-        enqueueSnackbar('Error Adding Team...', {
+      if (volunteersData.length === 0) {
+        enqueueSnackbar('Empty file', {
           variant: 'error',
         });
       }
+
+      /**
+       * Call back Action
+       */
+      const callbackAction = (value) => { 
+        if (value === true) {
+          enqueueSnackbar('There are users with same email', {
+            variant: 'error',
+          });
+        }
+        
+        if (value === false) {
+          if (validateData(volunteersData)) {
+            uploadTeams(volunteersData);
+          }
+          if (!validateData(volunteersData)) {
+            enqueueSnackbar('Error Adding Team...', {
+              variant: 'error',
+            });
+            validationSchema.validate(volunteersData).catch((values) => {
+              const row = values.path.split('.')[0][1];
+              enqueueSnackbar(`${values.errors} for ${values.value[row].key}`, {
+                variant: 'error',
+              });
+            });
+          }
+        };
+      }
+
+      /**
+       * Validate email
+       */
+      const validateEmail = () => {
+        const array = [];
+        Object.keys(volunteersData).map((volunteer, index) => {
+          volunteersData[index].values.map((volunteer2, index2) => {
+            array.push(volunteersData[index].values[index2].Email);
+            if ((volunteersData[index].values.length === index2 + 1) && (volunteersData.length === index + 1)) {
+              const right = hasDuplicates(array);
+              callbackAction(right);
+            }
+            return null;
+          });
+          return null;
+        });
+      };
+
+      if (volunteersData.length !== 0 ) {
+        validateEmail();
+      }
     };
     reader.readAsText(input);
-  };
+  }
 
   render() {
     return (

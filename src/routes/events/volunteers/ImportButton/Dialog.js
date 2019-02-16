@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Button,
   Dialog,
@@ -6,11 +6,14 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { withRouter } from 'react-router';
 
 import Form from './Form';
 import urlForDownloads from '../../../../config/urlForDownloads';
 
-class FormDialog extends React.Component {
+class FormDialog extends Component {
   state = {
     open: false,
   };
@@ -22,6 +25,26 @@ class FormDialog extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
+
+  /**
+   * Get all student emails
+   */
+  getStudentsEmail = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
+      const studentsEmail = [];
+      querySnapshot.forEach((doc) => {
+        studentsEmail.push(
+          doc.data().email,
+        );
+      });
+      this.setState({ studentsEmail, isLoading: false });
+    }).catch((error) => {
+      this.setState({ studentsEmail: [''] });
+      console.log(error);
+    });
+  }
 
   render() {
     const {
@@ -74,4 +97,8 @@ FormDialog.defaultProps = {
   eventuid: null,
   schools: null,
 };
-export default FormDialog;
+
+export default compose(
+  firestoreConnect(),
+  withRouter,
+)(FormDialog);
