@@ -163,11 +163,11 @@ class Overview extends Component {
                   <Typography className={classes.p} component="p">{event.desc}</Typography>
                   <Typography className={classes.p} component="p">
                     Start Date:
-                    {moment(event.start_date.toDate()).calendar()}
+                    {moment(event.start_date.toDate()).calendar(null,{sameElse: 'DD/MM/YYYY'})}
                   </Typography>
                   <Typography className={classes.p} component="p">
                     End Date:
-                    {moment(event.end_date.toDate()).calendar()}
+                    {moment(event.end_date.toDate()).calendar(null, {sameElse: 'DD/MM/YYYY'})}
                   </Typography>
                 </div>
               </Paper>

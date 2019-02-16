@@ -45,7 +45,14 @@ const validationSchema = yup.object({
     .default(() => (new Date())).typeError('Invalid date format'),
   enddate: yup.date('Invalid date format')
     .required('Required')
-    .default(() => (new Date())).typeError('Invalid date format'),
+    .default(() => (new Date())).typeError('Invalid date format')
+    .test('Date cannot be earlier than start date', 'Date cannot be earlier than start date', 
+      function help(value)
+      { const { startdate } = this.parent;
+        if (startdate && value) {
+          return startdate < value;
+        }
+      }),
   min_student: yup.number('Invalid number format')
     .integer('Invalid number format')
     .required('Required')

@@ -106,13 +106,13 @@ class EventCard extends Component {
             <Typography component="p">
               <strong>Start Date : </strong>
               {
-                moment(start_date.toDate()).calendar()
+                moment(start_date.toDate()).calendar(null, {sameElse: 'DD/MM/YYYY'})
               }
             </Typography>
             <Typography component="p">
               <strong>End Date : </strong>
               {
-                moment(end_date.toDate()).calendar()
+                moment(end_date.toDate()).calendar(null, {sameElse: 'DD/MM/YYYY'})
               }
             </Typography>
           </CardContent>
