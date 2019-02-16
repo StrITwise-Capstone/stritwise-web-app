@@ -144,7 +144,6 @@ class UploadTeamForm extends Component {
       minStudent,
       maxStudent,
     } = this.state;
-
     values.minStudent = minStudent;
     values.maxStudent = maxStudent;
 
@@ -153,7 +152,16 @@ class UploadTeamForm extends Component {
         variant: 'error',
       });
     };
-
+    /**
+     * Add the student email
+    */
+    const addStudentEmail = (student) => {
+      const emailList = studentsEmail;
+      emailList.push(student.Email);
+      return firestore.collection('events').doc(eventId).update({
+        students_email: emailList,
+      });
+    };
 
     const uploadTeams = (dataByTeamName, school_id) => {
       Object.keys(dataByTeamName).map((TeamIndex) => {
@@ -194,6 +202,7 @@ class UploadTeamForm extends Component {
               transaction_type: 'ADD_STUDENT',
               data,
             };
+            addStudentEmail(team.values[i]);
             firestore.collection('transactions').add(transaction);
           }
           handleClose();
@@ -282,7 +291,6 @@ class UploadTeamForm extends Component {
             school: yup.mixed()
               .test('Non-teachers need fill', '',
                 (value) => { 
-                  console.log(value);
                   if (teacherId === null && value !== { label: '', value: ''}) {
                     if (value.value.length < 1) {
                       enqueueSnackbar('No school is picked', {

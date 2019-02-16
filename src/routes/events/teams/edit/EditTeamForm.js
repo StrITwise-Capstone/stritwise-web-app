@@ -115,6 +115,34 @@ function hasDuplicates(array) {
  * @param {String} teacherId - A string of teacherId
  */
 class EditTeamForm extends Component {
+  state = {
+    studentsEmail: null,
+  }
+
+  componentDidUpdate() {
+    const { studentsEmail } = this.props;
+    if (this.state.studentsEmail === null) {
+      this.setState({ studentsEmail: studentsEmail });
+    }
+  }
+
+  /**
+     * Remove email from local copy
+  */
+  removeStudentEmail = (studentId) => {
+    const { studentsEmail } = this.state;
+    const { firestore, match } = this.props;
+    return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).get().then((docRef) => {
+      const emailOfStudent = docRef.data().email;
+      studentsEmail.map((email, index) => {
+        if (studentsEmail[index] === emailOfStudent) {
+          studentsEmail.splice(index, 1);
+          this.setState({ studentsEmail });
+        }
+        return null;
+      });
+    });
+  };
 
   render() {
     const {
@@ -130,9 +158,12 @@ class EditTeamForm extends Component {
       auth,
       teams,
       teamName,
-      studentsEmail,
       teacherId,
     } = this.props;
+    const {
+      studentsEmail,
+    } = this.state;
+    console.log(studentsEmail);
     return (
       <Formik
         enableReinitialize={true}
@@ -146,7 +177,17 @@ class EditTeamForm extends Component {
           } = values;
           
           const deleteStudents = () => {
-            deleteArray.map((student, index) => firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete());
+            deleteArray.map((student, index) => {
+              deleteStudentEmail(deleteArray[index]).then(() => {
+                return firestore.collection('events').doc(match.params.eventId).collection('students').doc(deleteArray[index]).delete()
+                  .then(() => {
+                    enqueueSnackbar('Deleted 1 student...', {
+                      variant: 'info',
+                    });
+                  });
+              });
+              return null;
+            });
           };
 
           
@@ -192,6 +233,35 @@ class EditTeamForm extends Component {
             }
             updatePage();
           });
+
+          /**
+           * Add the student email
+          */
+          const addStudentEmail = (student) => {
+            const emailList = studentsEmail;
+            emailList.push(student.email);
+            return firestore.collection('events').doc(eventId).update({
+              students_email: emailList,
+            });
+          };
+
+          /**
+           * Delete the student email
+          */
+          const deleteStudentEmail = (studentId) => {
+            return firestore.collection('events').doc(eventId).collection('students').doc(studentId).get().then((docRef) => {
+              const emailOfStudent = docRef.data().email;
+              studentsEmail.map((email, index) => {
+                if (studentsEmail[index] === emailOfStudent) {
+                  studentsEmail.splice(index, 1); 
+                }
+                return null;
+              });
+              return firestore.collection('events').doc(eventId).update({
+                students_email: studentsEmail,
+              });
+            });
+          };
 
           /**
           * Add all the new students in the current team
@@ -260,6 +330,7 @@ class EditTeamForm extends Component {
                       }
                       if (student.key === '') {
                         addNewStudent(student);
+                        addStudentEmail(student);
                       }
                     }
                     return null;
@@ -283,7 +354,6 @@ class EditTeamForm extends Component {
               return null;
             });
           };
-
           validateEmail();
         }}
       >
@@ -342,7 +412,7 @@ class EditTeamForm extends Component {
                               <Button style={{ float: 'right' }} type="button" size="small" color="primary" 
                                 onClick={() => {
                                   if (values.students[index] && values.students[index].key !== '' ) 
-                                  { values.deleteArray.push(values.students[index].key); }
+                                  { values.deleteArray.push(values.students[index].key); this.removeStudentEmail(values.students[index].key);}
                                   arrayHelpers.remove(index);
                                   values.lengthStudents -= 1;
                                   }}
@@ -487,6 +557,7 @@ class EditTeamForm extends Component {
                             emergency_contact_name: '',
                             emergency_contact_mobile: '',
                             emergency_contact_relation: '',
+                            shirt_size:'',
                             key:'',
                           });
                           values.lengthStudents += 1;

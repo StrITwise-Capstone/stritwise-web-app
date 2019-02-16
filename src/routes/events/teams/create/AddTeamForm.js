@@ -160,6 +160,19 @@ class AddTeamForm extends Component {
           /**
            * Add the students
           */
+          const addStudentsEmail = () => {
+            const emailList = studentsEmail;
+            students.map((student, index) => {
+              emailList.push(students[index].email);
+              return firestore.collection('events').doc(eventId).update({
+                students_email: emailList,
+              });
+            });
+          };
+
+          /**
+           * Add the students
+          */
           const addStudents = (docRef) => {
             students.map((student, index) => {
               const data = {
@@ -218,6 +231,7 @@ class AddTeamForm extends Component {
                 enqueueSnackbar('Added Team...', {
                   variant: 'info',
                 });
+                addStudentsEmail();
                 addStudents(docRef);
               });
             }
@@ -439,7 +453,8 @@ class AddTeamForm extends Component {
                           emergency_contact_mobile: '',
                           emergency_contact_name: '',
                           emergency_contact_relation: '',
-                          email:'',
+                          shirt_size: '',
+                          email: '',
                         }); values.lengthStudents += 1; console.log(values.students)}}
                         size="small"
                         color="primary"

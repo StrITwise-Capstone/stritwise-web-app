@@ -56,15 +56,39 @@ class TeamCard extends Component {
       match,
       enqueueSnackbar,
     } = this.props;
+
+    /**
+     * Delete the student email
+    */
+    const deleteStudentEmail = (studentId) => {
+      return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).get().then((docRef) => {
+        const emailOfStudent = docRef.data().email;
+        firestore.collection('events').doc(match.params.eventId).get().then((docRef2) => {
+          let studentsEmail = docRef2.data().students_email;
+          studentsEmail.map((email, index) => {
+            if (studentsEmail[index] === emailOfStudent) {
+              studentsEmail.splice(index, 1);
+              return firestore.collection('events').doc(match.params.eventId).update({
+                students_email: studentsEmail,
+              });
+            }
+            return null;
+          });
+        },
+        );
+      });
+    };
     const ref = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${teamId}`);
     ref.get().then(querySnapshot => querySnapshot.forEach((doc) => {
-      doc.ref.delete().then(() => {
-      }).catch(() => {
-        enqueueSnackbar('Student Not Deleted', {
-          variant: 'error',
+      deleteStudentEmail(doc.id).then(() => {
+        doc.ref.delete().then(() => {
+        }).catch(() => {
+          enqueueSnackbar('Student Not Deleted', {
+            variant: 'error',
+          });
         });
       });
-    })).finally((error)=> {
+    })).finally((error) => {
       this.deleteTeam();
     });
   }

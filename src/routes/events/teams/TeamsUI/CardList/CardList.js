@@ -196,7 +196,7 @@ class CardList extends Component {
       teamsList, isLoading, page, schools, teamsListCount,
     } = this.state;
     const {
-      event, teacherId,
+      event, teacherId, updatePage,
     } = this.props;
     const defaultOptions =  [{ label : '' , value : ''}];
     return (
@@ -304,7 +304,7 @@ class CardList extends Component {
                     <TeamCard
                       teamId={teamsList[teamuid].uid}
                       event={event}
-                      updatePage={() => { this.getTeams(); }}
+                      updatePage={updatePage}
                     />
                   </Grid>
                 ))

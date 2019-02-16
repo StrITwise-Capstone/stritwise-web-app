@@ -69,20 +69,14 @@ class AddTeam extends Component {
   getStudentsEmail = () => {
     const { firestore, match } = this.props;
     this.setState({ isLoading: true });
-    firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
-      const studentsEmail = [];
-      querySnapshot.forEach((doc) => {
-        studentsEmail.push(
-          doc.data().email,
-        );
-      });
-      this.setState({ studentsEmail, isLoading: false });
+    firestore.collection('events').doc(match.params.eventId).get().then((doc) => {
+      this.setState({ studentsEmail: doc.data().students_email, isLoading: false });
     }).catch((error) => {
       this.setState({ studentsEmail: [''] });
       console.log(error);
     });
   }
-  
+
   /**
    * Get all the schools
    */

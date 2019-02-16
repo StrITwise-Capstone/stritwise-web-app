@@ -127,16 +127,11 @@ class ViewTeams extends Component {
   getStudentsEmail = () => {
     const { firestore, match } = this.props;
     this.setState({ isLoading: true });
-    firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
-      const studentsEmail = ['null'];
-      querySnapshot.forEach((doc) => {
-        studentsEmail.push(
-          doc.data().email,
-        );
-      });
-      this.setState({ studentsEmail, isLoading: false });
+    firestore.collection('events').doc(match.params.eventId).get().then((doc) => {
+      this.setState({ studentsEmail: doc.data().students_email, isLoading: false });
     }).catch((error) => {
       this.setState({ studentsEmail: [''] });
+      console.log(error);
     });
   }
 
@@ -211,7 +206,7 @@ class ViewTeams extends Component {
                 teacherId={teacherId ? teacherId : null}
                 school={school}
                 teams={teams}
-                studentsEmail={studentsEmail}
+                studentsEmail={studentsEmail ? studentsEmail : ['']}
               />
             </div>)}
         >
@@ -225,6 +220,7 @@ class ViewTeams extends Component {
               eventId={match.params.eventId}
               event={event}
               teacherId={teacherId}
+              updatePage={() => { this.updatePage(); }}
             />)}
         </AdminLayout>
       </React.Fragment>
