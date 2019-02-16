@@ -28,7 +28,7 @@ var validationSchema = yup.array().of(yup.object().shape({
         .lessThan(100000000, 'Enter a valid phone number')
         .required('Mobile number is required')
         .typeError('Invalid Phone Number'),
-    'Email': yup.string().email('Email is required').required(),
+    'Email': yup.string().email('Invalid email format').required().typeError('Incorrect email format'),
     'Password': yup.string().required('Password is required').test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
     'Dietary Restrictions': yup.string().required('Dietary Restriction is required'),
     'Student Number': yup.string().required('Student Number is required'),

@@ -343,15 +343,11 @@ class EditTeamForm extends Component {
            * Validate email
            */
           const validateEmail = () => {
-            const array = [];
-            values.students.map((student, index) => {
-              array.push(values.students[index].email);
-              if (values.students.length === index + 1) {
-                const right = hasDuplicates(array);
-                callbackAction(right);
-              }
-              return null;
-            });
+            const array = values.students.map((student, index) =>
+              values.students[index].email
+            );
+            const right = hasDuplicates(array);
+            callbackAction(right);
           };
           validateEmail();
         }}

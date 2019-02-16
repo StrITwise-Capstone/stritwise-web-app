@@ -78,7 +78,8 @@ class TeamCard extends Component {
     /**
      * Delete the student email
     */
-    const deleteStudentEmail = (studentId) => {
+    const deleteStudentEmail = (student) => {
+      const studentId = student.id;
       return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).get().then((docRef) => {
         const emailOfStudent = docRef.data().email;
         studentsEmail.map((email, index) => {
@@ -90,22 +91,26 @@ class TeamCard extends Component {
         });
         return firestore.collection('events').doc(match.params.eventId).update({
           students_email: studentsEmail,
-        });
+        }).then(()=> student);
       });
     };
 
     const ref = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${teamId}`);
-    ref.get().then(querySnapshot => querySnapshot.forEach((doc) => {
-      deleteStudentEmail(doc.id).then(() => {
-        doc.ref.delete().then(() => {
-        }).catch(() => {
-          enqueueSnackbar('Student Not Deleted', {
-            variant: 'error',
+    ref.get().then((querySnapshot) => {
+      let index = 0;
+      querySnapshot.forEach((doc) => {
+        deleteStudentEmail(doc).then((doc) => {
+          doc.ref.delete().then(() => {
+            index += 1;
+            if (querySnapshot.size === index )
+              this.deleteTeam();
+          }).catch(() => {
+            enqueueSnackbar('Student Not Deleted', {
+              variant: 'error',
+            });
           });
         });
       });
-    })).finally((error) => {
-      this.deleteTeam();
     });
   }
 

@@ -241,15 +241,11 @@ class AddTeamForm extends Component {
            * Validate email
            */
           const validateEmail = () => {
-            const array = [];
-            students.map((student, index) => {
-              array.push(students[index].email);
-              if (students.length === index + 1) {
-                const right = hasDuplicates(array);
-                callbackAction(right);
-              }
-              return null;
-            });
+            const array = values.students.map((student, index) =>
+              values.students[index].email
+            );
+            const right = hasDuplicates(array);
+            callbackAction(right);
           };
           validateEmail();
         }
