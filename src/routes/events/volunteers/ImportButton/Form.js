@@ -13,6 +13,9 @@ import { compose } from 'redux';
 import * as d3 from 'd3';
 import yup from '../../../../instances/yup';
 
+// regExpression
+const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
+
 // validationSchema for volunteers
 var validationSchema = yup.array().of(yup.object().shape({
   key: yup.string().required(),
@@ -26,7 +29,7 @@ var validationSchema = yup.array().of(yup.object().shape({
         .required('Mobile number is required')
         .typeError('Invalid Phone Number'),
     'Email': yup.string().email('Email is required').required(),
-    'Password': yup.string().required('Password is required'),
+    'Password': yup.string().required('Password is required').test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
     'Dietary Restrictions': yup.string().required('Dietary Restriction is required'),
     'Student Number': yup.string().required('Student Number is required'),
     'Type of Volunteer': yup.string().required('Volunteer Type is required'),
@@ -146,6 +149,7 @@ class ImportButtonForm extends Component {
       volunteersData = d3.nest()
         .key(function(d) { return d['Email']; })
         .entries(volunteersData);
+
       if (volunteersData.length === 0) {
         enqueueSnackbar('Empty file', {
           variant: 'error',
@@ -167,7 +171,7 @@ class ImportButtonForm extends Component {
             uploadTeams(volunteersData);
           }
           if (!validateData(volunteersData)) {
-            enqueueSnackbar('Error Adding Team...', {
+            enqueueSnackbar('Error Adding Volunteers...', {
               variant: 'error',
             });
             validationSchema.validate(volunteersData).catch((values) => {
@@ -206,11 +210,30 @@ class ImportButtonForm extends Component {
   }
 
   render() {
+    const { enqueueSnackbar } = this.props;
     return (
       <Formik
-        initialValues={{
-        }}
+        initialValues={{}}
         onSubmit={this.handleSubmit}
+        validationSchema={
+          yup.object({
+            file: yup.mixed().required('File is required')
+              .test('fileFormat', 'Unsupported Format', 
+                (value) => {
+                  if (value) {
+                    if (!'application/vnd.ms-excel'.includes(value.type)) {
+                      enqueueSnackbar('Incorrect file format', {
+                        variant: 'error',
+                      });
+                      validationSchema.errors.file = 'Incorrect file message'; 
+                      return false;
+                    }
+                    return true;
+                  }
+                }
+              ),
+          })
+        }
         render={props => (
           <Form>
             <Field
