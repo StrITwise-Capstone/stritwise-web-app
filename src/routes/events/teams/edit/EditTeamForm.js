@@ -44,7 +44,13 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
   return yup.object({
     team_name: yup.string()
       .required('Required')
-      .test('team name', 'There is an existing team name', value => value && ((value === teamName) || !teams.indexOf(value) > -1)),
+      .test('team name', 'There is an existing team name', 
+        (value) => {
+          if (value !== teamName) {
+            return (!(teams.indexOf(value) > -1));
+          }
+          return true;
+        }),
     students: yup.array()
       .of(
         yup.object().shape({
@@ -73,6 +79,7 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
             .required('Required')
             .typeError('Invalid Phone Number'),
           emergency_contact_relation: yup.string(),
+          shirt_size: yup.string().required('Required shirt size'),
         }),
       )
       .required('Must have members')
@@ -104,6 +111,8 @@ function hasDuplicates(array) {
  * @param {Number} maxStudent - A number of maximum students for the team
  * @param {Function} updatePage - A function to refresh the page
  * @param {Object[]} teams - An array of string which are team names
+ * @param {Object[]} teamsEmail - An array of string which are student emails
+ * @param {String} teacherId - A string of teacherId
  */
 class EditTeamForm extends Component {
 
@@ -122,6 +131,7 @@ class EditTeamForm extends Component {
       teams,
       teamName,
       studentsEmail,
+      teacherId,
     } = this.props;
     return (
       <Formik
@@ -167,6 +177,7 @@ class EditTeamForm extends Component {
               relation: student.emergency_contact_relation,
             },
             modified_at: new Date(Date.now()),
+            shirt_size: student.shirt_size,
           }).then(() => {
             enqueueSnackbar('Updated 1 student...', {
               variant: 'info',
@@ -186,12 +197,13 @@ class EditTeamForm extends Component {
           * Add all the new students in the current team
           */
           const addNewStudent = (student) => {
+            const randomstring = Math.random().toString(36).slice(-8);
             const data = {
               team_id: teamId,
               first_name: student.first_name,
               last_name: student.last_name,
               email: student.email,
-              password: 'Test1234',
+              password: randomstring,
               dietary_restriction: student.dietaryrestriction ? student.dietaryrestriction : '',
               remarks: student.remarks ? student.remarks : '',
               emergency_contacts: {
@@ -201,6 +213,7 @@ class EditTeamForm extends Component {
               },
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
+              shirt_size: student.shirt_size,
             };
 
             data.eventId = eventId;
@@ -211,6 +224,9 @@ class EditTeamForm extends Component {
             };
             return firestore.collection('transactions').add(transaction).then((docRef) => {
               enqueueSnackbar('Added 1 student...', {
+                variant: 'info',
+              });
+              enqueueSnackbar('Refresh the page to see the updates', {
                 variant: 'info',
               });
               resetForm();
@@ -292,7 +308,7 @@ class EditTeamForm extends Component {
                   style={{ width: '500px' }}
                   index={-1}
                 />
-                {typeof (team.school_id) !== 'undefined'
+                {typeof (team.school_id) !== 'undefined' && teacherId === ''
                 && (
                 <Field
                   required
@@ -321,7 +337,7 @@ class EditTeamForm extends Component {
                               Student #
                               {index + 1}
                             </p>
-                            { index + 1 > minStudent
+                            { values.lengthStudents > minStudent
                               && (
                               <Button style={{ float: 'right' }} type="button" size="small" color="primary" 
                                 onClick={() => {
@@ -392,7 +408,16 @@ class EditTeamForm extends Component {
                               label="Dietary Restriction"
                               component={TextField}
                               placeholder="Nil / Halal / Vegetarian"
-                              style={{ width: '200px' }}
+                              style={{ width: '200px', marginRight:'50px' }}
+                            />
+                            <Field
+                              required
+                              name={`students[${index}].shirt_size`}
+                              type="text"
+                              label="Shirt Size"
+                              component={TextField}
+                              placeholder="XS/S/M/L/XL"
+                              style={{ width: '200px', marginRight: '50px' }}
                             />
                           </div>
                           <div>
@@ -440,6 +465,7 @@ class EditTeamForm extends Component {
                             <ErrorMessage name={`students[${index}].last_name`} />
                             <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
+                            <ErrorMessage name={`students[${index}].shirt_size`} />
                             <ErrorMessage name={`students[${index}].remarks`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_name`} />
@@ -507,6 +533,8 @@ EditTeamForm.propTypes = {
   schools: PropTypes.arrayOf(PropTypes.string).isRequired,
   teams: PropTypes.arrayOf(PropTypes.string),
   teamName: PropTypes.string.isRequired,
+  studentsEmail: PropTypes.arrayOf(PropTypes.string),
+  teacherId: PropTypes.string.isRequired,
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   match: PropTypes.any.isRequired,
@@ -520,6 +548,7 @@ EditTeamForm.defaultProps = {
   team: null,
   students: null,
   teams: null,
+  studentsEmail: null,
 };
 
 

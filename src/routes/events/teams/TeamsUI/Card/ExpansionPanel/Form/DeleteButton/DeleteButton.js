@@ -31,11 +31,11 @@ class DeleteButton extends Component {
           variant: 'success',
         });
         updatePage();
-      }).catch((err) => {
+      }).catch((error) => {
         enqueueSnackbar('Student Not Deleted', {
           variant: 'error',
         });
-        console.log(err);
+        console.log(error);
       });
   }
 

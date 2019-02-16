@@ -39,15 +39,26 @@ const initialValues = (
     emergency_contact_name: student.emergency_contact_name,
     emergency_contact_mobile: student.emergency_contact_mobile,
     emergency_contact_relation: student.emergency_contact_relation,
+    shirt_size: student.shirt_size,
 }}
 
 // validationSchema for student object
 const validationSchema = yup.object({
   firstname: yup.string()
-    .required('Required'),
+    .min(1, 'too short')
+    .required('First Name Required'),
   lastname: yup.string()
-    .required('Required'),
-  email: yup.string().email('Email is not valid'),
+    .required('Last Name Required'),
+  email: yup.string(),
+  dietary_restriction: yup.string(),
+  remarks: yup.string(),
+  emergency_contact_name: yup.string(),
+  emergency_contact_mobile: yup.number()
+    .moreThan(60000000, 'Enter a valid phone number')
+    .lessThan(100000000, 'Enter a valid phone number')
+    .required('Required')
+    .typeError('Invalid Phone Number'),
+  emergency_contact_relation: yup.string(),
 });
 
 /**
@@ -86,6 +97,12 @@ const EditStudentForm = ({
           remarks: values.remarks,
           email: values.email,
           modified_at: new Date(Date.now()),
+          shirt_size: values.shirt_size,
+          emergency_contacts: {
+            name: values.emergency_contact_name,
+            mobile: values.emergency_contact_mobile,
+            relation: values.emergency_contact_relation,
+          },
         });
       };
 
@@ -93,6 +110,7 @@ const EditStudentForm = ({
         enqueueSnackbar('Student Updated', {
           variant: 'success',
         });
+        updatePage();
         setSubmitting(false);
       }).catch((err) => {
         enqueueSnackbar('Student Not Updated', {
@@ -140,6 +158,13 @@ const EditStudentForm = ({
             <Field
               name="dietary_restriction"
               label="Dietary Restriction"
+              type="text"
+              component={TextField}
+            />
+            <Field
+              required
+              name="shirt_size"
+              label="Shirt Size"
               type="text"
               component={TextField}
             />
@@ -193,6 +218,7 @@ const EditStudentForm = ({
 
 EditStudentForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
+  updatePage: PropTypes.func.isRequired,
   eventId: PropTypes.string,
   studentId: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired,

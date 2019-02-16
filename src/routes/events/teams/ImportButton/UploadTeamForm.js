@@ -12,7 +12,6 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import * as d3 from 'd3';
 
-import * as util from '../../../../helper/util';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
@@ -20,10 +19,15 @@ import yup from '../../../../instances/yup';
 const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
 
 // initialValues for the form
-const initialValues = {
+const initialValues = (school) => { return {
   file: '',
-  school: '',
-};
+  school: {
+    value: school ? `${school.value}` : '',
+    label: school ? `${school.label}` : '',
+  },
+  }
+}
+;
 
 // validationSchema for the form
 const validationSchema = (teams, minStudent, maxStudent, studentsEmail) => yup.array().of(yup.object().shape({
@@ -45,8 +49,9 @@ const validationSchema = (teams, minStudent, maxStudent, studentsEmail) => yup.a
       'Relation to Participant': yup.string().required('Relation to Participant is required').min(2, 'Relation to participant is too short'),
       'Dietary Restrictions': yup.string().required('Dietary Restrictions is required'),
       Remarks: yup.string().required('Remarks is required (You can put nil)'),
+      'Shirt Size': yup.string().required('Shirt Size is required'),
     }),
-  ).min(minStudent, 'Not enough students in a team').max(maxStudent, 'Too many students in a team'),
+  ).min(minStudent, 'Not enough students').max(maxStudent, 'Too many students'),
 }));
 
 /**
@@ -149,6 +154,7 @@ class UploadTeamForm extends Component {
       });
     };
 
+
     const uploadTeams = (dataByTeamName, school_id) => {
       Object.keys(dataByTeamName).map((TeamIndex) => {
         const team = dataByTeamName[TeamIndex];
@@ -179,6 +185,7 @@ class UploadTeamForm extends Component {
               },
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
+              shirt_size: team.values[i]['Shirt Size'],
             };
             data.password = team.values[i].Password;
             data.eventId = eventId;
@@ -206,6 +213,12 @@ class UploadTeamForm extends Component {
       teamsData = d3.nest()
         .key(function(d) { return d['Team Name']; })
         .entries(teamsData);
+      
+      if (teamsData.length === 0) {
+        enqueueSnackbar('Empty file', {
+          variant: 'error',
+        });
+      }
 
       /**
        * Call back Action
@@ -216,7 +229,7 @@ class UploadTeamForm extends Component {
             variant: 'error',
           });
         }
-
+        
         if (value === false) {
           if (validateData(teamsData, teams, values.minStudent, values.maxStudent, studentsEmail)) {
             uploadTeams(teamsData, school_id);
@@ -245,29 +258,68 @@ class UploadTeamForm extends Component {
               const right = hasDuplicates(array);
               callbackAction(right);
             }
+            return null;
           });
+          return null;
         });
       };
-      validateEmail();
+
+      if (teamsData.length !== 0 ) {
+        validateEmail();
+      }
     };
     reader.readAsText(input);
   };
 
   render() {
-    const { schools } = this.props;
+    const { schools, teacherId, school, enqueueSnackbar } = this.props;
     return (
       <Formik
-        initialValues={initialValues}
+        initialValues={initialValues(school)}
         onSubmit={this.handleSubmit}
+        validationSchema={
+          yup.object({
+            school: yup.mixed()
+              .test('Non-teachers need fill', '',
+                (value) => { 
+                  console.log(value);
+                  if (teacherId === null && value !== { label: '', value: ''}) {
+                    if (value.value.length < 1) {
+                      enqueueSnackbar('No school is picked', {
+                        variant: 'error',
+                      });
+                    }
+                    return (value.value.length < 1);
+                  }
+                  return true;
+                },
+              ),
+            file: yup.mixed().required('File is required')
+              .test('fileFormat', 'Unsupported Format', 
+                (value) => {
+                  if (value) {
+                    if (!'application/vnd.ms-excel'.includes(value.type)) {
+                      enqueueSnackbar('Incorrect file format', {
+                        variant: 'error',
+                      });
+                      return false;
+                    }
+                    return true;
+                  }
+                }
+              ),
+          })
+        }
         render={props => (
           <Form>
+            {teacherId === null && (
             <Field
               required
               name="school"
               label="School"
               options={schools}
               component={Select}
-            />
+            />)}
             <Field
               required
               name="file"
@@ -283,7 +335,6 @@ class UploadTeamForm extends Component {
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={util.isFormValid(props.errors, props.touched)}
               >
                 Upload
               </Button>

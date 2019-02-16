@@ -64,7 +64,9 @@ class TeamCard extends Component {
           variant: 'error',
         });
       });
-    }));
+    })).finally((error)=> {
+      this.deleteTeam();
+    });
   }
 
   /**
@@ -100,6 +102,7 @@ class TeamCard extends Component {
           emergency_contact_name: currentStudent.emergency_contacts.name,
           emergency_contact_mobile: currentStudent.emergency_contacts.mobile,
           emergency_contact_relation: currentStudent.emergency_contacts.relation,
+          shirt_size: currentStudent.shirt_size,
         });
       });
       this.setState({ studentsList, isLoading: false });
@@ -144,7 +147,6 @@ class TeamCard extends Component {
    * Function to call delete team and delete student function
    */
   deleteTeamAndStudent = () => {
-    this.deleteTeam();
     this.deleteStudent();
   }
 
@@ -203,6 +205,18 @@ class TeamCard extends Component {
                         />
                       </React.Fragment>
                     ))}
+                    {Object.keys(studentsList).length < 1
+                      && (
+                        <div>
+                          <Typography component="p" className={classes.textField}>
+                            There is no students in the team
+                          </Typography>
+                          <Typography component="p" className={classes.textField}>
+                            Try refreshing to see the updated team
+                          </Typography>
+                        </div>
+                      )
+                    }
                   </div>
                 </List>
               </CardContent>

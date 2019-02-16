@@ -99,6 +99,7 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
           .required('Required')
           .typeError('Invalid Phone Number'),
         emergency_contact_relation: yup.string(),
+        shirt_size: yup.string().required('Required shirt size'),
       }),
     )
     .required('Must have members')
@@ -113,6 +114,7 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
  * @param {String} teacherId - A string of the teacherId of the teacher who is adding the team
  * @param {String} schoolId - A string of the schoolId of the school of the teacher
  * @param {Object[]} teamsName - An array of string which are team names
+ * @param {Object[]} studentsEmail - An array of string which are students email
  */
 class AddTeamForm extends Component {
   render() {
@@ -174,6 +176,7 @@ class AddTeamForm extends Component {
                 },
                 created_at: new Date(Date.now()),
                 modified_at: new Date(Date.now()),
+                shirt_size: students[index].shirt_size,
               };
               data.password = students[index].password;
               data.eventId = eventId;
@@ -211,7 +214,6 @@ class AddTeamForm extends Component {
             }
 
             if (value === false) {
-              console.log('create');
               addTeam().then((docRef) => {
                 enqueueSnackbar('Added Team...', {
                   variant: 'info',
@@ -260,14 +262,14 @@ class AddTeamForm extends Component {
                   style={{ width: '500px' }}
                   index={-1}
                 />
-                {schoolId === '' && (
-                <Field
-                  required
-                  name="school_id"
-                  label="School"
-                  options={schools}
-                  component={Select}
-                />)
+                {schoolId === '' && teacherId === '' && (
+                  <Field
+                    required
+                    name="school_id"
+                    label="School"
+                    options={schools}
+                    component={Select}
+                  />)
                 }
                 <FieldArray
                   name="students"
@@ -357,7 +359,16 @@ class AddTeamForm extends Component {
                               label="Dietary Restriction"
                               placeholder="Nil / Halal / Vegetarian"
                               component={TextField}
-                              style={{ width: '200px' }}
+                              style={{ width: '200px', marginRight: '50px' }}
+                            />
+                            <Field
+                              name={`students[${index}].shirt_size`}
+                              type="text"
+                              label="Shirt Size"
+                              placeholder="XS/S/M/L/XL"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                              required
                             />
                           </div>
                           <div>
@@ -405,6 +416,7 @@ class AddTeamForm extends Component {
                             <ErrorMessage name={`students[${index}].last_name`} />
                             <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].password`} />
+                            <ErrorMessage name={`students[${index}].shirt_size`} />
                             <ErrorMessage name={`students[${index}].confirmPassword`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].remarks`} />

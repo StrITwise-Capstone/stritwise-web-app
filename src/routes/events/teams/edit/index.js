@@ -86,6 +86,7 @@ class EditTeam extends Component {
           emergency_contact_name: student.emergency_contacts.name,
           emergency_contact_mobile: student.emergency_contacts.mobile,
           emergency_contact_relation: student.emergency_contacts.relation,
+          shirt_size: student.shirt_size,
         });
       });
       this.setState({ studentsList, isLoading: false });
@@ -113,10 +114,12 @@ class EditTeam extends Component {
           emergency_contact_name: student.emergency_contacts.name,
           emergency_contact_mobile: student.emergency_contacts.mobile,
           emergency_contact_relation: student.emergency_contacts.relation,
+          shirt_size: student.shirt_size,
         });
       });
       this.setState({ studentsList, isLoading: false });
     });
+    this.getTeam();
   }
 
   /**
@@ -179,11 +182,16 @@ class EditTeam extends Component {
       });
       this.setState({ studentsEmail, isLoading: false });
     }).catch((error) => {
+      this.setState({ studentsEmail: [''] });
       console.log(error);
     });
   }
 
   render() {
+    const {
+      user,
+      auth,
+    } = this.props;
     const {
       schools,
       studentsList,
@@ -193,8 +201,12 @@ class EditTeam extends Component {
       teams,
       studentsEmail,
     } = this.state;
+    let teacherId = '';
     if (schools.length > 1 && team) {
       team.school_name = this.getSchoolName(schools, team.school_id);
+    }
+    if (user && user.type === 'teacher') {
+      teacherId = auth.uid;
     }
     return (
       <AdminLayout
@@ -215,6 +227,7 @@ class EditTeam extends Component {
             teamName={team.team_name}
             updatePage={() => { this.updatePage(); }}
             studentsEmail={studentsEmail}
+            teacherId={teacherId}
           />)
         }
       </AdminLayout>
@@ -225,18 +238,27 @@ class EditTeam extends Component {
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   user: state.firestore.data.user,
+  auth: state.firebase.auth,
 });
 
 EditTeam.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   firestore: PropTypes.any.isRequired,
   match: PropTypes.any.isRequired,
+  user: PropTypes.any.isRequired,
+  auth: PropTypes.any.isRequired,
   /* eslint-enable */
 };
 
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect(),
+  firestoreConnect(props => [
+    {
+      collection: 'users',
+      storeAs: 'user',
+      doc: `${props.auth.uid}`,
+    },
+  ]),
   withSnackbar,
   withRouter,
 )(EditTeam);

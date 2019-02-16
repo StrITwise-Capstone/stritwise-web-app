@@ -78,6 +78,7 @@ class AddTeam extends Component {
       });
       this.setState({ studentsEmail, isLoading: false });
     }).catch((error) => {
+      this.setState({ studentsEmail: [''] });
       console.log(error);
     });
   }

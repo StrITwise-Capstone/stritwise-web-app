@@ -68,23 +68,38 @@ class ViewTeams extends Component {
   }
 
   /**
- * Get all the teams
- */
-  getTeams = () => {
-    const { firestore, match } = this.props;
-    this.setState({ isLoading: true });
-    firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
-      const teams = [];
-      querySnapshot.forEach((doc) => {
-        teams.push(
-          doc.data().team_name,
-        );
-      });
-      this.setState({ teams, isLoading: false });
-    }).catch((error) => {
-      console.log(error);
-    });
+   * Searches the schools array in state for a particular school_id
+   * @returns {string} The school name.
+   */
+  getSchoolName = (schools, userSchoolId) => {
+    if (schools !== null && userSchoolId !== null) {
+      const currentSchool = schools.find(schoolElement => (schoolElement.value === userSchoolId));
+      if (currentSchool) {
+        return currentSchool.label;
+      }
+      return 'N.A. ';
+    }
+    return 'ErrorLoading';
   }
+
+  /**
+   * Get all the teams
+   */
+    getTeams = () => {
+      const { firestore, match } = this.props;
+      this.setState({ isLoading: true });
+      firestore.collection('events').doc(match.params.eventId).collection('teams').get().then((querySnapshot) => {
+        const teams = [];
+        querySnapshot.forEach((doc) => {
+          teams.push(
+            doc.data().team_name,
+          );
+        });
+        this.setState({ teams, isLoading: false });
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
 
   /**
    * Get all the schools
@@ -113,7 +128,7 @@ class ViewTeams extends Component {
     const { firestore, match } = this.props;
     this.setState({ isLoading: true });
     firestore.collection('events').doc(match.params.eventId).collection('students').get().then((querySnapshot) => {
-      const studentsEmail = [];
+      const studentsEmail = ['null'];
       querySnapshot.forEach((doc) => {
         studentsEmail.push(
           doc.data().email,
@@ -121,7 +136,7 @@ class ViewTeams extends Component {
       });
       this.setState({ studentsEmail, isLoading: false });
     }).catch((error) => {
-      console.log(error);
+      this.setState({ studentsEmail: [''] });
     });
   }
 
@@ -139,6 +154,8 @@ class ViewTeams extends Component {
   updatePage = () => {
     this.setState({ isLoading: true });
     this.setState({ isLoading: false });
+    this.getTeams();
+    this.getStudentsEmail();
   }
 
   render() {
@@ -155,10 +172,13 @@ class ViewTeams extends Component {
       studentsEmail,
     } = this.state;
     let teacherId = '';
-    let schoolId = '';
+    let school = null;
     if (user && user.type === 'teacher') {
       teacherId = auth.uid;
-      schoolId = user.school_id;
+      school = {
+        value : user.school_id,
+        label : this.getSchoolName(schools, user.school_id)
+      };
     }
     return (
       <React.Fragment>
@@ -188,8 +208,8 @@ class ViewTeams extends Component {
                 updatePage={() => { this.updatePage(); }}
                 schools={schools}
                 eventId={match.params.eventId}
-                teacherId={teacherId}
-                schoolId={schoolId}
+                teacherId={teacherId ? teacherId : null}
+                school={school}
                 teams={teams}
                 studentsEmail={studentsEmail}
               />
