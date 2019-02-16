@@ -41,7 +41,7 @@ class FormDialog extends Component {
       studentsEmail,
       school,
     } = this.props;
-
+    console.log(studentsEmail);
     const {
       open,
     } = this.state;

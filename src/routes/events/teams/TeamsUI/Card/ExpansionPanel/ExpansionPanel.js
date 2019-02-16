@@ -31,6 +31,7 @@ const styles = theme => ({
  * @param {Boolean} deleteValue - A boolean whether can delete Student or not
 */
 class Student extends Component {
+
   render() {
     const {
       classes,

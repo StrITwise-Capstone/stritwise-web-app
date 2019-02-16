@@ -44,6 +44,21 @@ class TeamCard extends Component {
     isLoading: true,
     team: null,
     schoolsList: null,
+    studentsEmail: null,
+  }
+
+  /**
+   * Get all student emails
+   */
+  getStudentsEmail = () => {
+    const { firestore, match } = this.props;
+    this.setState({ isLoading: true });
+    firestore.collection('events').doc(match.params.eventId).get().then((doc) => {
+      this.setState({ studentsEmail: doc.data().students_email, isLoading: false });
+    }).catch((error) => {
+      this.setState({ studentsEmail: [''] });
+      console.log(error);
+    });
   }
 
   /**
@@ -57,27 +72,28 @@ class TeamCard extends Component {
       enqueueSnackbar,
     } = this.props;
 
+    const {
+      studentsEmail,
+    } = this.state;
     /**
      * Delete the student email
     */
     const deleteStudentEmail = (studentId) => {
       return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).get().then((docRef) => {
         const emailOfStudent = docRef.data().email;
-        firestore.collection('events').doc(match.params.eventId).get().then((docRef2) => {
-          let studentsEmail = docRef2.data().students_email;
-          studentsEmail.map((email, index) => {
-            if (studentsEmail[index] === emailOfStudent) {
-              studentsEmail.splice(index, 1);
-              return firestore.collection('events').doc(match.params.eventId).update({
-                students_email: studentsEmail,
-              });
-            }
-            return null;
-          });
-        },
-        );
+        studentsEmail.map((email, index) => {
+          if (studentsEmail[index] === emailOfStudent) {
+            studentsEmail.splice(index, 1);
+            this.setState({studentsEmail});
+          }
+          return null;
+        });
+        return firestore.collection('events').doc(match.params.eventId).update({
+          students_email: studentsEmail,
+        });
       });
     };
+
     const ref = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${teamId}`);
     ref.get().then(querySnapshot => querySnapshot.forEach((doc) => {
       deleteStudentEmail(doc.id).then(() => {
@@ -178,6 +194,7 @@ class TeamCard extends Component {
     this.getTeam();
     this.getSchools();
     this.getStudents();
+    this.getStudentsEmail();
   }
 
   render() {

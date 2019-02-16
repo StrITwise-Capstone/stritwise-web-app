@@ -163,7 +163,6 @@ class EditTeamForm extends Component {
     const {
       studentsEmail,
     } = this.state;
-    console.log(studentsEmail);
     return (
       <Formik
         enableReinitialize={true}

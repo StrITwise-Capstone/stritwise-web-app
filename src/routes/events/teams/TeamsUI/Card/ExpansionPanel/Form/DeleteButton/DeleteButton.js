@@ -32,20 +32,21 @@ class DeleteButton extends Component {
       return firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId).get().then((docRef) => {
         const emailOfStudent = docRef.data().email;
         firestore.collection('events').doc(match.params.eventId).get().then((docRef2) => {
-          let studentsEmail = docRef2.data().students_email;
+          const studentsEmail = docRef2.data().students_email;
           studentsEmail.map((email, index) => {
             if (studentsEmail[index] === emailOfStudent) {
               studentsEmail.splice(index, 1);
-              return firestore.collection('events').doc(match.params.eventId).update({
-                students_email: studentsEmail,
-              });
             }
             return null;
+          });
+          return firestore.collection('events').doc(match.params.eventId).update({
+            students_email: studentsEmail,
           });
         }
         );
       });
     };
+
     deleteStudentEmail(studentId)
       .then(() => {
         firestore.collection('events').doc(match.params.eventId).collection('students').doc(studentId)
@@ -60,6 +61,11 @@ class DeleteButton extends Component {
             });
             console.log(error);
           });
+      }).catch((error) => {
+        enqueueSnackbar('Student Not Deleted', {
+          variant: 'error',
+        });
+        console.log(error);
       });
   }
 

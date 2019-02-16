@@ -455,7 +455,7 @@ class AddTeamForm extends Component {
                           emergency_contact_relation: '',
                           shirt_size: '',
                           email: '',
-                        }); values.lengthStudents += 1; console.log(values.students)}}
+                        }); values.lengthStudents += 1;}}
                         size="small"
                         color="primary"
                       >
