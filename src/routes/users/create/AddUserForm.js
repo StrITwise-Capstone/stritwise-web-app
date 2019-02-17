@@ -102,7 +102,7 @@ class AddUserForm extends Component {
           };
           if (values.type === 'teacher') {
             if (typeof (values.school.value) !== 'undefined') {
-              addValues.school_id = values.school.value;
+              addValues.school = values.school.value;
             }
           }
           const transaction = {

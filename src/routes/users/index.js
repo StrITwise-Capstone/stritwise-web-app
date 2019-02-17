@@ -71,7 +71,7 @@ class Users extends Component {
         Name: `${user.data.firstName} ${user.data.lastName}`,
         Mobile: user.data.mobile,
         Type: user.data.type,
-        School: schoolsMap[user.data.school_id] ? schoolsMap[user.data.school_id] : 'N.A.',
+        School: schoolsMap[user.data.school] ? schoolsMap[user.data.school] : 'N.A.',
         Email: user.data.email,
       }
     ));
@@ -88,9 +88,9 @@ class Users extends Component {
       const { schools } = this.props;
       const school = schools.find(schElement => (schElement.name === search.toUpperCase()));
       if (school !== undefined) {
-        collection = collection.where('school_id', '==', school.id);
+        collection = collection.where('school', '==', school.id);
       } else {
-        collection = collection.where('school_id', '==', '1');
+        collection = collection.where('school', '==', '1');
       }
     }
     return collection;
