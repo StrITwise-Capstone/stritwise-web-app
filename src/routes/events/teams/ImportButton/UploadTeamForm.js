@@ -127,7 +127,7 @@ class UploadTeamForm extends Component {
     });
   }
 
-  handleSubmit = (values) => {
+  handleSubmit = (values,{ setSubmitting, resetForm }) => {
     const {
       firestore,
       eventId,
@@ -251,6 +251,7 @@ class UploadTeamForm extends Component {
               const row = values.path.split('.')[0][1];
               snackbarMessage(`${values.errors} in ${values.value[row].key} team`);
             });
+            setSubmitting(false);
           }
         };
       }
@@ -291,7 +292,7 @@ class UploadTeamForm extends Component {
             school: yup.mixed()
               .test('Non-teachers need fill', '',
                 (value) => { 
-                  if (teacherId === null && value !== { label: '', value: ''}) {
+                  if (teacherId === null && value !== { label: '', value: '' }) {
                     if (value.value.length < 1) {
                       enqueueSnackbar('No school is picked', {
                         variant: 'error',
@@ -344,6 +345,7 @@ class UploadTeamForm extends Component {
                 type="submit"
                 variant="contained"
                 color="primary"
+                disabled={props.isSubmitting === true}
               >
                 Upload
               </Button>

@@ -172,7 +172,7 @@ const AddEventForm = ({
               label="Start Date"
               type="date"
               component={DatePicker}
-              placeholder="(e.g. 11/02/2019 03:00 PM)"
+              placeholder="(e.g. YY/MM/DD)"
             />
             <Field
               required
@@ -180,7 +180,7 @@ const AddEventForm = ({
               label="End Date"
               type="date"
               component={DatePicker}
-              placeholder="(e.g. 11/02/2019 03:59 PM)"
+              placeholder="(e.g. YY/MM/DD)"
             />
             <Field
               required

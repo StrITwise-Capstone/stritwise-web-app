@@ -263,10 +263,10 @@ class TeamCard extends Component {
                       && (
                         <div>
                           <Typography component="p" className={classes.textField}>
-                            There are students in the team.
+                            Student accounts are being generated
                           </Typography>
                           <Typography component="p" className={classes.textField}>
-                            Please refresh the page to see updates.
+                            Please try again
                           </Typography>
                         </div>
                       )
