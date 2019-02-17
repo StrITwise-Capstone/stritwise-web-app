@@ -40,7 +40,7 @@ class Profile extends Component {
 
     if (isAuthenticated && user) {
       if (user.type === 'teacher') {
-        firestore.collection('schools').doc(user.school_id).get().then((doc) => {
+        firestore.collection('schools').doc(user.school).get().then((doc) => {
           if (doc.exists) {
             const { name } = doc.data();
             callback(name);

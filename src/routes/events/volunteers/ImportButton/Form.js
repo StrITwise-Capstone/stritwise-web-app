@@ -210,7 +210,7 @@ class ImportButtonForm extends Component {
   }
 
   render() {
-    const { enqueueSnackbar } = this.props;
+    // const { enqueueSnackbar } = this.props;
     return (
       <Formik
         initialValues={{}}
@@ -218,20 +218,21 @@ class ImportButtonForm extends Component {
         validationSchema={
           yup.object({
             file: yup.mixed().required('File is required')
-              .test('fileFormat', 'Unsupported Format', 
-                (value) => {
-                  if (value) {
-                    if (!'application/vnd.ms-excel'.includes(value.type)) {
-                      enqueueSnackbar('Incorrect file format', {
-                        variant: 'error',
-                      });
-                      validationSchema.errors.file = 'Incorrect file message'; 
-                      return false;
-                    }
-                    return true;
-                  }
-                }
-              ),
+              // .test('fileFormat', 'Unsupported Format', 
+              //   (value) => {
+              //     if (value) {
+              //       if (!'application/vnd.ms-excel'.includes(value.type)) {
+              //         enqueueSnackbar('Incorrect file format', {
+              //           variant: 'error',
+              //         });
+              //         validationSchema.errors.file = 'Incorrect file message'; 
+              //         return false;
+              //       }
+              //       return true;
+              //     }
+              //   }
+              // ),
+              ,
           })
         }
         render={props => (

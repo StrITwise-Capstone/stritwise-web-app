@@ -40,7 +40,7 @@ const validationSchema = Yup.object({
     .typeError('Invalid Phone Number'),
   email: Yup.string()
     .email('Email not valid')
-    .required('Required'),
+    .required('Required').typeError('Incorrect email format'),
   password: Yup.string()
     .required('Password Required')
     .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),

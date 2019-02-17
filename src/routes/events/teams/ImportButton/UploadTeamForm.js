@@ -39,7 +39,7 @@ const validationSchema = (teams, minStudent, maxStudent, studentsEmail) => yup.a
       'Last Name': yup.string().required('Last Name is required').min(2, 'Last name is too short'),
       Email: yup.string().email('Email is invalid').required().min(2, 'Email is too short')
         .test('Existing Email name', 'There is an existing email', value => value && !(studentsEmail.indexOf(value) > -1)),
-      Password: yup.string().required('Password is required').min(2).test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
+      Password: yup.string().required('Password is required').test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
       'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2, 'Emergency contact name is too short'),
       'Emergency Contact Mobile': yup.number()
         .moreThan(60000000, 'Enter a valid phone number')
@@ -48,10 +48,10 @@ const validationSchema = (teams, minStudent, maxStudent, studentsEmail) => yup.a
         .typeError('Invalid Phone Number'),
       'Relation to Participant': yup.string().required('Relation to Participant is required').min(2, 'Relation to participant is too short'),
       'Dietary Restrictions': yup.string().required('Dietary Restrictions is required'),
-      Remarks: yup.string().required('Remarks is required (You can put nil)'),
+      Remarks: yup.string().required('Remarks is required'),
       'Shirt Size': yup.string().required('Shirt Size is required'),
     }),
-  ).min(minStudent, 'Not enough students').max(maxStudent, 'Too many students'),
+  ).min(minStudent, `Minimum of ${minStudent} required`).max(maxStudent, `Maximum of ${maxStudent} required`),
 }));
 
 /**
@@ -205,7 +205,6 @@ class UploadTeamForm extends Component {
             addStudentEmail(team.values[i]);
             firestore.collection('transactions').add(transaction);
           }
-          handleClose();
           if (parseInt(TeamIndex) + 1 === dataByTeamName.length) updatePage();
         });
       });
@@ -241,6 +240,7 @@ class UploadTeamForm extends Component {
         
         if (value === false) {
           if (validateData(teamsData, teams, values.minStudent, values.maxStudent, studentsEmail)) {
+            handleClose();
             uploadTeams(teamsData, school_id);
           }
           if (!validateData(teamsData, teams, values.minStudent, values.maxStudent, studentsEmail)) {
@@ -303,19 +303,20 @@ class UploadTeamForm extends Component {
                 },
               ),
             file: yup.mixed().required('File is required')
-              .test('fileFormat', 'Unsupported Format', 
-                (value) => {
-                  if (value) {
-                    if (!'application/vnd.ms-excel'.includes(value.type)) {
-                      enqueueSnackbar('Incorrect file format', {
-                        variant: 'error',
-                      });
-                      return false;
-                    }
-                    return true;
-                  }
-                }
-              ),
+              // .test('fileFormat', 'Unsupported Format', 
+              //   (value) => {
+              //     if (value) {
+              //       if (!{'application/vnd.ms-excel','text/csv'}.includes(value.type)) {
+              //         enqueueSnackbar('Incorrect file format', {
+              //           variant: 'error',
+              //         });
+              //         return false;
+              //       }
+              //       return true;
+              //     }
+              //   }
+              // )
+              ,
           })
         }
         render={props => (

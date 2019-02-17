@@ -171,8 +171,8 @@ class ViewTeams extends Component {
     if (user && user.type === 'teacher') {
       teacherId = auth.uid;
       school = {
-        value : user.school_id,
-        label : this.getSchoolName(schools, user.school_id)
+        value : user.school,
+        label : this.getSchoolName(schools, user.school)
       };
     }
     return (

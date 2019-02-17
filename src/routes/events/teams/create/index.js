@@ -121,7 +121,7 @@ class AddTeam extends Component {
     let schoolId = '';
     if (user && user.type === 'teacher') {
       teacherId = auth.uid;
-      schoolId = user.school_id;
+      schoolId = user.school;
     }
     return (
       <AdminLayout
@@ -140,7 +140,7 @@ class AddTeam extends Component {
             teacherId={teacherId}
             schoolId={schoolId}
             teamsName={teamsName}
-            studentsEmail={studentsEmail}
+            studentsEmail={studentsEmail ? studentsEmail : ['']}
           />)
         }
       </AdminLayout>

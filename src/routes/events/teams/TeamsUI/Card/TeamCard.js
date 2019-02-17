@@ -97,6 +97,10 @@ class TeamCard extends Component {
 
     const ref = firestore.collection('events').doc(match.params.eventId).collection('students').where('team_id', '==', `${teamId}`);
     ref.get().then((querySnapshot) => {
+      if (querySnapshot.empty)
+      {
+        this.deleteTeam();
+      }
       let index = 0;
       querySnapshot.forEach((doc) => {
         deleteStudentEmail(doc).then((doc) => {
@@ -110,6 +114,10 @@ class TeamCard extends Component {
             });
           });
         });
+      });
+    }).catch((doc) => {
+      enqueueSnackbar('Team is not deleted', {
+        variant: 'error',
       });
     });
   }
@@ -255,10 +263,10 @@ class TeamCard extends Component {
                       && (
                         <div>
                           <Typography component="p" className={classes.textField}>
-                            There is no students in the team
+                            There are students in the team.
                           </Typography>
                           <Typography component="p" className={classes.textField}>
-                            Try refreshing to see the updated team
+                            Please refresh the page to see updates.
                           </Typography>
                         </div>
                       )

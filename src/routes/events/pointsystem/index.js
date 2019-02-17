@@ -118,7 +118,7 @@ class PointSystem extends Component {
           }
           {
             rankingsList.length < 4 && (
-              <Typography component="p">There's less than 4 teams.</Typography>
+              <Typography component="p">There is less than 4 teams.</Typography>
             )
           }
           {isNotLoading && rankingsList.length >= 4 && (

@@ -62,7 +62,7 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
           email: yup.string()
             .email('Invalid email')
             .required('Email Required')
-            .test('Existing Email name', 'There is an existing email', 
+            .test('Existing Email name', 'The email address is in use by another account.', 
               function validateEmail(value) {
                 if (this.parent.key === '') {
                   return !(studentsEmail.indexOf(value) > -1);
@@ -194,10 +194,11 @@ class EditTeamForm extends Component {
           * Update the current team
           */
           const updateTeam = () => {
+            console.log(team.credit);
             return firestore.collection('events').doc(eventId).collection('teams').doc(teamId).update({
               team_name: values.team_name,
               school_id: values.school_id.value,
-              credit: 0,
+              credit: team.credit ? team.credit : 0,
               modified_at: new Date(Date.now()),
             });
           };
@@ -343,11 +344,15 @@ class EditTeamForm extends Component {
            * Validate email
            */
           const validateEmail = () => {
-            const array = values.students.map((student, index) =>
-              values.students[index].email
-            );
-            const right = hasDuplicates(array);
-            callbackAction(right);
+            const array = [];
+            values.students.map((student, index) => {
+              array.push(values.students[index].email);
+              if (values.students.length === index + 1) {
+                const right = hasDuplicates(array);
+                callbackAction(right);
+              }
+              return null;
+            });
           };
           validateEmail();
         }}
@@ -481,7 +486,7 @@ class EditTeamForm extends Component {
                               type="text"
                               label="Shirt Size"
                               component={TextField}
-                              placeholder="XS/S/M/L/XL"
+                              placeholder="M"
                               style={{ width: '200px', marginRight: '50px' }}
                             />
                           </div>

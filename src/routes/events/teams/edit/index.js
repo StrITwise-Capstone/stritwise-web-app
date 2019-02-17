@@ -221,7 +221,7 @@ class EditTeam extends Component {
             teams={teams}
             teamName={team.team_name}
             updatePage={() => { this.updatePage(); }}
-            studentsEmail={studentsEmail}
+            studentsEmail={studentsEmail ? studentsEmail : ['']}
             teacherId={teacherId}
           />)
         }

@@ -82,7 +82,7 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
         email: yup.string()
           .email('Invalid email')
           .required('Email Required')
-          .test('Existing Email name', 'There is an existing email', value => value && !(studentsEmail.indexOf(value) > -1)),
+          .test('Existing Email name', 'The email address is in use by another account', value => value && !(studentsEmail.indexOf(value) > -1)),
         password: yup.string()
           .required('Password Required')
           .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
@@ -241,11 +241,15 @@ class AddTeamForm extends Component {
            * Validate email
            */
           const validateEmail = () => {
-            const array = values.students.map((student, index) =>
-              values.students[index].email
-            );
-            const right = hasDuplicates(array);
-            callbackAction(right);
+            const array = [];
+            values.students.map((student, index) => {
+              array.push(values.students[index].email);
+              if (values.students.length === index + 1) {
+                const right = hasDuplicates(array);
+                callbackAction(right);
+              }
+              return null;
+            });
           };
           validateEmail();
         }
@@ -375,7 +379,7 @@ class AddTeamForm extends Component {
                               name={`students[${index}].shirt_size`}
                               type="text"
                               label="Shirt Size"
-                              placeholder="XS/S/M/L/XL"
+                              placeholder="M"
                               component={TextField}
                               style={{ marginRight: '50px', width: '200px' }}
                               required
