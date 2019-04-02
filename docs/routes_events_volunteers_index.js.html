@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/events/volunteers/index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/events/volunteers/index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { withRouter } from 'react-router';
+import { compose } from 'redux';
+import { Link } from 'react-router-dom';
+import {
+  Button,
+  MenuItem,
+  CircularProgress,
+} from '@material-ui/core';
+import { withSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
+
+import * as Yup from 'yup';
+import { Formik, Form, Field } from 'formik';
+import * as util from '../../../helper/util';
+import TextField from '../../../components/UI/TextField/TextField';
+import Dropdown from '../../../components/UI/Dropdown/Dropdown';
+import AdminLayout from '../../../hoc/Layout/AdminLayout';
+import CustomTable from '../../../components/UI/Table/Table';
+import Dialog from './ImportButton/Dialog';
+import urlForDownloads from '../../../config/urlForDownloads';
+
+/**
+ * Class representing the Volunteers component.
+ */
+class Volunteers extends Component {
+  state = {
+    // Filter option.
+    filter: 'all',
+    // Search value.
+    search: '',
+    // Checks if retrieval of Table data is still running.
+    isLoading: false,
+  }
+
+  /**
+   * Function that is invoked to perform update operation on the data.
+   */
+  handleEdit = (volunteerID) => {
+    const { history, match } = this.props;
+    history.push(`/events/${match.params.eventId}/volunteers/${volunteerID}/edit`);
+  }
+
+  /**
+   * Function that is invoked to perform delete operation on the data.
+   */
+  handleDelete = (volunteerId) => {
+    const { firestore, match } = this.props;
+    return firestore.collection('events').doc(match.params.eventId).collection('volunteers').doc(volunteerId).delete()
+      .then(() => (console.log('Document is being deleted!')))
+      .catch(error => (console.error('Error removing document: ', error)));
+  }
+
+  refreshState = () => {
+    this.setState({isLoading: true});
+    this.setState({isLoading: false});
+  }
+
+  /**
+   * Function that is invoked to map documents to the intended format.
+   */
+  handleDocsList = (docsList) => {
+    let data = [];
+    const { teams } = this.props;
+    if (!teams) {
+      return null;
+    }
+    const teamsMap = teams.reduce((map, obj) => {
+      // Disabled eslint error for performance reasons
+      /* eslint no-param-reassign: "off" */
+      map[obj.id] = obj.team_name;
+      /* eslint-enable */
+      return map;
+    }, {});
+    data = docsList.map(volunteer => (
+      {
+        id: volunteer.uid,
+        Name: `${volunteer.data.first_name} ${volunteer.data.last_name}`,
+        Mobile: volunteer.data.mobile,
+        Type: volunteer.data.type,
+        Team: teamsMap[volunteer.data.team_id] ? teamsMap[volunteer.data.team_id] : 'N.A.',
+        School: volunteer.data.school,
+        'Dietary Restrictions': volunteer.data.dietary_restriction ? volunteer.data.dietary_restriction : 'Nil',
+        'Student Number': volunteer.data.student_no,
+        Email: volunteer.data.email,
+      }
+    ));
+    return data;
+  }
+
+  /**
+   * Function that is invoked to apply the filter to the filterRef variable in state.
+   */
+  handleCustomFilter = (collection, filter, search) => {
+    if (filter === 'type' || filter === 'school') {
+      collection = collection.where(filter, '==', search);
+    }
+    return collection;
+  }
+
+
+  render() {
+    const { firestore, match } = this.props;
+    const { filter, search, isLoading } = this.state;
+    const colRef = firestore.collection('events').doc(match.params.eventId).collection('volunteers');
+    const action = (
+      &lt;div style={{ display: 'flex' }}>
+        &lt;Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to={`/events/${match.params.eventId}/volunteers/create`}
+        >
+        Add Volunteer
+        &lt;/Button>
+        &lt;Button
+          type="button"
+          variant="contained"
+          color="secondary"
+          href={urlForDownloads.volunteersTemplate}
+        >
+        Download Template
+        &lt;/Button>
+        &lt;Dialog
+          refreshState={this.refreshState}
+          eventuid={match.params.eventId}
+        />
+      &lt;/div>
+    );
+    return (
+      &lt;AdminLayout
+        title="Volunteers"
+        // subtitle="Some longer subtitle here"
+        action={action}
+      >
+        { isLoading &amp;&amp; &lt;CircularProgress /> }
+        {!isLoading
+        &amp;&amp; (
+        &lt;CustomTable
+          // For Table
+          // title="Volunteers"
+          colRef={colRef}
+          handleDocsList={this.handleDocsList}
+          enableEdit
+          handleEdit={this.handleEdit}
+          enableDelete
+          handleDelete={this.handleDelete}
+          handleCustomFilter={this.handleCustomFilter}
+          filter={filter}
+          search={search}
+        >
+          &lt;div>
+            &lt;Formik
+              enableReinitialize
+              initialValues={{ search: '', filter: 'all' }}
+              validationSchema={Yup.object({
+                search: Yup.string(),
+                filter: Yup.mixed()
+                  .singleSelectRequired('Required'),
+              })}
+              onSubmit={(values, { setSubmitting }) => {
+                this.setState({ search: values.search, filter: values.filter });
+                setSubmitting(false);
+              }}
+            >
+              {({
+                errors,
+                touched,
+                handleSubmit,
+                values,
+              }) => (
+                &lt;Form onSubmit={handleSubmit}>
+                  &lt;div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                    &lt;Field
+                      required
+                      name="filter"
+                      label="Filter"
+                      component={Dropdown}
+                    >
+                      &lt;MenuItem value="all">
+                        &lt;em>All&lt;/em>
+                      &lt;/MenuItem>
+                      &lt;MenuItem value="type">Type&lt;/MenuItem>
+                      &lt;MenuItem value="school">School&lt;/MenuItem>
+                    &lt;/Field>
+                  &lt;/div>
+                  {values.filter !== 'all' ? (
+                    &lt;div style={{ display: 'inline-block', minWidth: '200px', paddingRight: '5px' }}>
+                      &lt;Field
+                        required
+                        name="search"
+                        label="Search"
+                        type="text"
+                        component={TextField}
+                      />
+                    &lt;/div>
+                  ) : (
+                    null
+                  )}
+
+                  &lt;div style={{ display: 'inline-block', verticalAlign: 'bottom' }}>
+                    &lt;Button
+                      type="submit"
+                      variant="outlined"
+                      color="primary"
+                      disabled={util.isFormValid(errors, touched)}
+                    >
+                      Filter
+                    &lt;/Button>
+                  &lt;/div>
+                &lt;/Form>
+              )}
+            &lt;/Formik>
+          &lt;/div>
+        &lt;/CustomTable>)}
+      &lt;/AdminLayout>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  teams: state.firestore.ordered.teams,
+  auth: state.firebase.auth,
+});
+
+
+Volunteers.propTypes = {
+  teams: PropTypes.arrayOf(PropTypes.shape({})),
+  firestore: PropTypes.shape({}).isRequired,
+  auth: PropTypes.shape({}).isRequired,
+  history: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({}).isRequired,
+};
+
+Volunteers.defaultProps = {
+  teams: [],
+};
+
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect(props => (
+    [
+      {
+        collection: 'events', doc: `${props.match.params.eventId}`, subcollections: [{ collection: 'teams' }], storeAs: 'teams',
+      },
+    ]
+  )),
+  withRouter,
+  withSnackbar,
+)(Volunteers);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AddCrewForm.html">AddCrewForm</a></li><li><a href="AddUser.html">AddUser</a></li><li><a href="AddUserForm.html">AddUserForm</a></li><li><a href="AddVolunteer.html">AddVolunteer</a></li><li><a href="AdminLayout.html">AdminLayout</a></li><li><a href="EditPoints.html">EditPoints</a></li><li><a href="EditUser.html">EditUser</a></li><li><a href="EditVolunteer.html">EditVolunteer</a></li><li><a href="Points.html">Points</a></li><li><a href="Table.html">Table</a></li><li><a href="TablePaginationActions.html">TablePaginationActions</a></li><li><a href="TableToolbar.html">TableToolbar</a></li><li><a href="Users.html">Users</a></li><li><a href="Volunteers.html">Volunteers</a></li></ul><h3>Global</h3><ul><li><a href="global.html#EditCrewForm">EditCrewForm</a></li><li><a href="global.html#EditTeamPtsForm">EditTeamPtsForm</a></li><li><a href="global.html#EditUserForm">EditUserForm</a></li><li><a href="global.html#TableView">TableView</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Feb 04 2019 03:23:59 GMT+0800 (Russia TZ 7 Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

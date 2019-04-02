@@ -1,28 +1,58 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { withRouter } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
+import {
+  createMuiTheme,
+  MuiThemeProvider,
+} from '@material-ui/core/styles';
+
+
+import PointSystem from './routes/events/pointsystem';
 import './App.css';
+import Layout from './hoc/Layout/Layout';
+import Routes from './routes/routes/index';
+import styles from './App.styles';
+
+function getRoutes(location) {
+  var getRoute = null;
+  if (!location.pathname.includes("pointsystem"))
+  { 
+    getRoute = 
+  (<Layout>
+    <Routes />
+  </Layout>)
+  }
+  else{
+    console.log("here")
+    getRoute = (<PointSystem/>)
+  }
+  return getRoute;
+}
 
 class App extends Component {
+  theme = createMuiTheme(styles);
+  
   render() {
+    const { location } = this.props;
+    const getRoute = getRoutes(location);
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit src/App.js and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
+      <React.Fragment>
+        <MuiThemeProvider theme={this.theme}>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
           >
-            Learn React
-          </a>
-        </header>
-      </div>
+          {
+            getRoute
+          }
+          </SnackbarProvider>
+        </MuiThemeProvider>
+      </React.Fragment>
     );
   }
 }
 
-export default App;
+export default withRouter(App);
