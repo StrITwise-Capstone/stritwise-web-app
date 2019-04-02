@@ -96,10 +96,10 @@ class Navbar extends Component {
               className={classes.grow}
             >
               <img
-                onClick={() => { history.push('/'); }}
-                src="/assets/logo.gif"
+                onClick={() => { window.open('http://www.stritwise.sg/', '_blank'); }}
+                src="/assets/logo.png"
                 alt="StrITwise Web Application"
-                style={{ height: '50px' }}
+                style={{ height: '40px',marginLeft:'10px',margintop:'8px' }}
               />
             </Typography>
             {isAuthenticated

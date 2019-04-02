@@ -25,8 +25,6 @@ import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
 
-// regExpression
-const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
 
 // initialValues for team Object
 const initialValues = (minStudent, schools, teacherId, schoolId) => {
@@ -88,14 +86,7 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
           .email('Invalid email')
           .required('Email Required')
           .test('Existing Email name', 'The email address is in use by another account', value => value && !(studentsEmail.indexOf(value) > -1)),
-        password: yup.string()
-          .required('Password Required')
-          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
-        confirmPassword: yup.string()
-          .required('Confirm Password Required')
-          .oneOf([yup.ref('password')], 'Passwords do not match')
-          .test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
-        dietaryrestriction: yup.string(),
+       dietaryrestriction: yup.string(),
         remarks: yup.string(),
         emergency_contact_name: yup.string(),
         emergency_contact_mobile: yup.number()
@@ -198,7 +189,7 @@ class AddTeamForm extends Component {
                 shirt_size: students[index].shirt_size,
                 badge:students[index].badge,
               };
-              data.password = students[index].password;
+              data.password = 'TeSt1234';
               data.eventId = eventId;
               const transaction = {
                 user_id: auth.uid,
@@ -350,26 +341,6 @@ class AddTeamForm extends Component {
                               placeholder="guangyao@gmail.com"
                               component={TextField}
                               style={{ marginRight: '50px', width: '200px' }}
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Field
-                              name={`students[${index}].password`}
-                              type="password"
-                              label="Password"
-                              placeholder="Test1234"
-                              component={TextField}
-                              style={{ marginRight: '50px', width: '200px' }}
-                              required
-                            />
-                            <Field
-                              name={`students[${index}].confirmPassword`}
-                              type="password"
-                              label="Confirm Password"
-                              placeholder="Test1234"
-                              component={TextField}
-                              style={{ width: '200px' }}
                               required
                             />
                           </div>

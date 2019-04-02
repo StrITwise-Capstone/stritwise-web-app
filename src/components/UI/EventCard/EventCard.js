@@ -24,7 +24,7 @@ const styles = {
     height: '100%',
   },
   media: {
-    height: '150px',
+    height: '200px',
   },
 };
 

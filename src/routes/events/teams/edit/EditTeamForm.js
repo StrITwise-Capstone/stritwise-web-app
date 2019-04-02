@@ -19,11 +19,13 @@ import {
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import TextField from '../../../../components/UI/TextField/TextField';
 import ErrorMessage from '../../../../components/UI/ErrorMessage/ErrorMessage';
 import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
+import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
 
 // initialValues for team object
 const initialValues = (team, minStudent, students) => {
@@ -80,6 +82,7 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
             .typeError('Invalid Phone Number'),
           emergency_contact_relation: yup.string(),
           shirt_size: yup.string().required('Required shirt size'),
+          badge: yup.string().required('Required badge name'),
         }),
       )
       .required('Must have members')
@@ -219,6 +222,7 @@ class EditTeamForm extends Component {
             },
             modified_at: new Date(Date.now()),
             shirt_size: student.shirt_size,
+            badge: student.badge,
           }).then(() => {
             enqueueSnackbar('Updated 1 student...', {
               variant: 'info',
@@ -284,6 +288,7 @@ class EditTeamForm extends Component {
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
               shirt_size: student.shirt_size,
+              badge: student.badge,
             };
 
             data.eventId = eventId;
@@ -482,13 +487,26 @@ class EditTeamForm extends Component {
                             />
                             <Field
                               required
-                              name={`students[${index}].shirt_size`}
+                              name={`students[${index}].badge`}
                               type="text"
-                              label="Shirt Size"
+                              label="Badge"
                               component={TextField}
                               placeholder="M"
                               style={{ width: '200px', marginRight: '50px' }}
                             />
+                            <Field
+                                name={`students[${index}].shirt_size`}
+                                label="Shirt Size"
+                                component={Dropdown}
+                                required>
+                                  <MenuItem value="XXS">XXS</MenuItem>
+                                  <MenuItem value="XS">XS</MenuItem>
+                                  <MenuItem value="S">S</MenuItem>
+                                  <MenuItem value="M">M</MenuItem>
+                                  <MenuItem value="L">L</MenuItem>
+                                  <MenuItem value="XL">XL</MenuItem>
+                                  <MenuItem value="XXL">XXL</MenuItem>
+                              </Field>
                           </div>
                           <div>
                             <Field
@@ -536,6 +554,7 @@ class EditTeamForm extends Component {
                             <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].shirt_size`} />
+                            <ErrorMessage name={`students[${index}].badge`} />
                             <ErrorMessage name={`students[${index}].remarks`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_name`} />
@@ -558,6 +577,7 @@ class EditTeamForm extends Component {
                             emergency_contact_mobile: '',
                             emergency_contact_relation: '',
                             shirt_size:'',
+                            badge: '',
                             key:'',
                           });
                           values.lengthStudents += 1;

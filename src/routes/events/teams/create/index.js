@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
 
-import Form from './AddTeamForm';
+import Form from './AddTeamForm2';
 import AdminLayout from '../../../../hoc/Layout/AdminLayout';
 
 const styles = () => ({
