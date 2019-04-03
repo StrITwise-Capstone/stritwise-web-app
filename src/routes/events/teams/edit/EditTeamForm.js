@@ -72,10 +72,6 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
                 return true;
               },
             ),
-          mobile:yup.number().moreThan(60000000, 'Enter a valid phone number')
-            .lessThan(100000000, 'Enter a valid phone number')
-            .required('Required')
-            .typeError('Invalid Phone Number'),
           dietaryrestriction: yup.string(),
           remarks: yup.string(),
           emergency_contact_name: yup.string(),
@@ -217,7 +213,6 @@ class EditTeamForm extends Component {
             first_name: student.first_name,
             last_name: student.last_name,
             email: student.email,
-            mobile: student.mobile,
             dietary_restriction: student.dietary_restriction ? student.dietary_restriction : '',
             remarks: student.remarks ? student.remarks : '',
             emergency_contacts: {
@@ -282,7 +277,6 @@ class EditTeamForm extends Component {
               first_name: student.first_name,
               last_name: student.last_name,
               email: student.email,
-              mobile: student.mobile,
               password: randomstring,
               dietary_restriction: student.dietaryrestriction ? student.dietaryrestriction : '',
               remarks: student.remarks ? student.remarks : '',
@@ -480,16 +474,7 @@ class EditTeamForm extends Component {
                               style={{ marginRight: '50px', width: '200px' }}
                               required
                             />)
-                            }                            
-                            <Field
-                              name={`students[${index}].mobile`}
-                              type="text"
-                              label="Mobile Number"
-                              required
-                              component={TextField}
-                              placeholder="92130832"
-                              style={{ marginRight: '50px', width: '200px' }}
-                            />
+                            }
                           </div>
                           <div>
                             <Field
@@ -509,6 +494,19 @@ class EditTeamForm extends Component {
                               placeholder="M"
                               style={{ width: '200px', marginRight: '50px' }}
                             />
+                            <Field
+                                name={`students[${index}].shirt_size`}
+                                label="Shirt Size"
+                                component={Dropdown}
+                                required>
+                                  <MenuItem value="XXS">XXS</MenuItem>
+                                  <MenuItem value="XS">XS</MenuItem>
+                                  <MenuItem value="S">S</MenuItem>
+                                  <MenuItem value="M">M</MenuItem>
+                                  <MenuItem value="L">L</MenuItem>
+                                  <MenuItem value="XL">XL</MenuItem>
+                                  <MenuItem value="XXL">XXL</MenuItem>
+                              </Field>
                           </div>
                           <div>
                             <Field
@@ -523,7 +521,7 @@ class EditTeamForm extends Component {
                             <Field
                               name={`students[${index}].emergency_contact_mobile`}
                               type="text"
-                              label="Emergency Contact Mobile"
+                              label="Mobile"
                               required
                               component={TextField}
                               placeholder="92130832"
@@ -540,21 +538,6 @@ class EditTeamForm extends Component {
                             />
                           </div>
                           <div>
-                          <Field
-                                name={`students[${index}].shirt_size`}
-                                label="Shirt Size"
-                                component={Dropdown}
-                                required>
-                                  <MenuItem value="XXS">XXS</MenuItem>
-                                  <MenuItem value="XS">XS</MenuItem>
-                                  <MenuItem value="S">S</MenuItem>
-                                  <MenuItem value="M">M</MenuItem>
-                                  <MenuItem value="L">L</MenuItem>
-                                  <MenuItem value="XL">XL</MenuItem>
-                                  <MenuItem value="XXL">XXL</MenuItem>
-                              </Field>
-                          </div>
-                          <div>
                             <Field
                               name={`students[${index}].remarks`}
                               type="text"
@@ -568,7 +551,6 @@ class EditTeamForm extends Component {
                           <div>
                             <ErrorMessage name={`students[${index}].first_name`} />
                             <ErrorMessage name={`students[${index}].last_name`} />
-                            <ErrorMessage name={`students[${index}].mobile`} />
                             <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].shirt_size`} />
@@ -588,7 +570,6 @@ class EditTeamForm extends Component {
                           arrayHelpers.push({
                             first_name: '',
                             last_name: '',
-                            mobile:'',
                             email: '',
                             dietary_restriction: '',
                             remarks: '',
