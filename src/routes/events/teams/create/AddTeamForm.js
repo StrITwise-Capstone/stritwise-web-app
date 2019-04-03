@@ -37,6 +37,7 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => {
         return { 
           first_name: '',
           last_name: '',
+          mobile:'',
           password: '',
           confirmPassword: '',
           dietaryrestriction: '',
@@ -84,6 +85,10 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
           .required('First Name Required'),
         last_name: yup.string()
           .required('Last Name Required'),
+        mobile:yup.number().moreThan(60000000, 'Enter a valid phone number')
+          .lessThan(100000000, 'Enter a valid phone number')
+          .required('Required')
+          .typeError('Invalid Phone Number'),
         email: yup.string()
           .email('Invalid email')
           .required('Email Required')
@@ -185,6 +190,7 @@ class AddTeamForm extends Component {
                 team_id: docRef.id,
                 first_name: students[index].first_name,
                 last_name: students[index].last_name,
+                mobile: students[index].mobile,
                 email: students[index].email,
                 dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
                 remarks: students[index].remarks ? students[index].remarks : '',
@@ -352,6 +358,15 @@ class AddTeamForm extends Component {
                               style={{ marginRight: '50px', width: '200px' }}
                               required
                             />
+                            <Field
+                              name={`students[${index}].mobile`}
+                              type="text"
+                              label="Mobile Number"
+                              placeholder="89765432"
+                              component={TextField}
+                              style={{ marginRight: '50px', width: '200px' }}
+                              required
+                            />
                           </div>
                           <div>
                             <Field
@@ -391,21 +406,6 @@ class AddTeamForm extends Component {
                             style={{ marginRight: '50px', width: '200px' }}
                             required
                             />
-                            <div style={{ marginRight: '50px', width: '200px' }}>
-                              <Field
-                                name={`students[${index}].shirt_size`}
-                                label="Shirt Size"
-                                component={Dropdown}
-                                required>
-                                  <MenuItem value="XXS">XXS</MenuItem>
-                                  <MenuItem value="XS">XS</MenuItem>
-                                  <MenuItem value="S">S</MenuItem>
-                                  <MenuItem value="M">M</MenuItem>
-                                  <MenuItem value="L">L</MenuItem>
-                                  <MenuItem value="XL">XL</MenuItem>
-                                  <MenuItem value="XXL">XXL</MenuItem>
-                              </Field>
-                            </div>
                           </div>
                           <div>
                             <Field
@@ -421,7 +421,7 @@ class AddTeamForm extends Component {
                               name={`students[${index}].emergency_contact_mobile`}
                               type="text"
                               required
-                              label="Mobile"
+                              label="Emergency Contact Mobile"
                               placeholder="98745123"
                               component={TextField}
                               style={{ width: '200px', marginRight: '50px' }}
@@ -436,6 +436,21 @@ class AddTeamForm extends Component {
                               style={{ width: '200px' }}
                             />
                           </div>
+                          <div style={{ marginRight: '50px', width: '200px' }}>
+                              <Field
+                                name={`students[${index}].shirt_size`}
+                                label="Shirt Size"
+                                component={Dropdown}
+                                required>
+                                  <MenuItem value="XXS">XXS</MenuItem>
+                                  <MenuItem value="XS">XS</MenuItem>
+                                  <MenuItem value="S">S</MenuItem>
+                                  <MenuItem value="M">M</MenuItem>
+                                  <MenuItem value="L">L</MenuItem>
+                                  <MenuItem value="XL">XL</MenuItem>
+                                  <MenuItem value="XXL">XXL</MenuItem>
+                              </Field>
+                            </div>
                           <div>
                             <Field
                               name={`students[${index}].remarks`}
@@ -451,6 +466,7 @@ class AddTeamForm extends Component {
                             <ErrorMessage name={`students[${index}].first_name`} />
                             <ErrorMessage name={`students[${index}].last_name`} />
                             <ErrorMessage name={`students[${index}].email`} />
+                            <ErrorMessage name={`students[${index}].mobile`} />
                             <ErrorMessage name={`students[${index}].password`} />
                             <ErrorMessage name={`students[${index}].shirt_size`} />
                             <ErrorMessage name={`students[${index}].badge`} />

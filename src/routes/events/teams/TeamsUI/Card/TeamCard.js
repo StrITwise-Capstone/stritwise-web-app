@@ -151,6 +151,7 @@ class TeamCard extends Component {
           mobile: currentStudent.mobile,
           email: currentStudent.email,
           dietary_restriction: currentStudent.dietary_restriction,
+          badge: currentStudent.badge,
           remarks: currentStudent.remarks,
           emergency_contact_name: currentStudent.emergency_contacts.name,
           emergency_contact_mobile: currentStudent.emergency_contacts.mobile,
