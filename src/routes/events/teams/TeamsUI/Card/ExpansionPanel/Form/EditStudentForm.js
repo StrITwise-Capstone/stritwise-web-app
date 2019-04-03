@@ -54,13 +54,12 @@ const validationSchema = yup.object({
   lastname: yup.string()
     .required('Last Name Required'),
   email: yup.string(),
-  badge: yup.string()
-    .required('Required'),
   mobile:yup.number()
     .moreThan(60000000, 'Enter a valid phone number')
     .lessThan(100000000, 'Enter a valid phone number')
     .required('Required')
-    .typeError('Invalid Phone Number'),
+    .typeError('Invalid Phone Number'), 
+  badge: yup.string().required('Required Badge Name'),
   dietary_restriction: yup.string(),
   remarks: yup.string(),
   emergency_contact_name: yup.string(),
@@ -107,8 +106,8 @@ const EditStudentForm = ({
           dietary_restriction: values.dietary_restriction,
           remarks: values.remarks,
           email: values.email,
-          badge: values.badge,
           mobile: values.mobile,
+          badge: values.badge,
           modified_at: new Date(Date.now()),
           shirt_size: values.shirt_size,
           emergency_contacts: {
@@ -162,7 +161,6 @@ const EditStudentForm = ({
             />
             <Field
               required
-              disabled
               name="email"
               label="Email"
               type="text"
@@ -189,6 +187,19 @@ const EditStudentForm = ({
               component={TextField}
             />
             <Field
+              name= "shirt_size"
+              label="Shirt Size"
+              component={Dropdown}
+              required>
+                <MenuItem value="XXS">XXS</MenuItem>
+                <MenuItem value="XS">XS</MenuItem>
+                <MenuItem value="S">S</MenuItem>
+                <MenuItem value="M">M</MenuItem>
+                <MenuItem value="L">L</MenuItem>
+                <MenuItem value="XL">XL</MenuItem>
+                <MenuItem value="XXL">XXL</MenuItem>
+            </Field>
+            <Field
               required
               name="emergency_contact_name"
               label="Emergency Contact Name"
@@ -209,19 +220,6 @@ const EditStudentForm = ({
               type="text"
               component={TextField}
             />
-            <Field
-              name="shirt_size"
-              label="Shirt Size"
-              component={Dropdown}
-              required>
-                <MenuItem value="XXS">XXS</MenuItem>
-                <MenuItem value="XS">XS</MenuItem>
-                <MenuItem value="S">S</MenuItem>
-                <MenuItem value="M">M</MenuItem>
-                <MenuItem value="L">L</MenuItem>
-                <MenuItem value="XL">XL</MenuItem>
-                <MenuItem value="XXL">XXL</MenuItem>
-            </Field>
             <Field
               name="remarks"
               label="Remarks"

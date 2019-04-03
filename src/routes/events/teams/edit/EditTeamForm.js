@@ -72,10 +72,11 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
                 return true;
               },
             ),
-          mobile:yup.number().moreThan(60000000, 'Enter a valid phone number')
+          mobile:yup.number()
+            .moreThan(60000000, 'Enter a valid phone number')
             .lessThan(100000000, 'Enter a valid phone number')
             .required('Required')
-            .typeError('Invalid Phone Number'),
+            .typeError('Invalid Phone Number'),   
           dietaryrestriction: yup.string(),
           remarks: yup.string(),
           emergency_contact_name: yup.string(),
@@ -86,7 +87,7 @@ const validationSchema = (minStudent, teams, teamName, studentsEmail) => {
             .typeError('Invalid Phone Number'),
           emergency_contact_relation: yup.string(),
           shirt_size: yup.string().required('Required shirt size'),
-          badge: yup.string().required('Required badge name'),
+          badge: yup.string().required('Required Badge Name'),
         }),
       )
       .required('Must have members')
@@ -218,6 +219,7 @@ class EditTeamForm extends Component {
             last_name: student.last_name,
             email: student.email,
             mobile: student.mobile,
+            badge: student.badge,
             dietary_restriction: student.dietary_restriction ? student.dietary_restriction : '',
             remarks: student.remarks ? student.remarks : '',
             emergency_contacts: {
@@ -227,7 +229,6 @@ class EditTeamForm extends Component {
             },
             modified_at: new Date(Date.now()),
             shirt_size: student.shirt_size,
-            badge: student.badge,
           }).then(() => {
             enqueueSnackbar('Updated 1 student...', {
               variant: 'info',
@@ -282,8 +283,9 @@ class EditTeamForm extends Component {
               first_name: student.first_name,
               last_name: student.last_name,
               email: student.email,
-              mobile: student.mobile,
+              mobile:student.mobile,
               password: randomstring,
+              badge:student.badge,
               dietary_restriction: student.dietaryrestriction ? student.dietaryrestriction : '',
               remarks: student.remarks ? student.remarks : '',
               emergency_contacts: {
@@ -294,7 +296,6 @@ class EditTeamForm extends Component {
               created_at: new Date(Date.now()),
               modified_at: new Date(Date.now()),
               shirt_size: student.shirt_size,
-              badge: student.badge,
             };
 
             data.eventId = eventId;
@@ -480,15 +481,15 @@ class EditTeamForm extends Component {
                               style={{ marginRight: '50px', width: '200px' }}
                               required
                             />)
-                            }                            
+                            }
                             <Field
                               name={`students[${index}].mobile`}
                               type="text"
                               label="Mobile Number"
-                              required
+                              placeholder="89765432"
                               component={TextField}
-                              placeholder="92130832"
                               style={{ marginRight: '50px', width: '200px' }}
+                              required
                             />
                           </div>
                           <div>
@@ -501,14 +502,29 @@ class EditTeamForm extends Component {
                               style={{ width: '200px', marginRight:'50px' }}
                             />
                             <Field
-                              required
-                              name={`students[${index}].badge`}
-                              type="text"
-                              label="Badge"
-                              component={TextField}
-                              placeholder="M"
-                              style={{ width: '200px', marginRight: '50px' }}
+                            name={`students[${index}].badge`}
+                            type="text"
+                            label="Badge Name"
+                            placeholder="eg. ZengGuangYao"
+                            component={TextField}
+                            style={{ marginRight: '50px', width: '200px' }}
+                            required
                             />
+                            <div style={{ marginRight: '50px', width: '200px' }}>
+                              <Field
+                                name={`students[${index}].shirt_size`}
+                                label="Shirt Size"
+                                component={Dropdown}
+                                required>
+                                  <MenuItem value="XXS">XXS</MenuItem>
+                                  <MenuItem value="XS">XS</MenuItem>
+                                  <MenuItem value="S">S</MenuItem>
+                                  <MenuItem value="M">M</MenuItem>
+                                  <MenuItem value="L">L</MenuItem>
+                                  <MenuItem value="XL">XL</MenuItem>
+                                  <MenuItem value="XXL">XXL</MenuItem>
+                              </Field>
+                            </div>
                           </div>
                           <div>
                             <Field
@@ -540,21 +556,6 @@ class EditTeamForm extends Component {
                             />
                           </div>
                           <div>
-                          <Field
-                                name={`students[${index}].shirt_size`}
-                                label="Shirt Size"
-                                component={Dropdown}
-                                required>
-                                  <MenuItem value="XXS">XXS</MenuItem>
-                                  <MenuItem value="XS">XS</MenuItem>
-                                  <MenuItem value="S">S</MenuItem>
-                                  <MenuItem value="M">M</MenuItem>
-                                  <MenuItem value="L">L</MenuItem>
-                                  <MenuItem value="XL">XL</MenuItem>
-                                  <MenuItem value="XXL">XXL</MenuItem>
-                              </Field>
-                          </div>
-                          <div>
                             <Field
                               name={`students[${index}].remarks`}
                               type="text"
@@ -568,11 +569,11 @@ class EditTeamForm extends Component {
                           <div>
                             <ErrorMessage name={`students[${index}].first_name`} />
                             <ErrorMessage name={`students[${index}].last_name`} />
-                            <ErrorMessage name={`students[${index}].mobile`} />
                             <ErrorMessage name={`students[${index}].email`} />
+                            <ErrorMessage name={`students[${index}].mobile`} />
+                            <ErrorMessage name={`students[${index}].badge`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].shirt_size`} />
-                            <ErrorMessage name={`students[${index}].badge`} />
                             <ErrorMessage name={`students[${index}].remarks`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_name`} />
@@ -588,15 +589,15 @@ class EditTeamForm extends Component {
                           arrayHelpers.push({
                             first_name: '',
                             last_name: '',
-                            mobile:'',
                             email: '',
+                            mobile: '',
+                            badge: '',
                             dietary_restriction: '',
                             remarks: '',
                             emergency_contact_name: '',
                             emergency_contact_mobile: '',
                             emergency_contact_relation: '',
                             shirt_size:'',
-                            badge: '',
                             key:'',
                           });
                           values.lengthStudents += 1;

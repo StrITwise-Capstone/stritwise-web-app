@@ -25,6 +25,9 @@ import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
 
+
+// regExpression
+
 // initialValues for team Object
 const initialValues = (minStudent, schools, teacherId, schoolId) => {
   return {
@@ -34,8 +37,8 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => {
         return { 
           first_name: '',
           last_name: '',
-          mobile:'',
           dietaryrestriction: '',
+          mobile:'',
           remarks: '',
           emergency_contact_mobile: '',
           emergency_contact_name: '',
@@ -71,7 +74,6 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
   team_name: yup.string()
     .required('Required')
     .test('team name', 'There is an existing team name', value => value && !(teamsName.indexOf(value) > -1)),
-  school_id: yup.string().required('Required'),
   students: yup.array()
     .of(
       yup.object().shape({
@@ -80,15 +82,15 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
           .required('First Name Required'),
         last_name: yup.string()
           .required('Last Name Required'),
-        mobile:yup.number()
-          .moreThan(60000000, 'Enter a valid phone number')
-          .lessThan(100000000, 'Enter a valid phone number')
-          .required('Required')
-          .typeError('Invalid Phone Number'),       
         email: yup.string()
           .email('Invalid email')
           .required('Email Required')
           .test('Existing Email name', 'The email address is in use by another account', value => value && !(studentsEmail.indexOf(value) > -1)),
+        mobile:yup.number()
+          .moreThan(60000000, 'Enter a valid phone number')
+          .lessThan(100000000, 'Enter a valid phone number')
+          .required('Required')
+          .typeError('Invalid Phone Number'),   
         dietaryrestriction: yup.string(),
         remarks: yup.string(),
         emergency_contact_name: yup.string(),
@@ -99,7 +101,7 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
           .typeError('Invalid Phone Number'),
         emergency_contact_relation: yup.string(),
         shirt_size: yup.string().required('Required shirt size'),
-        badge: yup.string().required('Required Badge Name')
+        badge: yup.string().required('Required Badge Name'),
       }),
     )
     .required('Must have members')
@@ -178,8 +180,8 @@ class AddTeamForm extends Component {
               const data = {
                 team_id: docRef.id,
                 first_name: students[index].first_name,
-                last_name: students[index].last_name,
                 mobile: students[index].mobile,
+                last_name: students[index].last_name,
                 email: students[index].email,
                 badge: students[index].badge,
                 dietary_restriction: students[index].dietaryrestriction ? students[index].dietaryrestriction : '',
@@ -193,7 +195,7 @@ class AddTeamForm extends Component {
                 modified_at: new Date(Date.now()),
                 shirt_size: students[index].shirt_size,
               };
-              data.password = 'TeSt1234';
+              data.password = "Test1234";
               data.eventId = eventId;
               const transaction = {
                 user_id: auth.uid,
@@ -375,6 +377,21 @@ class AddTeamForm extends Component {
                             style={{ marginRight: '50px', width: '200px' }}
                             required
                             />
+                            <div style={{ marginRight: '50px', width: '200px' }}>
+                                <Field
+                                  name={`students[${index}].shirt_size`}
+                                  label="Shirt Size"
+                                  component={Dropdown}
+                                  required>
+                                    <MenuItem value="XXS">XXS</MenuItem>
+                                    <MenuItem value="XS">XS</MenuItem>
+                                    <MenuItem value="S">S</MenuItem>
+                                    <MenuItem value="M">M</MenuItem>
+                                    <MenuItem value="L">L</MenuItem>
+                                    <MenuItem value="XL">XL</MenuItem>
+                                    <MenuItem value="XXL">XXL</MenuItem>
+                                </Field>
+                            </div>
                           </div>
                           <div>
                             <Field
@@ -405,21 +422,6 @@ class AddTeamForm extends Component {
                               style={{ width: '200px' }}
                             />
                           </div>
-                          <div style={{ marginRight: '50px', width: '200px' }}>
-                              <Field
-                                name={`students[${index}].shirt_size`}
-                                label="Shirt Size"
-                                component={Dropdown}
-                                required>
-                                  <MenuItem value="XXS">XXS</MenuItem>
-                                  <MenuItem value="XS">XS</MenuItem>
-                                  <MenuItem value="S">S</MenuItem>
-                                  <MenuItem value="M">M</MenuItem>
-                                  <MenuItem value="L">L</MenuItem>
-                                  <MenuItem value="XL">XL</MenuItem>
-                                  <MenuItem value="XXL">XXL</MenuItem>
-                              </Field>
-                          </div>
                           <div>
                             <Field
                               name={`students[${index}].remarks`}
@@ -434,10 +436,11 @@ class AddTeamForm extends Component {
                           <div>
                             <ErrorMessage name={`students[${index}].first_name`} />
                             <ErrorMessage name={`students[${index}].last_name`} />
-                            <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].mobile`} />
+                            <ErrorMessage name={`students[${index}].email`} />
                             <ErrorMessage name={`students[${index}].shirt_size`} />
                             <ErrorMessage name={`students[${index}].badge`} />
+                            <ErrorMessage name={`students[${index}].confirmPassword`} />
                             <ErrorMessage name={`students[${index}].dietaryrestriction`} />
                             <ErrorMessage name={`students[${index}].remarks`} />
                             <ErrorMessage name={`students[${index}].emergency_contact_mobile`} />
@@ -451,15 +454,15 @@ class AddTeamForm extends Component {
                         type="button"
                         onClick={() => { arrayHelpers.push({ 
                           first_name: '',
-                          last_name: '',
                           mobile:'',
+                          last_name: '',
                           dietaryrestriction: '',
                           remarks: '',
                           emergency_contact_mobile: '',
                           emergency_contact_name: '',
                           emergency_contact_relation: '',
-                          shirt_size: '',
                           badge: '',
+                          shirt_size: '',
                           email: '',
                         }); values.lengthStudents += 1;}}
                         size="small"
