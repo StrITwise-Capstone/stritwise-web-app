@@ -13,10 +13,12 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { withSnackbar } from 'notistack';
 import { withRouter } from 'react-router';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import DeleteButton from './DeleteButton/DeleteButton';
 import yup from '../../../../../../../instances/yup';
 import TextField from '../../../../../../../components/UI/TextField/TextField';
+import Dropdown from '../../../../../../../components/UI/Dropdown/Dropdown';
 
 // initialValues for student object
 const initialValues = (
@@ -32,6 +34,8 @@ const initialValues = (
     dietary_restriction: student.dietary_restriction,
     remarks: student.remarks,
     email: student.email,
+    mobile: student.mobile,
+    badge: student.badge,
     studentId,
     eventId,
     teamId,
@@ -50,6 +54,13 @@ const validationSchema = yup.object({
   lastname: yup.string()
     .required('Last Name Required'),
   email: yup.string(),
+  badge: yup.string()
+    .required('Required'),
+  mobile:yup.number()
+    .moreThan(60000000, 'Enter a valid phone number')
+    .lessThan(100000000, 'Enter a valid phone number')
+    .required('Required')
+    .typeError('Invalid Phone Number'),
   dietary_restriction: yup.string(),
   remarks: yup.string(),
   emergency_contact_name: yup.string(),
@@ -96,6 +107,8 @@ const EditStudentForm = ({
           dietary_restriction: values.dietary_restriction,
           remarks: values.remarks,
           email: values.email,
+          badge: values.badge,
+          mobile: values.mobile,
           modified_at: new Date(Date.now()),
           shirt_size: values.shirt_size,
           emergency_contacts: {
@@ -156,6 +169,13 @@ const EditStudentForm = ({
               component={TextField}
             />
             <Field
+              required
+              name="mobile"
+              label="Mobile Number"
+              type="text"
+              component={TextField}
+            />
+            <Field
               name="dietary_restriction"
               label="Dietary Restriction"
               type="text"
@@ -163,8 +183,8 @@ const EditStudentForm = ({
             />
             <Field
               required
-              name="shirt_size"
-              label="Shirt Size"
+              name="badge"
+              label="Badge Name"
               type="text"
               component={TextField}
             />
@@ -189,6 +209,19 @@ const EditStudentForm = ({
               type="text"
               component={TextField}
             />
+            <Field
+              name="shirt_size"
+              label="Shirt Size"
+              component={Dropdown}
+              required>
+                <MenuItem value="XXS">XXS</MenuItem>
+                <MenuItem value="XS">XS</MenuItem>
+                <MenuItem value="S">S</MenuItem>
+                <MenuItem value="M">M</MenuItem>
+                <MenuItem value="L">L</MenuItem>
+                <MenuItem value="XL">XL</MenuItem>
+                <MenuItem value="XXL">XXL</MenuItem>
+            </Field>
             <Field
               name="remarks"
               label="Remarks"
