@@ -8,6 +8,7 @@ import {
 import {
   Button,
   CircularProgress,
+  Typography,
 } from '@material-ui/core';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
@@ -52,6 +53,7 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => {
     teacherId: teacherId ? teacherId : 'null',
     lengthStudents: minStudent,
     schoolId: schoolId ? schoolId : '',
+    school_id: '',
   };
 };
 
@@ -74,6 +76,7 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
   team_name: yup.string()
     .required('Required')
     .test('team name', 'There is an existing team name', value => value && !(teamsName.indexOf(value) > -1)),
+  school_id: yup.string().required('Required'),
   students: yup.array()
     .of(
       yup.object().shape({
