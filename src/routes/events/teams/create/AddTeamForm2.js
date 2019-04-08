@@ -30,6 +30,7 @@ import Dropdown from '../../../../components/UI/Dropdown/Dropdown';
 
 // initialValues for team Object
 const initialValues = (minStudent, schools, teacherId, schoolId) => {
+  if (teacherId)
   return {
     team_name: '',
     students: Array.apply(null, Array(minStudent)).map(
@@ -53,6 +54,31 @@ const initialValues = (minStudent, schools, teacherId, schoolId) => {
     lengthStudents: minStudent,
     schoolId: schoolId ? schoolId : '',
   };
+  if (!teacherId)
+  return {
+    team_name: '',
+    students: Array.apply(null, Array(minStudent)).map(
+      (student) => { 
+        return { 
+          first_name: '',
+          last_name: '',
+          dietaryrestriction: '',
+          mobile:'',
+          remarks: '',
+          emergency_contact_mobile: '',
+          emergency_contact_name: '',
+          emergency_contact_relation: '',
+          email: '',
+          shirt_size: '',
+          badge: '',
+        }
+      }),
+    schools,
+    teacherId: teacherId ? teacherId : 'null',
+    lengthStudents: minStudent,
+    schoolId: schoolId ? schoolId : '',
+    school_id: '',
+  };
 };
 
 // checkDuplicates
@@ -70,7 +96,9 @@ function hasDuplicates(array) {
 }
 
 // validationSchema for team object
-const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
+const validationSchema = (minStudent, teamsName, studentsEmail,teacherId) => {
+  if (teacherId) 
+  return yup.object({
   team_name: yup.string()
     .required('Required')
     .test('team name', 'There is an existing team name', value => value && !(teamsName.indexOf(value) > -1)),
@@ -106,7 +134,47 @@ const validationSchema = (minStudent, teamsName, studentsEmail) => yup.object({
     )
     .required('Must have members')
     .min(minStudent, `Minimum of ${minStudent} member`),
-});
+})
+  if (!teacherId) 
+  return yup.object({
+  team_name: yup.string()
+    .required('Required')
+    .test('team name', 'There is an existing team name', value => value && !(teamsName.indexOf(value) > -1)),
+  school_id: yup.string().required('Required'),
+  students: yup.array()
+  .of(
+    yup.object().shape({
+      first_name: yup.string()
+        .min(1, 'too short')
+        .required('First Name Required'),
+      last_name: yup.string()
+        .required('Last Name Required'),
+      email: yup.string()
+        .email('Invalid email')
+        .required('Email Required')
+        .test('Existing Email name', 'The email address is in use by another account', value => value && !(studentsEmail.indexOf(value) > -1)),
+      mobile:yup.number()
+        .moreThan(60000000, 'Enter a valid phone number')
+        .lessThan(100000000, 'Enter a valid phone number')
+        .required('Required')
+        .typeError('Invalid Phone Number'),   
+      dietaryrestriction: yup.string(),
+      remarks: yup.string(),
+      emergency_contact_name: yup.string(),
+      emergency_contact_mobile: yup.number()
+        .moreThan(60000000, 'Enter a valid phone number')
+        .lessThan(100000000, 'Enter a valid phone number')
+        .required('Required')
+        .typeError('Invalid Phone Number'),
+      emergency_contact_relation: yup.string(),
+      shirt_size: yup.string().required('Required shirt size'),
+      badge: yup.string().required('Required Badge Name'),
+    }),
+  )
+  .required('Must have members')
+  .min(minStudent, `Minimum of ${minStudent} member`),
+})
+};
 
 /**
  * Class representing the AddTeamForm component.
@@ -136,7 +204,7 @@ class AddTeamForm extends Component {
     return (
       <Formik
         initialValues={initialValues(minStudent, schools, teacherId, schoolId)}
-        validationSchema={validationSchema(minStudent, teamsName, studentsEmail)}
+        validationSchema={validationSchema(minStudent, teamsName, studentsEmail,teacherId)}
         onSubmit={(values, { resetForm, setSubmitting }) => {
           let schoolValue = '';
           if (schoolId !== '') {
