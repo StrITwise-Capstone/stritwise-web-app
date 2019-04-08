@@ -269,7 +269,8 @@ class AddTeamForm extends Component {
             content = (
               <Form onSubmit={handleSubmit}>
                 <p>
-                  {`Minimum of ${minStudent} students`}
+                  {`Minimum of ${minStudent} students`}<br></br><br></br>
+                  *If you have a foreign number, put a placeholder of "88888888" and add your number in the remarks field. e.g. +60 17-567 1234
                 </p>
                 <Field
                   required

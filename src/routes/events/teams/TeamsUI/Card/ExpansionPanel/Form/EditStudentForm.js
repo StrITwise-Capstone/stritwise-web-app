@@ -161,6 +161,7 @@ const EditStudentForm = ({
             />
             <Field
               required
+              disabled
               name="email"
               label="Email"
               type="text"

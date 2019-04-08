@@ -16,7 +16,6 @@ import Select from '../../../../components/UI/Select/Select';
 import yup from '../../../../instances/yup';
 
 // regExpression
-const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})");
 
 // initialValues for the form
 const initialValues = (school) => { return {
@@ -39,7 +38,12 @@ const validationSchema = (teams, minStudent, maxStudent, studentsEmail) => yup.a
       'Last Name': yup.string().required('Last Name is required').min(2, 'Last name is too short'),
       Email: yup.string().email('Email is invalid').required().min(2, 'Email is too short')
         .test('Existing Email name', 'There is an existing email', value => value && !(studentsEmail.indexOf(value) > -1)),
-      Password: yup.string().required('Password is required').test('password', 'Password should contain at least 1 digit, 1 lower case, 1 upper case and at least 8 characters', value => value && mediumRegex.test(value)),
+      'Mobile Number': yup.number()
+        .moreThan(60000000, 'Enter a valid phone number')
+        .lessThan(100000000, 'Enter a valid phone number')
+        .required('Required')
+        .typeError('Invalid Phone Number'),
+      Badge: yup.string().required('Badge is required'),
       'Emergency Contact Name': yup.string().required('Emergency Contact Name is required').min(2, 'Emergency contact name is too short'),
       'Emergency Contact Mobile': yup.number()
         .moreThan(60000000, 'Enter a valid phone number')
@@ -184,6 +188,8 @@ class UploadTeamForm extends Component {
               first_name: team.values[i]['First Name'],
               last_name: team.values[i]['Last Name'],
               email: team.values[i].Email,
+              mobile: team.values[i]['Mobile Number'],
+              badge: team.values[i]['Badge'],
               dietary_restriction: team.values[i]['Dietary Restrictions'],
               remarks: team.values[i].Remarks,
               emergency_contacts: {
@@ -195,7 +201,7 @@ class UploadTeamForm extends Component {
               modified_at: new Date(Date.now()),
               shirt_size: team.values[i]['Shirt Size'],
             };
-            data.password = team.values[i].Password;
+            data.password = 'Test1234';
             data.eventId = eventId;
             const transaction = {
               user_id: auth.uid,
